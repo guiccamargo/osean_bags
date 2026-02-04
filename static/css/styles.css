@@ -1,0 +1,29 @@
+.produto-img {
+    height: 300px;
+    width: 400px:
+    object-fit: cover;
+}
+.carousel_out{
+    height: 400px;
+}
+.rounded-circle {
+  border-radius: 50% !important;
+}
+.btn-overlay {
+    position: absolute;
+    padding:4%;
+    top: 60%;
+    left: 60%;
+    width: 45%;
+    height: 50%;
+    background-color: #eb4034;
+}
+/* Flash Message Styling */
+.flash {
+  color: #ee6f57;
+  text-align: center;
+}
+
+.btn {
+  position: relative;
+}
