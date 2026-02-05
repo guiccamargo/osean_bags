@@ -1,11 +1,12 @@
 from typing import List
 
+import sqlalchemy.exc
 from flask import request, redirect, url_for
 from flask_login import login_user
 from werkzeug.security import generate_password_hash
 
 from db import db
-from models import Produto, Usuario, Carrinho, Carrossel
+from models import Produto, Usuario, Carrinho, Carrossel, Foto
 
 
 def soma_itens(id_usuario: int) -> int:
@@ -31,7 +32,7 @@ def listar_produtos():
     for produto in todos_produtos:
         lista_produtos.append({
             "id": produto.id,
-            "imagem": produto.imagem,
+            "imagem": acessar_capa(produto.id),
             "nome": produto.nome,
             "preco": produto.preco,
         })
@@ -52,12 +53,15 @@ def acessar_carrossel() -> List[str]:
     Acessa os itens do carrossel
     :return: lista com o caminho das imagens do carrossel
     """
-    banners = []
-    todos_banners = Carrossel.query.all()
-    for banner in todos_banners:
-        banners.append(banner.primeira_imagem)
-        banners.append(banner.segunda_imagem)
-    return banners
+    try:
+        banners = []
+        todos_banners = Carrossel.query.all()
+        for banner in todos_banners:
+            banners.append(banner.primeira_imagem)
+            banners.append(banner.segunda_imagem)
+        return banners
+    except sqlalchemy.exc.OperationalError:
+        return None
 
 
 def registar():
@@ -83,3 +87,10 @@ def excluir_item_carrinho(id_usuario, id_produto):
     produto = Carrinho.query.filter_by(usuario_id=id_usuario, produto_id=id_produto).first()
     db.session.delete(produto)
     db.session.commit()
+
+def acessar_fotos(produto_id):
+    return db.session.execute(db.select(Foto).where(Foto.produto_id == produto_id).scalars())
+
+def acessar_capa(produto_id):
+    capa = Foto.query.filter_by(produto_id=produto_id).first()
+    return capa.arquivo

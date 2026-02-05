@@ -5,7 +5,7 @@ from werkzeug.security import check_password_hash
 
 from db import db
 from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
-    excluir_item_carrinho
+    excluir_item_carrinho, acessar_capa
 from forms import LoginForm, RegisterForm
 from models import Usuario, Carrinho, Produto
 
@@ -117,7 +117,7 @@ def ir_para_carrinho():
         if item.produto_id == 0:
             continue
         produto = db.get_or_404(Produto, item.produto_id)
-        produtos_no_carrinho.append({"id": produto.id, "name": produto.nome, "img": produto.imagem, "total": round(produto.preco * item.quantidade, 2),
+        produtos_no_carrinho.append({"id": produto.id, "name": produto.nome, "img": acessar_capa(produto.id), "total": round(produto.preco * item.quantidade, 2),
                          "quantidade": item.quantidade})
 
     # Renderizar página do carrinho
