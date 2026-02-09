@@ -5,7 +5,7 @@ from werkzeug.security import check_password_hash
 
 from db import db
 from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
-    excluir_item_carrinho, acessar_capa
+    excluir_item_carrinho, acessar_capa, acessar_fotos
 from forms import LoginForm, RegisterForm
 from models import Usuario, Carrinho, Produto
 
@@ -226,3 +226,14 @@ def atualizar_item(user_id, product_id):
 def deletar_item(user_id, product_id):
     excluir_item_carrinho(user_id, product_id)
     return redirect(url_for("site.ir_para_carrinho"))
+
+@site_bp.route('/produtos/<int:produto_id>')
+def pagina_produto(produto_id):
+    # Autenticação de usuário
+    if current_user.is_authenticated:
+        soma = soma_itens(current_user.id)
+    else:
+        soma = None
+    produto = Produto.query.filter_by(id=produto_id).first()
+    fotos = acessar_fotos(produto_id)
+    return render_template('produto.html', produto=produto, fotos=fotos, logged_in=current_user.is_authenticated, total_items=soma)

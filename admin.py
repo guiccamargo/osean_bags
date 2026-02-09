@@ -95,28 +95,6 @@ class ProdutoAdmin(ModelView):
         ))
     ]
 
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
-
-    # class ProdutoAdmin(ModelView):
-    #     file_path = os.path.join(os.path.dirname(__file__), 'static/uploads/')
-    #     def on_model_create(self, form, model, is_created):
-    #         if is_created:
-    #             produto_id = model.id
-    #             self.file_path = os.path.join(self.file_path, produto_id)
-    #
-    #     form_extra_fields = {
-    #         'capa': FileUploadField(
-    #             'Capa',
-    #             base_path=file_path,
-    #             validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Somente imagens!')]
-    #         )
-    #     }
-    #     inline_models = (Foto,)
-    #     def on_model_change(self, form, model, is_created):
-    #         if form.capa.data:
-    #             caminho = os.path.join(self.file_path, model.imagem)
-    #             formatar_imagem(caminho, (400, 500))
 
     column_formatters = {
         'imagem': lambda v, c, m, p: Markup(

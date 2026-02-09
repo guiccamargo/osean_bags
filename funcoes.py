@@ -89,7 +89,7 @@ def excluir_item_carrinho(id_usuario, id_produto):
     db.session.commit()
 
 def acessar_fotos(produto_id):
-    return db.session.execute(db.select(Foto).where(Foto.produto_id == produto_id).scalars())
+    return db.session.execute(db.select(Foto).where(Foto.produto_id == produto_id)).scalars()
 
 def acessar_capa(produto_id):
     capa = Foto.query.filter_by(produto_id=produto_id).first()
