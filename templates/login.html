@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% from 'bootstrap5/form.html' import render_form %}
-<html lang="en">
+<html lang="pt-br">
 {%include "header.html" %}
 <head>
     <title>Login</title>
@@ -24,20 +24,22 @@
             <div class="card contorno col-lg-4 col-md-10">
                 <div class="card-body text-center">
                     <div class="card-img-top rounded-circle mx-auto" id="login-img">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="#6B5F3B"
-                         class="bi bi-person card-img-top rounded-circle" id="profile-img"
-                         viewBox="0 0 16 16">
-                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
-                    </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="#6B5F3B"
+                             class="bi bi-person card-img-top rounded-circle" id="profile-img"
+                             viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                        </svg>
                     </div>
                     <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Login</h1>
                     <br/>
                     <div>
-                        {% with messages = get_flashed_messages() %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
-                        {% for message in messages: %}
-                        <p class="flash">{{ message }}</p>
-                        {% endfor %}
+                        <ul class="list-group flashes">
+                            {% for category, message in messages %}
+                            <li class="list-group-item {{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
                         {% endif %}
                         {% endwith %}
                         <div class="">

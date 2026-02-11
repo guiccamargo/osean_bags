@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     {% block styles %}
     {{ bootstrap.load_css() }}
@@ -11,17 +11,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
     {% endblock %}
 </head>
 <body>
 <header class="px-3 pb-2 bg-light text-white row">
     <div class="d-flex flex-wrap py-2 justify-content-between">
         <ul class="nav nav-pills my-3">
-            <li class="nav-item">
-                <div id="logo" class="mx-1">
-                    <a href="{{ url_for('site.home') }}" class="btn btn-custom"></a>
-                </div>
-            </li>
             <li class="nav-item"><a href="{{ url_for('site.produtos') }}" class="btn btn-custom">
                 <strong>Produtos</strong>
             </a></li>
@@ -29,6 +25,9 @@
                 <strong>Sobre Nós</strong>
             </a></li>
         </ul>
+        <div id="logo" class="mx-1">
+            <a href="{{ url_for('site.home') }}" class="btn btn-custom"></a>
+        </div>
         <ul class="nav nav-pills">
             {% if admin: %}
             <li class="nav-item"><a href="/admin" class="btn btn-custom mx-1">
@@ -51,15 +50,19 @@
                 </span>
                 {% endif %}
             </a></li>
-            <li class="nav-item"><a href="{{ url_for('site.logout') }}" class="btn btn-custom">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#6B5F3B"
-                     class="bi bi-box-arrow-left" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                          d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
-                    <path fill-rule="evenodd"
-                          d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-                </svg>
-            </a></li>
+            <li class="nav-item">
+                <div class="dropdown mx-2">
+                    <button class="btn rounded-circle btn-circle" type="button" id="dropdown-perfil"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <strong>{{ inicial_nome }}</strong>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item texto-estilizado" href="#">Meus Pedidos</a></li>
+                        <li><a class="dropdown-item texto-estilizado" href="{{ url_for('site.gerenciar', usuario_id=id_usuario) }}">Gerenciar Conta</a></li>
+                        <li><a class="dropdown-item texto-estilizado" href="{{ url_for('site.logout') }}">Sair</a></li>
+                    </ul>
+                </div>
+            </li>
             {% else: %}
             <li class="nav-item"><a href="{{ url_for('site.login') }}" class="btn btn-custom mx-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#6B5F3B" class="bi bi-person"

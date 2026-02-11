@@ -21,3 +21,17 @@ class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired()], render_kw={"class": "contorno"})
     senha = PasswordField("Senha", validators=[DataRequired()], render_kw={"class": "contorno"})
     submit = SubmitField("Entrar")
+
+class AtualizarLoginForm(FlaskForm):
+    """
+    Formulário de atualização login
+    """
+    senha_atual = PasswordField("Senha Atual", validators=[DataRequired()], render_kw={"class": "contorno"})
+    senha_nova = PasswordField("Nova Senha", validators=[DataRequired()], render_kw={"class": "contorno"})
+    confirmacao_senha_nova = PasswordField("Confirme a Nova Senha", validators=[DataRequired()], render_kw={"class": "contorno"})
+
+    submit = SubmitField("Mudar Senha")
+
+class AtualizarNomeForm(FlaskForm):
+    nome = StringField("Nome", validators=[DataRequired()], render_kw={"class": "contorno"})
+    submit = SubmitField("Atualizar")

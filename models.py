@@ -22,6 +22,8 @@ class Usuario(UserMixin, db.Model):
     def is_admin(self):
         return self.admin
 
+    def get_inicial(self):
+        return str(self.nome[0]).upper()
 
 class Produto(db.Model):
     __tablename__ = 'produtos'

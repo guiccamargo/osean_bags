@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% from 'bootstrap5/form.html' import render_form %}
+<html lang="pt-br">
+{%include "header.html" %}
+<head>
+    <title>Gerenciar Conta</title>
+</head>
+<body class="bg-light">
+<main class="mb-4">
+    <div class="container">
+        <div class="row container justify-content-center">
+            <div class="card contorno col-lg-4 col-md-10">
+                <div class="card-body text-center">
+                    <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Atualizar Senha</h1>
+                    <br/>
+                    <div>
+                        {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                        {% if errors %}
+                        <ul class="list-group flashes">
+                            {% for message in errors %}
+                            <li class="list-group-item errors">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+                        <div class="">
+                            {{render_form(senha_form, novalidate=True, button_map={"submit": "btn
+                            btn-custom-comprar"})}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card contorno col-lg-4 col-md-10 ms-4">
+                <div class="card-body text-center">
+                    <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Alterar Nome do
+                        Usuário</h1>
+                    <br/>
+                    <div>
+                        <div class="">
+                            {% with success = get_flashed_messages(category_filter=["success"]) %}
+                            {% if success %}
+                            <ul class="list-group flashes">
+                                {% for message in success %}
+                                <li class="list-group-item success">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% endwith %}
+                            <div class="">
+                                {{render_form(nome_form, novalidate=True, button_map={"submit": "btn
+                                btn-custom-comprar"})}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row container justify-content-center mt-4">
+            <!-- Botão que aciona o Modal -->
+            <button type="button" class="btn btn-outline-danger col-2" data-bs-toggle="modal" data-bs-target="#excluir">
+                Ecluir conta
+            </button>
+        </div>
+
+        <!-- Estrutura do Modal -->
+        <div class="modal fade" id="excluir" tabindex="-1" aria-labelledby="modal-excluir" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir Conta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body texto-estilizado">
+                        Tem certeza que deseja excluir sua conta?
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('site.deletar_conta', id_usuario=id_usuario) }}" type="button" class="btn btn-custom-comprar">Excluir</a>
+                        <a type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Fechar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include "footer.html" %}
+</body>
+</html>

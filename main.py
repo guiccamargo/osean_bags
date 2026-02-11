@@ -11,6 +11,7 @@ from models import Usuario, Produto, Carrossel
 from rotas import site_bp
 
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['BABEL_DEFAULT_LOCALE'] = 'pt_BR'
 babel = Babel(app)

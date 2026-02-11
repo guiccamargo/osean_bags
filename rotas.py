@@ -4,9 +4,10 @@ from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash
 
 from db import db
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, AtualizarLoginForm, AtualizarNomeForm
 from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
-    excluir_item_carrinho, acessar_capa, acessar_fotos, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes
+    excluir_item_carrinho, acessar_capa, acessar_fotos, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes, \
+    acessar_inicial, redefinir_senha, redefinir_nome, deletar_usuario
 from models import Usuario, Carrinho, Produto
 
 site_bp = Blueprint('site', __name__, template_folder='templates')
@@ -31,12 +32,47 @@ def renderizar_header(usuario):
     else:
         soma = None
 
+    if logged_in:
+        id_usuario_atual = current_user.id
+    else:
+        id_usuario_atual = None
+
+    if logged_in:
+        inicial_nome = acessar_inicial(usuario.id)
+    else:
+        inicial_nome = None
+
     return {
         'logged_in': logged_in,
         'total_items': soma,
-        'admin': is_admin
+        'admin': is_admin,
+        'id_usuario': id_usuario_atual,
+        'inicial_nome': inicial_nome,
     }
 
+@site_bp.route('/gerenciar/<int:usuario_id>', methods=['GET', 'POST'])
+def gerenciar(usuario_id):
+    if request.method == 'GET':
+        return render_template('gerenciar_conta.html', senha_form=AtualizarLoginForm(), nome_form=AtualizarNomeForm(), **renderizar_header(current_user))
+    else:
+        # achar usuario no banco de dados
+        user = db.session.query(Usuario).filter_by(id=usuario_id).first()
+        if request.form.get('senha_atual'):
+            if check_password_hash(pwhash=user.password_hash, password=request.form.get('senha_atual')):
+                if request.form.get('senha_nova') == request.form.get('confirmacao_senha_nova'):
+                    redefinir_senha(usuario_id)
+                    flash('Sua senha foi atualizada', category='success')
+                    logout_user()
+                    return redirect(url_for('site.login'))
+                else:
+                    flash('As senhas não coincidem', category='error')
+            else:
+                flash('Senha incorreta', category='error')
+        elif request.form.get('nome'):
+            flash('Nome do Usuário alterado', category='success')
+            redefinir_nome(usuario_id)
+
+        return redirect(url_for('site.gerenciar', usuario_id=usuario_id))
 
 @site_bp.route('/')
 def home():
@@ -60,14 +96,14 @@ def login():
         user = db.session.query(Usuario).filter_by(email=request.form.get('email')).first()
         # Checar se o usuário existe
         if not user:
-            flash("Este email não está cadastrado")
+            flash("Este email não está cadastrado", category='error')
             return redirect(url_for("site.login"))
         # Checar se a senha está correta
         if check_password_hash(pwhash=user.password_hash, password=request.form.get('senha')):
             login_user(user)
             return redirect(url_for("site.home"))
         else:
-            flash("Senha incorreta")
+            flash("Senha incorreta", category='error')
             return render_template("login.html", form=LoginForm(), **renderizar_header(current_user))
     # Renderizar página de login
     else:
@@ -94,7 +130,7 @@ def register():
         user = db.session.execute(db.select(Usuario).where(Usuario.email == request.form.get("email"))).scalar()
         # Checa se o usuário já existe
         if user:
-            flash("Esse Email já está cadastrado")
+            flash("Esse Email já está cadastrado", category='error')
             return redirect(url_for("site.login"))
         # Registra usuário
         else:
@@ -223,3 +259,9 @@ def pagina_produto(produto_id):
     produto = Produto.query.filter_by(id=produto_id).first()
     fotos = acessar_fotos(produto_id)
     return render_template('produto.html', produto=produto, fotos=fotos, **renderizar_header(current_user))
+
+@site_bp.route('/deletar/<int:id_usuario>')
+def deletar_conta(id_usuario):
+    logout_user()
+    deletar_usuario(id_usuario)
+    return redirect(url_for('site.home'))

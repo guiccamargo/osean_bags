@@ -122,3 +122,25 @@ def acessar_escolha_do_mes():
             "imagem": acessar_capa(escolha.id),
             "nome": escolha.nome,
         }
+
+def acessar_inicial(usuario_id):
+    usuario = db.get_or_404(Usuario, usuario_id)
+    return usuario.get_inicial()
+
+def redefinir_senha(usuario_id):
+    usuario = db.get_or_404(Usuario, usuario_id)
+    senha = request.form.get("senha_nova")
+    usuario.password_hash = generate_password_hash(senha, method="pbkdf2:sha256",
+                           salt_length=8)
+    db.session.commit()
+
+def redefinir_nome(usuario_id):
+    usuario = db.get_or_404(Usuario, usuario_id)
+    nome = request.form.get('nome')
+    usuario.nome = nome
+    db.session.commit()
+
+def deletar_usuario(usuario_id):
+    usuario = db.get_or_404(Usuario, usuario_id)
+    db.session.delete(usuario)
+    db.session.commit()
