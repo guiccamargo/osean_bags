@@ -4,9 +4,9 @@ from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash
 
 from db import db
-from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
-    excluir_item_carrinho, acessar_capa, acessar_fotos
 from forms import LoginForm, RegisterForm
+from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
+    excluir_item_carrinho, acessar_capa, acessar_fotos, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes
 from models import Usuario, Carrinho, Produto
 
 site_bp = Blueprint('site', __name__, template_folder='templates')
@@ -14,19 +14,39 @@ site_bp = Blueprint('site', __name__, template_folder='templates')
 BASE_DOMAIN = "http://127.0.0.1:5000"
 
 
+def renderizar_header(usuario):
+    try:
+        logged_in = usuario.is_authenticated
+    except AttributeError:
+        logged_in = False
+
+    try:
+        is_admin = usuario.is_admin()
+    except AttributeError:
+        is_admin = False
+
+    # Autenticação de usuário
+    if usuario.is_authenticated:
+        soma = soma_itens(usuario.id)
+    else:
+        soma = None
+
+    return {
+        'logged_in': logged_in,
+        'total_items': soma,
+        'admin': is_admin
+    }
+
+
 @site_bp.route('/')
 def home():
     """
     renderiza a página inicial
     """
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
 
-    return render_template("index.html", logged_in=current_user.is_authenticated,
-                           total_items=soma, carrossel=acessar_carrossel())
+    return render_template("index.html", carrossel=acessar_carrossel(), bestsellers=acessar_bestsellers(),
+                           novidades=acessar_novidades(), escolha_do_mes=acessar_escolha_do_mes(),
+                           **renderizar_header(current_user))
 
 
 @site_bp.route("/login", methods=["POST", "GET"])
@@ -34,12 +54,7 @@ def login():
     """
     Renderiza a página de login
     """
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
-   # Tentar login
+    # Tentar login
     if request.method == "POST":
         # achar usuario no banco de dados
         user = db.session.query(Usuario).filter_by(email=request.form.get('email')).first()
@@ -53,14 +68,10 @@ def login():
             return redirect(url_for("site.home"))
         else:
             flash("Senha incorreta")
-            return render_template("login.html", form=LoginForm(), logged_in=current_user.is_authenticated,
-                                   total_items=soma
-                                   )
+            return render_template("login.html", form=LoginForm(), **renderizar_header(current_user))
     # Renderizar página de login
     else:
-        return render_template("login.html", form=LoginForm(), logged_in=current_user.is_authenticated,
-                               total_items=soma
-                               )
+        return render_template("login.html", form=LoginForm(), **renderizar_header(current_user))
 
 
 @site_bp.route("/logout")
@@ -77,11 +88,6 @@ def register():
     """
     Registra novo usuário
     """
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
     # Tentar registro
     if request.method == "POST":
         # procurar usuário no banco de dados
@@ -96,8 +102,7 @@ def register():
             return redirect(url_for("site.home"))
     # Renderiza página de registro
     else:
-        return render_template("register.html", form=RegisterForm(), logged_in=current_user.is_authenticated,
-                               total_items=soma)
+        return render_template("register.html", form=RegisterForm(), **renderizar_header(current_user))
 
 
 @site_bp.route('/carrinho')
@@ -105,11 +110,6 @@ def ir_para_carrinho():
     """
     Renderiza página do carrinho
     """
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
     # Listar produtos
     produtos_no_carrinho = []
     all_items = db.session.execute(db.select(Carrinho).where(Carrinho.usuario_id == current_user.id)).scalars()
@@ -117,11 +117,12 @@ def ir_para_carrinho():
         if item.produto_id == 0:
             continue
         produto = db.get_or_404(Produto, item.produto_id)
-        produtos_no_carrinho.append({"id": produto.id, "name": produto.nome, "img": acessar_capa(produto.id), "total": round(produto.preco * item.quantidade, 2),
-                         "quantidade": item.quantidade})
+        produtos_no_carrinho.append({"id": produto.id, "name": produto.nome, "img": acessar_capa(produto.id),
+                                     "total": round(produto.preco * item.quantidade, 2),
+                                     "quantidade": item.quantidade})
 
     # Renderizar página do carrinho
-    return render_template("cart.html", products=produtos_no_carrinho, logged_in=True, total_items=soma)
+    return render_template("cart.html", products=produtos_no_carrinho, **renderizar_header(current_user))
 
 
 @site_bp.route('/produtos')
@@ -129,14 +130,7 @@ def produtos():
     """
     Renderiza página de produtos
     """
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
-
-    return render_template('produtos.html', logged_in=current_user.is_authenticated, lista_produtos=listar_produtos(),
-                           total_items=soma)
+    return render_template('produtos.html', lista_produtos=listar_produtos(), **renderizar_header(current_user))
 
 
 @site_bp.route("/produto/<produto_id>")
@@ -166,13 +160,7 @@ def sobre_nos():
     """
     Renderiza a página Sobre Nós
     """
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
-
-    return render_template('sobre_nos', logged_in=current_user.is_authenticated, total_items=soma)
+    return render_template('sobre_nos', **renderizar_header(current_user))
 
 
 @site_bp.route("/create-checkout-session", methods=["GET", "POST"])
@@ -213,6 +201,7 @@ def clear_checkout():
     limpar_carrinho(current_user.id)
     return redirect(url_for("site.ir_para_carrinho"))
 
+
 @site_bp.route("/atualizar/<int:user_id>/<int:product_id>'", methods=["GET", "POST"])
 def atualizar_item(user_id, product_id):
     quantidade = request.args.get('quantidade', type=int)
@@ -222,18 +211,15 @@ def atualizar_item(user_id, product_id):
         atualizar_quantia(user_id, product_id, quantidade)
     return redirect(url_for("site.ir_para_carrinho"))
 
+
 @site_bp.route("/deletar/<int:user_id>/<int:product_id>'", methods=["GET", "POST"])
 def deletar_item(user_id, product_id):
     excluir_item_carrinho(user_id, product_id)
     return redirect(url_for("site.ir_para_carrinho"))
 
+
 @site_bp.route('/produtos/<int:produto_id>')
 def pagina_produto(produto_id):
-    # Autenticação de usuário
-    if current_user.is_authenticated:
-        soma = soma_itens(current_user.id)
-    else:
-        soma = None
     produto = Produto.query.filter_by(id=produto_id).first()
     fotos = acessar_fotos(produto_id)
-    return render_template('produto.html', produto=produto, fotos=fotos, logged_in=current_user.is_authenticated, total_items=soma)
+    return render_template('produto.html', produto=produto, fotos=fotos, **renderizar_header(current_user))

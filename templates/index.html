@@ -3,48 +3,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Store</title>
+    <title>Osean Bags</title>
 </head>
-{% if carrossel: %}
 <body data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
-<div id="carouselExampleCaptions" class="carousel slide w-100 carousel_out">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"
-                aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"
-                aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"
-                aria-label="Slide 3"></button>
+<main class="bg-light">
+    {% if carrossel: %}
+    <div id="carousel-inicial" class="carousel slide w-100 mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+            {% for banner in carrossel %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <img src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}"
+                     class="d-block w-100">
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <button class="carousel-control-prev" type="button"
+                data-bs-target="#carousel-inicial" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+
+        <button class="carousel-control-next" type="button"
+                data-bs-target="#carousel-inicial" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
     </div>
-    <div class="carousel-inner h-100">
-        <div class="carousel-item w-100 h-100 active">
-            <img src="{{ 'static/uploads/carrossel/' + carrossel[0] }}" class="d-block carrossel-img w-100 h-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>First slide label</h5>
-                <p>Some representative placeholder content for the first slide.</p>
+    {% endif %}
+    <div class="info-barra mt-4">
+        <div class="info-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6B5F3B" class="bi bi-truck"
+                 viewBox="0 0 16 16">
+                <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+            </svg>
+            <h5 class="texto-estilizado">
+                Envio para
+                todo o Brasil
+            </h5>
+        </div>
+        <div class="info-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6B5F3B" class="bi bi-wallet2"
+                 viewBox="0 0 16 16">
+                <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/>
+            </svg>
+            <h5 class="texto-estilizado">
+                Pagamento Seguro
+            </h5>
+        </div>
+        <div class="info-item">
+            <img src="static/formas_pagamento.png" width="250"/>
+        </div>
+    </div>
+    {% if novidades %}
+    <div class="container album py-5 ">
+        <h1 class="texto-estilizado mt-2 mb-3 julius-sans-one-regular">Novidades</h1>
+        <div class="container position-relative">
+            <div class="row g-2">
+                {% for produto in novidades: %}
+                <div class="col-lg-3 col-md-4 me-3">
+                    <div class="card shadow-sm">
+                        <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
+                        <div class="card-body">
+                            <p class="card-text">{{produto.nome}}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">R${{produto.preco}}</small>
+                            </div>
+                            <a class="stretched-link"
+                               href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="carousel-item w-100 h-100">
-            <img src="{{ 'static/uploads/carrossel/' + carrossel[1] }}" class="d-block carrossel-img w-100 h-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>Second slide label</h5>
-                <p>Some representative placeholder content for the second slide.</p>
+    </div>
+    {% endif %}
+    {% if bestsellers: %}
+    <div class="container album py-5 ">
+        <h1 class="texto-estilizado mb-3 julius-sans-one-regular">Bestsellers</h1>
+        <div class="container position-relative">
+            <div class="row g-2">
+                {% for produto in bestsellers: %}
+                <div class="col-lg-3 col-md-4 me-3">
+                    <div class="card shadow-sm">
+                        <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
+                        <div class="card-body">
+                            <p class="card-text">{{produto.nome}}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">R${{produto.preco}}</small>
+                            </div>
+                            <a class="stretched-link"
+                               href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-</div>
-<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-</button>
-<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-</button>
-</div>
+    {% endif %}
+    <br/>
+    {% if escolha_do_mes %}
+    <div class="container album py-5 ">
+        <h1 class="texto-estilizado mb-3 julius-sans-one-regular">Escolha do Mês</h1>
+        <div class="container position-relative">
+            <div class="row g-2 justify-content-center">
+                <div class="col-4">
+                    <img class="produto-img" id="escolha"
+                         src="static/uploads/{{escolha_do_mes.imagem}}"/>
+                    <a class="stretched-link"
+                       href="{{ url_for('site.pagina_produto', produto_id=escolha_do_mes.id) }}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </main>
 </body>
-{% endif %}
 <footer>
     {% include "footer.html" %}
 </footer>

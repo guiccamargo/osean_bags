@@ -4,7 +4,7 @@
 <head>
     <title>Produto</title>
 </head>
-<body data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
+<body class="bg-light" data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
 <header
         class="masthead"
         style="background-image: url('../static/assets/img/home-bg.jpg')">
@@ -12,31 +12,30 @@
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
                 <div class="page-heading">
-                    <h1>Lista de produtos</h1>
-                    <!--                    <span class="subheading">Welcome!</span>-->
+                    <h1 class="texto-estilizado mb-4 julius-sans-one-regular">Lista de produtos</h1>
                 </div>
             </div>
         </div>
     </div>
 </header>
 <main>
-    <div class="album py-5 bg-light">
+    <div class="album py-5 ">
         <div class="container position-relative">
-            <div class="row row-cols-2 row-cols-md-5 g-2">
+            <div class="row g-2">
                 {% for produto in lista_produtos: %}
-                    <div class="col d-flex position-relative">
-                        <div class="card shadow-sm">
-                            <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
-                            <div class="card-body">
-                                <p class="card-text">{{produto.nome}}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">R${{produto.preco}}</small>
-                                </div>
+                <div class="col-lg-3 col-md-4 me-3">
+                    <div class="card shadow-sm">
+                        <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
+                        <div class="card-body">
+                            <p class="card-text">{{produto.nome}}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">R${{produto.preco}}</small>
                             </div>
+                            <a class="stretched-link" href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
+                            </a>
                         </div>
                     </div>
-                <a class="stretched-link" href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
-                </a>
+                </div>
                 {% endfor %}
             </div>
         </div>

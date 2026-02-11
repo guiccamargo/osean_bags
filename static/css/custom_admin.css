@@ -1,0 +1,104 @@
+
+.btn.btn-secondary{
+    color:  #6B5F3B;
+    background-color: white;
+    border-color:  #6B5F3B;
+}
+
+.btn.btn-secondary:hover {
+    color: white;
+    background-color: #C8BC9A;
+    border-color: white;
+}
+
+.btn.btn-primary {
+    color: white !important;
+    background-color: #6B5F3B !important;
+    border-color: #6B5F3B !important;
+}
+
+.btn.btn-primary:hover {
+    color: #C8BC9A !important;
+    background-color:white !important;
+    border-color: #C8BC9A !important;
+}
+
+.btn.btn-danger{
+    color: red;
+    border-color: red;
+    background-color: white;
+}
+.btn.btn-danger:hover{
+    color: white;
+    background-color: red;
+}
+
+small {
+    color: #6B5F3B !important;
+}
+
+td{
+    color: #6B5F3B !important;
+}
+
+span{
+    color: #6B5F3B !important;
+}
+
+a span:hover{
+    color: #ee6f57 !important;
+}
+
+button span:hover{
+    color: #ee6f57 !important;
+}
+
+/* Fundo do header */
+.navbar {
+    background-color: white !important;  /* sua cor */
+}
+
+/* Texto do header */
+.navbar a,
+.navbar-brand {
+    color: #6B5F3B !important;
+}
+
+/* Texto ao passar o mouse */
+.navbar a:hover {
+    color: #ee6f57 !important;
+}
+
+.nav-link{
+    color: #6B5F3B !important;
+}
+
+.nav-link:hover{
+    color: #ee6f57 !important;
+}
+
+.column-header a{
+    color: #6B5F3B !important;
+}
+
+.column-header a:hover{
+    color: #ee6f57 !important;
+}
+
+.dropdown-item{
+    color: #6B5F3B !important;
+}
+
+.filter:hover{
+    color: #ee6f57 !important;
+}
+
+label{
+    color: #6B5F3B !important;
+}
+
+.form-control{
+    border: 1pt solid #6B5F3B;
+    border-radius: 12px;
+    overflow: hidden;
+}

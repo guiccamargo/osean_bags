@@ -55,11 +55,7 @@ def acessar_carrossel() -> List[str]:
     """
     try:
         banners = []
-        todos_banners = Carrossel.query.all()
-        for banner in todos_banners:
-            banners.append(banner.primeira_imagem)
-            banners.append(banner.segunda_imagem)
-        return banners
+        return Carrossel.query.all()
     except sqlalchemy.exc.OperationalError:
         return None
 
@@ -94,3 +90,35 @@ def acessar_fotos(produto_id):
 def acessar_capa(produto_id):
     capa = Foto.query.filter_by(produto_id=produto_id).first()
     return capa.arquivo
+
+def acessar_bestsellers():
+    lista_produtos = []
+    todos_produtos = Produto.query.order_by(Produto.vendas).limit(5).all()
+    for produto in todos_produtos:
+        lista_produtos.append({
+            "id": produto.id,
+            "imagem": acessar_capa(produto.id),
+            "nome": produto.nome,
+            "preco": produto.preco,
+        })
+    return lista_produtos
+
+def acessar_novidades():
+    lista_produtos = []
+    novidades = Produto.query.filter_by(novidade=True).all()
+    for produto in novidades:
+        lista_produtos.append({
+            "id": produto.id,
+            "imagem": acessar_capa(produto.id),
+            "nome": produto.nome,
+            "preco": produto.preco,
+        })
+    return lista_produtos
+
+def acessar_escolha_do_mes():
+    escolha = Produto.query.filter_by(escolha_do_mes=True).first()
+    return {
+            "id": escolha.id,
+            "imagem": acessar_capa(escolha.id),
+            "nome": escolha.nome,
+        }

@@ -6,37 +6,51 @@
     <title>Your Cart</title>
 </head>
 <body>
-{% for product in products: %}
-<div class="card mb-3" style="max-width: 540px;">
-    <div class="row g-0">
-        <div class="col-md-4">
-            <img class="img-fluid rounded-start" src="static/uploads/{{ product['img'] }}" alt="..." width="400"
-                 height="500">
-        </div>
-        <div class="col-md-8">
-            <div class="card-body">
-                <h5 class="card-title">{{ product["name"] }}</h5>
-                <form class="input-group-text" action="{{url_for('site.atualizar_item', user_id=current_user['id'], product_id=product['id'])}}">
-                    <label for="quantidade">Quantidade:</label>
-                    <input class="form-control" type="number" id="quantidade" name="quantidade" step="1" value="{{ product['quantidade'] }}"
-                           min="0">
-                    <input type="submit" value="Adicionar">
-                </form>
-                <p class="card-text">R${{ product["total"] }}</p>
-                <a type="button" class="btn btn-danger"
-                   href="{{url_for('site.deletar_item', user_id=current_user['id'], product_id=product['id'])}}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                         class="bi bi-trash3" viewBox="0 0 16 16">
-                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-                    </svg>
-                </a>
+<div class="container">
+    <div class="container justify-content-center">
+        {% for product in products: %}
+        <div class="card mb-3 mx-auto" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="static/uploads/{{ product['img'] }}" alt="..." width="400"
+                         height="500">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product["name"] }}</h5>
+                        <div class="align-items-center justify-content-center">
+                            <form class="row"
+                                  action="{{url_for('site.atualizar_item', user_id=current_user['id'], product_id=product['id'])}}">
+                                <label for="quantidade" class="col-6">Quantidade:</label>
+                                <input class="form-control contorno col-4 me-2" type="number" id="quantidade"
+                                       name="quantidade" step="1"
+                                       value="{{ product['quantidade'] }}"
+                                       min="0">
+                                <input type="submit" value="+" class="btn btn-custom-comprar col-2">
+                            </form>
+                        </div>
+                        <p class="col-8">Total R${{ product["total"] }}</p>
+                        <span class="col-2"></span>
+                        <a type="button" class="btn btn-outline-danger col-2"
+                           href="{{url_for('site.deletar_item', user_id=current_user['id'], product_id=product['id'])}}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-trash3" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
+        {% endfor %}
+    </div>
+    <div class="row container justify-content-center">
+        <a type="button" class="btn btn-outline-danger me-2 col-2" href="{{url_for('site.clear_checkout') }}">Esvaziar
+            Carrinho</a>
+        <a type="button" class="btn btn-custom-comprar col-2" href="{{url_for('site.create_checkout_session')}}">Confirmar
+            Pedido</a>
     </div>
 </div>
-{% endfor %}
-<a type="button" class="btn btn-danger" href="{{url_for('site.clear_checkout') }}">Clear</a>
-<a type="button" class="btn btn-warning" href="{{url_for('site.create_checkout_session')}}">Checkout</a>
 </body>
 <footer>
     {% include "footer.html" %}

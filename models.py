@@ -30,14 +30,15 @@ class Produto(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     descricao = db.Column(db.Text(), nullable=False)
-
     fotos = db.relationship(
         'Foto',
         backref='produto',
         cascade='all, delete-orphan',
         lazy=True
     )
-
+    vendas = db.Column(db.Integer, nullable=False, default=0)
+    novidade = db.Column(db.Boolean, default=False)
+    escolha_do_mes = db.Column(db.Boolean, default=False)
 
 class Foto(db.Model):
     __tablename__ = 'fotos'
@@ -68,8 +69,8 @@ class Carrossel(db.Model):
     __tablename__ = 'carrossel'
 
     id = db.Column(db.Integer, primary_key=True)
-    primeira_imagem = db.Column(db.String(200))
-    segunda_imagem = db.Column(db.String(200))
+    arquivo = db.Column(db.String(200), nullable=False)
+
 
 
 class Carrinho(db.Model):

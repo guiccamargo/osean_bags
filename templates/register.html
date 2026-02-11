@@ -3,30 +3,39 @@
 <html lang="en">
 {% include "header.html" %}
 <head>
-    <title>Register</title>
+    <title>Criar Conta</title>
 </head>
 <body>
-<header
-        class="masthead"
+<main
+        class="bg-light"
         style="background-image: url('../static/assets/img/register-bg.jpg')"
 >
-    <div class="container position-relative px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-7">
-                <div class="page-heading">
-                    <h1>Criar Conta</h1>
-<!--                    <span class="subheading">Criar Conta</span>-->
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
-<main class="mb-4">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto">
-                {{render_form(form, novalidate=True, button_map={"submit": "primary"})}}
+        <div class="row justify-content-center">
+            <div class="card contorno col-lg-4 col-md-10">
+                <div class="card-body text-center">
+                    <div class="card-img-top rounded-circle mx-auto" id="register-img">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="#6B5F3B"
+                             class="bi bi-person-add" viewBox="0 0 16 16">
+                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                            <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+                        </svg>
+                    </div>
+                    <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Criar Conta</h1>
+                    <br/>
+                    <div>
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        {% for message in messages: %}
+                        <p class="flash">{{ message }}</p>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                        <div class="">
+                            {{render_form(form, novalidate=True, button_map={"submit": "btn btn-custom-comprar"})}}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

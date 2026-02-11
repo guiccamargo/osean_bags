@@ -1,3 +1,22 @@
+#logo {
+  background-image: url('../logo.png');
+  background-size: contain; /* 'contain' evita que o logo seja cortado */
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 115px;
+  height: 64px; /* Defina a altura desejada aqui */
+}
+
+#logo a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.nav {
+  align-items: center;
+}
+
 .produto-img {
     height: 300px;
     width: 400px:
@@ -19,6 +38,7 @@
     background-color: #C8BC9A;
     color: white;
 }
+
 /* Flash Message Styling */
 .flash {
   color: #ee6f57;
@@ -53,3 +73,96 @@
   --bs-btn-active-border-color: #6B5F3B;
   --bs-btn-active-color: #ffffff;
 }
+
+#link-registrar{
+    text-decoration: none;
+    color: #6B5F3B;
+}
+
+#link-registrar:hover {
+    text-decoration: underline;
+}
+
+#profile-img{
+    height: max-content;
+    width: max-content;
+    background-color: transparent;
+    padding:10px;
+    border: 2pt solid  #6B5F3B;
+}
+
+#register-img{
+    height: max-content;
+    width: max-content;
+    background-color: transparent;
+    padding:10px;
+    border: 2pt solid  #6B5F3B;
+}
+
+
+.contorno{
+    border: 1pt solid #6B5F3B;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.texto-estilizado{
+    color: #6B5F3B;
+}
+
+#quantidade {
+    width: 8ch;
+    text-align: center;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  opacity: 0.7;
+}
+
+.carousel-inner img {
+    height: 400px;
+    object-fit: cover;
+}
+
+.julius-sans-one-regular {
+  font-family: "Julius Sans One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  text-align: center;
+}
+
+#escolha{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+.info-barra {
+    display: flex;
+    border: 1px solid #6B5F3B;
+    border-radius: 12px;
+    overflow: hidden; /* garante que os cantos arredondados funcionem */
+    width: 70%;        /* você escolhe: 60%, 70%, 800px, etc */
+    margin: 20px auto; /* centraliza horizontalmente */
+}
+
+.info-item {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* linha separadora entre os itens */
+.info-item:not(:last-child) {
+    border-right: 1px solid #6B5F3B;
+}
+
+.form-label{
+    color: #6B5F3B;
+}
+
+.form-control{
+    color: #6B5F3B !important;
