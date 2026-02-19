@@ -1,14 +1,15 @@
 import stripe
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash
 
 from db import db
-from forms import LoginForm, RegisterForm, AtualizarLoginForm, AtualizarNomeForm
+from forms import LoginForm, RegisterForm, AtualizarNomeForm, EnderecoForm, EditarEnderecoForm, AtualizarSenhaForm
 from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
     excluir_item_carrinho, acessar_capa, acessar_fotos, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes, \
-    acessar_inicial, redefinir_senha, redefinir_nome, deletar_usuario, produtos_para_envio
-from models import Usuario, Carrinho, Produto
+    acessar_inicial, deletar_usuario, produtos_para_envio, adicionar_endereco, \
+    acessar_enderecos, editar_endereco, atualizar_senha, atualizar_nome
+from models import Usuario, Carrinho, Produto, Endereco
 
 site_bp = Blueprint('site', __name__, template_folder='templates')
 
@@ -50,29 +51,61 @@ def renderizar_header(usuario):
         'inicial_nome': inicial_nome,
     }
 
+
 @site_bp.route('/gerenciar/<int:usuario_id>', methods=['GET', 'POST'])
 def gerenciar(usuario_id):
-    if request.method == 'GET':
-        return render_template('gerenciar_conta.html', senha_form=AtualizarLoginForm(), nome_form=AtualizarNomeForm(), **renderizar_header(current_user))
-    else:
-        # achar usuario no banco de dados
-        user = db.session.query(Usuario).filter_by(id=usuario_id).first()
-        if request.form.get('senha_atual'):
-            if check_password_hash(pwhash=user.password_hash, password=request.form.get('senha_atual')):
-                if request.form.get('senha_nova') == request.form.get('confirmacao_senha_nova'):
-                    redefinir_senha(usuario_id)
-                    flash('Sua senha foi atualizada', category='success')
-                    logout_user()
-                    return redirect(url_for('site.login'))
-                else:
-                    flash('As senhas não coincidem', category='error')
-            else:
-                flash('Senha incorreta', category='error')
-        elif request.form.get('nome'):
-            flash('Nome do Usuário alterado', category='success')
-            redefinir_nome(usuario_id)
+    usuario = db.get_or_404(Usuario, usuario_id)
+    senha_form = AtualizarSenhaForm()
+    nome_form = AtualizarNomeForm(nome_atual=usuario.nome, sobrenome_atual=usuario.sobrenome)
+    enderecoform = EditarEnderecoForm()
 
+    enderecos = acessar_enderecos(usuario_id)
+    # ---------- CASO 1: POST vindo do fetch (JSON) ----------
+    if request.method == "POST" and request.is_json:
+        data = request.get_json()
+        endereco_id = data.get("endereco_id")
+
+        endereco = db.get_or_404(Endereco, endereco_id)
+
+        return jsonify({
+            "status": "ok",
+            "apelido": endereco.apelido,
+            "cep": endereco.cep,
+            "cidade": endereco.cidade,
+            "estado": endereco.estado,
+            "rua": endereco.rua,
+            "numero": endereco.numero,
+            "complemento": endereco.complemento
+        })
+    # ---------- CASO 2: POST vindo do submit do formulário ----------
+    # 👉 POST do formulário de senha
+    if senha_form.submit_senha.data and senha_form.validate():
+        atualizar_senha(usuario_id)
+        flash("Senha atualizada com sucesso!", "senha_success")
         return redirect(url_for('site.gerenciar', usuario_id=usuario_id))
+
+    # 👉 POST do formulário de nome
+    if nome_form.submit_nome.data and nome_form.validate():
+        atualizar_nome(usuario_id)
+        flash("Nome alterado com sucesso!", "nome_success")
+        return redirect(url_for('site.gerenciar', usuario_id=usuario_id))
+
+    # 👉 POST do formulário de endereço
+    if enderecoform.submit_endereco.data and enderecoform.validate():
+        editar_endereco(enderecoform.endereco_id.data)
+        flash("Endereço atualizado!", "endereco_success")
+        return redirect(url_for('site.gerenciar', usuario_id=usuario_id))
+
+    # ---------- CASO 3: GET ----------
+    return render_template(
+        "gerenciar_conta.html",
+        senha_form=senha_form,
+        nome_form=nome_form,
+        enderecoform=enderecoform,
+        enderecos=enderecos,
+        **renderizar_header(current_user)
+    )
+
 
 @site_bp.route('/')
 def home():
@@ -141,7 +174,7 @@ def register():
         return render_template("register.html", form=RegisterForm(), **renderizar_header(current_user))
 
 
-@site_bp.route('/carrinho' , methods=["GET", "POST"])
+@site_bp.route('/carrinho', methods=["GET", "POST"])
 def ir_para_carrinho():
     """
     Renderiza página do carrinho
@@ -157,13 +190,49 @@ def ir_para_carrinho():
                                      "total": round(produto.preco * item.quantidade, 2),
                                      "quantidade": item.quantidade})
     if request.method == 'POST':
-        opcoes_envio = produtos_para_envio(current_user.id)
+        data = request.get_json()
+        endereco_id = data["endereco_id"]
+        opcoes_envio = produtos_para_envio(current_user.id, endereco_id)
     else:
         opcoes_envio = None
-
     # Renderizar página do carrinho
-    return render_template("cart.html", envio=opcoes_envio, products=produtos_no_carrinho, **renderizar_header(current_user))
+    return render_template("cart.html", envio=opcoes_envio, enderecos=acessar_enderecos(current_user.id),
+                           products=produtos_no_carrinho, **renderizar_header(current_user))
 
+
+@site_bp.route("/calcular-frete", methods=["POST"])  # Remova o GET para testar
+def calcular_frete_rota():
+    data = request.get_json()
+
+    if not data or "endereco_id" not in data:
+        return jsonify({"erro": "Dados insuficientes"}), 400
+
+    endereco_id = data["endereco_id"]
+
+    # Adicione um print para ver no console do VS Code se a requisição chegou aqui
+    print(f"Calculando frete para o endereço: {endereco_id}")
+
+    try:
+        opcoes_envio = produtos_para_envio(current_user.id, endereco_id)
+        return jsonify(opcoes_envio)
+    except Exception as e:
+        print(f"Erro no calculo: {e}")
+        return jsonify({"erro": str(e)}), 500
+
+
+@site_bp.route('/deletar-endereco/<int:id_endereco>')
+def deletar_endereco(id_endereco):
+    endereco = db.get_or_404(Endereco, id_endereco)
+
+    # Verifica se o endereço pertence ao usuário atual
+    if endereco.usuario_id != current_user.id:
+        flash("Você não tem permissão para deletar este endereço.", "endereco_error")
+        return redirect(url_for('site.gerenciar', usuario_id=current_user.id))
+
+    db.session.delete(endereco)
+    db.session.commit()
+    flash("Endereço removido com sucesso!", "endereco_success")
+    return redirect(url_for('site.gerenciar', usuario_id=current_user.id))
 
 @site_bp.route('/produtos')
 def produtos():
@@ -264,8 +333,18 @@ def pagina_produto(produto_id):
     fotos = acessar_fotos(produto_id)
     return render_template('produto.html', produto=produto, fotos=fotos, **renderizar_header(current_user))
 
+
 @site_bp.route('/deletar/<int:id_usuario>')
 def deletar_conta(id_usuario):
     logout_user()
     deletar_usuario(id_usuario)
     return redirect(url_for('site.home'))
+
+
+@site_bp.route('/<int:id_usuario>/endereco', methods=['GET', 'POST'])
+def cadastrar_endereco(id_usuario):
+    if request.method == 'GET':
+        return render_template('novo_endereco.html', form=EnderecoForm())
+    else:
+        adicionar_endereco(id_usuario)
+        return redirect(url_for('site.ir_para_carrinho'))

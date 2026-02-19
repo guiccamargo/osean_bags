@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% from 'bootstrap5/form.html' import render_form %}
+<html lang="pt-br">
+{%include "header.html" %}
+<head>
+    <title>Endereço</title>
+</head>
+<body class="bg-light">
+<header
+        class="masthead"
+        style="background-image: url('../static/assets/img/login-bg.jpg')"
+>
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="mb-4">
+    <div class="container">
+        <div class="row container justify-content-center">
+            <div class="card contorno col-lg-4 col-md-10">
+                <div class="card-body text-center">
+                </div>
+                <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Cadastrar Novo Endereço</h1>
+                <br/>
+                <div class="text-center">
+                    {{render_form(form, novalidate=True, button_map={"submit": "btn btn-custom-comprar"})}}
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</main>
+{% include "footer.html" %}
+</body>
+</html>
+

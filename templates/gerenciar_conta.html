@@ -14,17 +14,18 @@
                     <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Atualizar Senha</h1>
                     <br/>
                     <div>
-                        {% with errors = get_flashed_messages(category_filter=["error"]) %}
-                        {% if errors %}
+                        {% with messages = get_flashed_messages(category_filter=["senha_error", "senha_success"]) %}
+                        {% if messages %}
                         <ul class="list-group flashes">
-                            {% for message in errors %}
-                            <li class="list-group-item errors">{{ message }}</li>
+                            {% for message in messages %}
+                            <li class="list-group-item success">{{ message }}</li>
                             {% endfor %}
                         </ul>
                         {% endif %}
                         {% endwith %}
+
                         <div class="">
-                            {{render_form(senha_form, novalidate=True, button_map={"submit": "btn
+                            {{render_form(senha_form, novalidate=True, button_map={"submit_senha": "btn
                             btn-custom-comprar"})}}
                         </div>
                     </div>
@@ -37,17 +38,18 @@
                     <br/>
                     <div>
                         <div class="">
-                            {% with success = get_flashed_messages(category_filter=["success"]) %}
-                            {% if success %}
+                            {% with messages = get_flashed_messages(category_filter=["nome_error", "nome_success"]) %}
+                            {% if messages %}
                             <ul class="list-group flashes">
-                                {% for message in success %}
+                                {% for message in messages %}
                                 <li class="list-group-item success">{{ message }}</li>
                                 {% endfor %}
                             </ul>
                             {% endif %}
                             {% endwith %}
+
                             <div class="">
-                                {{render_form(nome_form, novalidate=True, button_map={"submit": "btn
+                                {{render_form(nome_form, novalidate=True, button_map={"submit_nome": "btn
                                 btn-custom-comprar"})}}
                             </div>
                         </div>
@@ -55,27 +57,71 @@
                 </div>
             </div>
         </div>
-        <div class="row container justify-content-center mt-4">
-            <!-- Botão que aciona o Modal -->
-            <button type="button" class="btn btn-outline-danger col-2" data-bs-toggle="modal" data-bs-target="#excluir">
-                Excluir conta
-            </button>
-        </div>
+        <div class="container">
+            <div class="row container justify-content-center">
+                <div class="card contorno col-lg-4 col-md-10">
+                    <div class="card-body">
+                        <h1 class="card-title texto-estilizado m-0 julius-sans-one-regular">
+                            Editar Endereço
+                        </h1>
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+                            <select id="select-endereco-editar" data-user-id="{{ current_user.id }}">
+                                {% for endereco in enderecos %}
+                                <option value="{{ endereco.id }}">
+                                    {{ endereco.apelido }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <a class="btn btn-outline-danger"
+                               href="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                </svg>
+                            </a>
+                        </div>
+                        {% with messages = get_flashed_messages(category_filter=["endereco_error", "endereco_success"])
+                        %}
+                        {% if messages %}
+                        <ul class="list-group flashes">
+                            {% for message in messages %}
+                            <li class="list-group-item success">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+                        {{ render_form(enderecoform, button_map={"submit_endereco": "btn btn-custom-comprar"},
+                        action=url_for('site.gerenciar', usuario_id=current_user.id)) }}
+                    </div>
+                </div>
+            </div>
 
-        <!-- Estrutura do Modal -->
-        <div class="modal fade" id="excluir" tabindex="-1" aria-labelledby="modal-excluir" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir Conta</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body texto-estilizado">
-                        Tem certeza que deseja excluir sua conta?
-                    </div>
-                    <div class="modal-footer">
-                        <a href="{{ url_for('site.deletar_conta', id_usuario=id_usuario) }}" type="button" class="btn btn-custom-comprar">Excluir</a>
-                        <a type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Fechar</a>
+            <div class="row container justify-content-center mt-4">
+                <!-- Botão que aciona o Modal -->
+                <button type="button" class="btn btn-outline-danger col-2" data-bs-toggle="modal"
+                        data-bs-target="#excluir">
+                    Excluir conta
+                </button>
+            </div>
+
+            <!-- Estrutura do Modal -->
+            <div class="modal fade" id="excluir" tabindex="-1" aria-labelledby="modal-excluir" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir
+                                Conta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body texto-estilizado">
+                            Tem certeza que deseja excluir sua conta?
+                        </div>
+                        <div class="modal-footer">
+                            <a href="{{ url_for('site.deletar_conta', id_usuario=id_usuario) }}" type="button"
+                               class="btn btn-custom-comprar">Excluir</a>
+                            <a type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Fechar</a>
+                        </div>
                     </div>
                 </div>
             </div>

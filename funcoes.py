@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 
 from apis.envio import calcular_frete
 from db import db
-from models import Produto, Usuario, Carrinho, Carrossel, Foto
+from models import Produto, Usuario, Carrinho, Carrossel, Foto, Endereco, Config
 
 
 def soma_itens(id_usuario: int) -> int:
@@ -73,9 +73,10 @@ def registar():
     Registra um novo usuário
     """
     nome = request.form.get("nome")
+    sobrenome = request.form.get("sobrenome")
     email = request.form.get("email")
     senha = request.form.get("senha")
-    new_user = Usuario(email=email, name=nome,
+    new_user = Usuario(email=email, name=nome, last_name=sobrenome,
                        password=generate_password_hash(senha, method="pbkdf2:sha256",
                                                        salt_length=8))
     db.session.add(new_user)
@@ -146,7 +147,7 @@ def acessar_inicial(usuario_id):
     return usuario.get_inicial()
 
 
-def redefinir_senha(usuario_id):
+def atualizar_senha(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
     senha = request.form.get("senha_nova")
     usuario.password_hash = generate_password_hash(senha, method="pbkdf2:sha256",
@@ -154,10 +155,12 @@ def redefinir_senha(usuario_id):
     db.session.commit()
 
 
-def redefinir_nome(usuario_id):
+def atualizar_nome(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
     nome = request.form.get('nome')
+    sobrebnome = request.form.get('sobrenome')
     usuario.nome = nome
+    usuario.sobrenome = sobrebnome
     db.session.commit()
 
 
@@ -167,10 +170,10 @@ def deletar_usuario(usuario_id):
     db.session.commit()
 
 
-def produtos_para_envio(id_usuario):
+def produtos_para_envio(id_usuario, endereco_id):
     items = Carrinho.query.filter_by(usuario_id=id_usuario).all()
     lista_de_produtos = []
-    cep = request.form.get('cep')
+    endereco = db.get_or_404(Endereco, endereco_id)
     for item in items:
         produto = db.get_or_404(Produto, item.produto_id)
         lista_de_produtos.append({
@@ -181,4 +184,42 @@ def produtos_para_envio(id_usuario):
             "weight": produto.peso,
             "quantity": item.quantidade
         })
-    return calcular_frete(lista_de_produtos, cep)
+    config_info = Config.query.first().__dict__
+    return calcular_frete(produtos=lista_de_produtos, cep_destino=endereco.cep, cep_origem=config_info['cep_origem'],
+                          email_contato=config_info['email'])
+
+
+def acessar_enderecos(id_usuario):
+    return Endereco.query.filter_by(usuario_id=id_usuario).all() if id_usuario else None
+
+
+def adicionar_endereco(id_usuario):
+    apelido = request.form.get('apelido')
+    cep = request.form.get('cep')
+    if '-' in cep:
+        cep.replace('-', '')
+    cidade = request.form.get('cidade')
+    estado = request.form.get('estado')
+    rua = request.form.get('rua')
+    numero = request.form.get('numero')
+    complemento = request.form.get('complemento')
+    novo_endereco = Endereco(usuario_id=id_usuario, apelido=apelido, cep=cep, cidade=cidade, estado=estado, rua=rua,
+                             numero=numero, complemento=complemento)
+    db.session.add(novo_endereco)
+    db.session.commit()
+
+
+def editar_endereco(id_enderco):
+    cidade = request.form.get('cidade')
+    estado = request.form.get('estado')
+    rua = request.form.get('rua')
+    numero = request.form.get('numero')
+    complemento = request.form.get('complemento')
+
+    endereco = db.get_or_404(Endereco, id_enderco)
+    endereco.cidade = cidade
+    endereco.estado = estado
+    endereco.rua = rua
+    endereco.numero = numero
+    endereco.complemento = complemento
+    db.session.commit()
