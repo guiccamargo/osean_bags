@@ -5,9 +5,9 @@ from flask_babel import Babel
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
 
-from admin import UsuarioAdmin, ProdutoAdmin, CarrosselAdmin, MyAdminIndexView
+from admin import UsuarioAdmin, ProdutoAdmin, CarrosselAdmin, MyAdminIndexView, ConfigAdmin
 from db import db
-from models import Usuario, Produto, Carrossel
+from models import Usuario, Produto, Carrossel, Config
 from rotas import site_bp
 
 app = Flask(__name__)
@@ -26,6 +26,7 @@ admin = Admin(app, name='Osean Bags', theme=Bootstrap4Theme(), index_view=MyAdmi
 admin.add_view(UsuarioAdmin(Usuario, db.session))
 admin.add_view(ProdutoAdmin(Produto, db.session))
 admin.add_view(CarrosselAdmin(Carrossel, db.session))
+admin.add_view(ConfigAdmin(Config, db.session))
 
 # Config login manager
 login_manager = LoginManager()

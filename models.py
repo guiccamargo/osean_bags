@@ -32,6 +32,10 @@ class Produto(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     descricao = db.Column(db.Text(), nullable=False)
+    peso = db.Column(db.Float, nullable=False)
+    altura = db.Column(db.Integer, nullable=False)
+    largura = db.Column(db.Integer, nullable=False)
+    comprimento = db.Column(db.Integer, nullable=False)
     fotos = db.relationship(
         'Foto',
         backref='produto',
@@ -54,19 +58,6 @@ class Foto(db.Model):
         nullable=False
     )
 
-# class Produto(db.Model):
-#     __tablename__ = 'produtos'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     nome = db.Column(db.String(100), nullable=False)
-#     preco = db.Column(db.Float, nullable=False)
-#     capa = db.Column(db.String(200))
-#     descricao = db.Column(db.Text(), nullable=False)
-#     vendas = db.Column(db.Integer, default=0)
-#
-#     fotos = db.relationship('Foto', backref='produto', lazy=True)
-
-
 class Carrossel(db.Model):
     __tablename__ = 'carrossel'
 
@@ -83,3 +74,9 @@ class Carrinho(db.Model):
     produto_id = db.Column(db.Integer, db.ForeignKey('produtos.id'), nullable=True)
     quantidade = db.Column(db.Integer, default=1)
     produto = db.relationship('Produto')
+
+class Config(db.Model):
+    __tablename__ = 'config'
+    id = db.Column(db.Integer, primary_key=True)
+    cep_origem = db.Column(db.String(9), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)

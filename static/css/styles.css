@@ -1,3 +1,36 @@
+body {
+    padding-top: 110px;
+}
+
+input[type="radio"] {
+  /* Remove a aparência padrão do navegador */
+  -webkit-appearance: none; /* Para navegadores WebKit/Blink */
+  -moz-appearance: none;    /* Para Firefox */
+  appearance: none;
+
+  /* Estiliza o círculo externo */
+  width: 18px;
+  height: 18px;
+  border: 2px solid #C8BC9A;
+  border-radius: 50%; /* Transforma em círculo */
+  outline: none; /* Remove o outline padrão ao focar */
+  cursor: pointer;
+
+  /* Adiciona transição suave */
+  transition: 0.2s all linear;
+  position: relative;
+}
+
+/* Estiliza o interior quando o rádio está marcado */
+input[type="radio"]:checked {
+  border: 9px solid #C8BC9A; /* Cria o ponto interno mudando a borda */
+}
+
+/* Opcional: Estilo ao focar para acessibilidade */
+input[type="radio"]:focus {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
 #logo {
   background-image: url('../logo.png');
   background-size: contain; /* 'contain' evita que o logo seja cortado */
@@ -24,6 +57,22 @@
   --bs-btn-color: #6B5F3B;
   --bs-btn-hover-color: #6B5F3B;
 }
+
+/* Flash Message Styling */
+.flashes {
+  text-align: center;
+  border-color: transparent;
+}
+.error {
+    border-color: transparent;
+    background-color: transparent;
+    color: #ee6f57;
+}
+.success {
+    color: green;
+    background-color: #d4edda; /* Light green background */
+}
+/* Add styles for .info and .warning as needed */
 
 .btn-circle {
     aspect-ratio: 1 / 1;
@@ -58,19 +107,6 @@
     background-color: #C8BC9A;
     color: white;
 }
-
-/* Flash Message Styling */
-.flashes {
-  text-align: center;
-}
-.error {
-    color: #ee6f57;
-}
-.success {
-    color: green;
-    background-color: #d4edda; /* Light green background */
-}
-/* Add styles for .info and .warning as needed */
 
 .btn {
   position: relative;
@@ -203,3 +239,31 @@ section.modal{
     right:0;
     z-index: 1;
 }
+
+.btn-flutuante{
+    padding: 0;
+    padding-left: 1px;
+  --bs-btn-bg: #6B5F3B;
+  --bs-btn-border-color: #6B5F3B;
+  --bs-btn-color: white;
+
+  --bs-btn-hover-bg: transparent;
+  --bs-btn-hover-border-color: #6B5F3B;
+  --bs-btn-hover-border-color: #6B5F3B;
+  --bs-btn-hover-color: #6B5F3B;
+
+  --bs-btn-active-bg: #6B5F3B;
+  --bs-btn-active-border-color: #6B5F3B;
+  --bs-btn-active-color: white;
+}
+
+#busca::placeholder {
+    color: #6B5F3B;
+    text-align: center;
+}
+
+input {
+    text-align: center;
+}
+
+

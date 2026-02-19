@@ -9,6 +9,7 @@ from flask_login import current_user
 from flask_wtf.file import FileAllowed
 from markupsafe import Markup
 from werkzeug.utils import secure_filename
+from wtforms.validators import Regexp
 
 from models import Foto
 
@@ -33,9 +34,15 @@ BASE_UPLOAD = os.path.join(os.path.dirname(__file__), 'static/uploads')
 
 
 def formatar_imagem(caminho, tamanho=(800, 800)):
-    img = Image.open(caminho)
-    img.thumbnail(tamanho)
-    img.save(caminho)
+    try:
+        img = Image.open(caminho)
+        img.verify()  # verifica se é imagem válida
+        img = Image.open(caminho)  # reabre após verify
+        img.thumbnail(tamanho)
+        img.save(caminho)
+    except Exception:
+        os.remove(caminho)
+        raise ValueError("Arquivo enviado não é uma imagem válida.")
 
 
 class FotoAdmin(ModelView):
@@ -82,7 +89,10 @@ class ProdutoAdmin(BaseAdmin):
     column_descriptions = {'vendas': 'Quantia de vendas deste produto',
                            'preco': 'Inserir valor usando . para separar o valor dos centavos', 'novidade':
                                'Adicionar este produto à seção de novidades',
-                           'escolha_do_mes': 'Selecionar este produto como Escolha do Mês'}
+                           'escolha_do_mes': 'Selecionar este produto como Escolha do Mês',
+                           'peso': 'Peso do produto em quilogramas', 'altura': 'Altura do pacote em centímetros',
+                           'largura': 'Largura do pacote em centímetros',
+                           'comprimento': 'Comprimento do pacote em centímetros'}
     column_searchable_list = ('nome',)
     column_filters = ('novidade', 'escolha_do_mes')
     UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'static/uploads')
@@ -140,12 +150,19 @@ class CarrosselAdmin(BaseAdmin):
             pasta = BASE_UPLOAD
             os.makedirs(pasta, exist_ok=True)
 
-            nome = secure_filename(form.arquivo.data.filename)
+            file = form.arquivo.data
+            file.stream.seek(0)
+
+            nome = secure_filename(file.filename)
             caminho = os.path.join(pasta, nome)
 
-            form.arquivo.data.save(caminho)
+            file.save(caminho)
 
-            formatar_imagem(caminho, (1000, 1000))
+            try:
+                formatar_imagem(caminho, (1000, 1000))
+            except Exception:
+                os.remove(caminho)
+                raise
 
             model.arquivo = nome
 
@@ -157,3 +174,19 @@ class CarrosselAdmin(BaseAdmin):
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
+
+
+class ConfigAdmin(ModelView):
+    form_args = {
+        'cep_origem': {
+            'validators': [
+                Regexp(r'^\d{5}-?\d{3}$', message="CEP inválido")
+            ]
+        }
+    }
+
+
+    column_descriptions = {
+        'cep_origem': 'Cep de onde o produto será enviado.',
+        'email': 'Email da empresa'
+    }

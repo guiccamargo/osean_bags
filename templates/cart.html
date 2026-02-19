@@ -3,9 +3,9 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Your Cart</title>
+    <title>Carrinho</title>
 </head>
-<body>
+<body class="bg-light">
 <div class="container">
     <div class="container justify-content-center">
         {% for product in products: %}
@@ -43,11 +43,66 @@
             </div>
         </div>
         {% endfor %}
+        {% if envio: %}
+        <div class="row justify-content-center mt-5">
+            <div class="col-auto">
+                <form action="">
+                    <h5 class="texto-estilizado mb-3">Opções de Envio:</h5>
+
+                    {% for metodo in envio %}
+                    <div class="d-flex align-items-start mb-3">
+                        <input class="me-2 mt-1"
+                               type="radio"
+                               id="envio_{{ loop.index }}"
+                               name="metodo_envio"
+                               value="{{ metodo['nome'] }}">
+
+                        <label class="texto-estilizado" for="envio_{{ loop.index }}">
+                            <strong>{{ metodo['nome'] }}</strong><br>
+                            R${{ metodo['preço'] }}<br>
+                            Prazo de Entrega: {{ metodo['prazo'] }} dias
+                        </label>
+                    </div>
+                    {% endfor %}
+
+                </form>
+            </div>
+        </div>
+        {% endif %}
     </div>
+    <div class="container my-5">
+        <form class="row justify-content-center align-items-center"
+              action="{{url_for('site.ir_para_carrinho', id_usuario=current_user['id']) }}"
+              method="post">
+
+            <div class="col-auto">
+                <label for="cep" class="col-form-label texto-estilizado"><h5>Calcular
+                    frete:</h5></label>
+            </div>
+
+            <div class="col-auto">
+                <input class="form-control contorno"
+                       type="text"
+                       id="cep"
+                       name="cep"
+                       placeholder="CEP"
+                       pattern="\d{5}-?\d{3}"
+                       title="Digite um CEP no formato 00000-000"
+                       required>
+            </div>
+
+            <div class="col-auto">
+                <input type="submit" value="Calcular" class="btn btn-custom-comprar">
+            </div>
+
+        </form>
+    </div>
+
     <div class="row container justify-content-center">
         <a type="button" class="btn btn-outline-danger me-2 col-2" href="{{url_for('site.clear_checkout') }}">Esvaziar
             Carrinho</a>
-        <a type="button" class="btn btn-custom-comprar col-2" href="{{url_for('site.create_checkout_session')}}">Confirmar
+        <a type="button" class="btn btn-custom-comprar col-2"
+           href="{{url_for('site.create_checkout_session')}}">Confirmar
             Pedido</a>
     </div>
 </div>

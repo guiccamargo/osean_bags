@@ -7,7 +7,7 @@ from db import db
 from forms import LoginForm, RegisterForm, AtualizarLoginForm, AtualizarNomeForm
 from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
     excluir_item_carrinho, acessar_capa, acessar_fotos, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes, \
-    acessar_inicial, redefinir_senha, redefinir_nome, deletar_usuario
+    acessar_inicial, redefinir_senha, redefinir_nome, deletar_usuario, produtos_para_envio
 from models import Usuario, Carrinho, Produto
 
 site_bp = Blueprint('site', __name__, template_folder='templates')
@@ -141,7 +141,7 @@ def register():
         return render_template("register.html", form=RegisterForm(), **renderizar_header(current_user))
 
 
-@site_bp.route('/carrinho')
+@site_bp.route('/carrinho' , methods=["GET", "POST"])
 def ir_para_carrinho():
     """
     Renderiza página do carrinho
@@ -156,9 +156,13 @@ def ir_para_carrinho():
         produtos_no_carrinho.append({"id": produto.id, "name": produto.nome, "img": acessar_capa(produto.id),
                                      "total": round(produto.preco * item.quantidade, 2),
                                      "quantidade": item.quantidade})
+    if request.method == 'POST':
+        opcoes_envio = produtos_para_envio(current_user.id)
+    else:
+        opcoes_envio = None
 
     # Renderizar página do carrinho
-    return render_template("cart.html", products=produtos_no_carrinho, **renderizar_header(current_user))
+    return render_template("cart.html", envio=opcoes_envio, products=produtos_no_carrinho, **renderizar_header(current_user))
 
 
 @site_bp.route('/produtos')

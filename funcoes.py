@@ -1,10 +1,11 @@
 from typing import List
 
 import sqlalchemy.exc
-from flask import request, redirect, url_for
+from flask import request
 from flask_login import login_user
 from werkzeug.security import generate_password_hash
 
+from apis.envio import calcular_frete
 from db import db
 from models import Produto, Usuario, Carrinho, Carrossel, Foto
 
@@ -27,9 +28,16 @@ def listar_produtos():
     Acessa os produtos do Banco de Dados
     :return: lista de produtos
     """
+    busca = request.args.get("busca")
+
+    if busca:
+        produtos = Produto.query.filter(Produto.nome.ilike(f"%{busca}%")).all()
+    else:
+        produtos = Produto.query.all()
+
     lista_produtos = []
-    todos_produtos = Produto.query.all()
-    for produto in todos_produtos:
+
+    for produto in produtos:
         lista_produtos.append({
             "id": produto.id,
             "imagem": acessar_capa(produto.id),
@@ -74,22 +82,27 @@ def registar():
     db.session.commit()
     login_user(new_user)
 
+
 def atualizar_quantia(id_usuario, id_produto, nova_quantidade):
     cart_item = Carrinho.query.filter_by(usuario_id=id_usuario, produto_id=id_produto).first()
     cart_item.quantidade = nova_quantidade
     db.session.commit()
+
 
 def excluir_item_carrinho(id_usuario, id_produto):
     produto = Carrinho.query.filter_by(usuario_id=id_usuario, produto_id=id_produto).first()
     db.session.delete(produto)
     db.session.commit()
 
+
 def acessar_fotos(produto_id):
     return db.session.execute(db.select(Foto).where(Foto.produto_id == produto_id)).scalars()
+
 
 def acessar_capa(produto_id):
     capa = Foto.query.filter_by(produto_id=produto_id).first()
     return capa.arquivo
+
 
 def acessar_bestsellers():
     lista_produtos = []
@@ -103,6 +116,7 @@ def acessar_bestsellers():
         })
     return lista_produtos
 
+
 def acessar_novidades():
     lista_produtos = []
     novidades = Produto.query.filter_by(novidade=True).all()
@@ -115,24 +129,30 @@ def acessar_novidades():
         })
     return lista_produtos
 
+
 def acessar_escolha_do_mes():
     escolha = Produto.query.filter_by(escolha_do_mes=True).first()
+    if not escolha:
+        return None
     return {
-            "id": escolha.id,
-            "imagem": acessar_capa(escolha.id),
-            "nome": escolha.nome,
-        }
+        "id": escolha.id,
+        "imagem": acessar_capa(escolha.id),
+        "nome": escolha.nome,
+    }
+
 
 def acessar_inicial(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
     return usuario.get_inicial()
 
+
 def redefinir_senha(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
     senha = request.form.get("senha_nova")
     usuario.password_hash = generate_password_hash(senha, method="pbkdf2:sha256",
-                           salt_length=8)
+                                                   salt_length=8)
     db.session.commit()
+
 
 def redefinir_nome(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
@@ -140,7 +160,25 @@ def redefinir_nome(usuario_id):
     usuario.nome = nome
     db.session.commit()
 
+
 def deletar_usuario(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
     db.session.delete(usuario)
     db.session.commit()
+
+
+def produtos_para_envio(id_usuario):
+    items = Carrinho.query.filter_by(usuario_id=id_usuario).all()
+    lista_de_produtos = []
+    cep = request.form.get('cep')
+    for item in items:
+        produto = db.get_or_404(Produto, item.produto_id)
+        lista_de_produtos.append({
+            "id": produto.id,
+            "width": produto.largura,
+            "height": produto.altura,
+            "length": produto.comprimento,
+            "weight": produto.peso,
+            "quantity": item.quantidade
+        })
+    return calcular_frete(lista_de_produtos, cep)
