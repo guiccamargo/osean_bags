@@ -1,11 +1,12 @@
 from typing import List
 
 import sqlalchemy.exc
-from flask import request
+from flask import request, url_for
 from flask_login import login_user
 from werkzeug.security import generate_password_hash
 
 from apis.envio import calcular_frete
+from apis.pagamento import gerar_link_pagamento
 from db import db
 from models import Produto, Usuario, Carrinho, Carrossel, Foto, Endereco, Config
 
@@ -209,17 +210,63 @@ def adicionar_endereco(id_usuario):
     db.session.commit()
 
 
-def editar_endereco(id_enderco):
+def editar_endereco(id_endereco):
     cidade = request.form.get('cidade')
     estado = request.form.get('estado')
     rua = request.form.get('rua')
     numero = request.form.get('numero')
     complemento = request.form.get('complemento')
 
-    endereco = db.get_or_404(Endereco, id_enderco)
+    endereco = db.get_or_404(Endereco, id_endereco)
     endereco.cidade = cidade
     endereco.estado = estado
     endereco.rua = rua
     endereco.numero = numero
     endereco.complemento = complemento
     db.session.commit()
+
+
+def fechar_pedido(id_usuario, endereco_id, frete):
+    usuario = db.get_or_404(Usuario, id_usuario)
+    itens = Carrinho.query.filter_by(usuario_id=id_usuario).all()
+    endereco = db.get_or_404(Endereco, endereco_id)
+
+    # 1. Tratamento robusto do frete
+    try:
+        if frete and "|" in frete:
+            nome_frete, preco_frete, prazo_frete = frete.split("|")
+            custo_envio = float(preco_frete)
+        else:
+            custo_envio = 0.0
+    except (ValueError, TypeError):
+        custo_envio = 0.0
+
+    # 2. Lista de produtos (unit_price deve ser float)
+    lista_de_produtos = []
+    for item in itens:
+        produto = db.get_or_404(Produto, item.produto_id)
+        lista_de_produtos.append({
+            "id": str(produto.id),
+            "title": produto.nome,
+            "quantity": int(item.quantidade),
+            "currency_id": "BRL",
+            "unit_price": float(produto.preco),  # Garante que é float
+        })
+
+    # 3. Estrutura correta para o Mercado Pago
+    preference_data = {
+        "items": lista_de_produtos,
+        "shipments": {
+            "cost": custo_envio,
+            "mode": "not_specified",  # 'custom' exige configurações extras no painel
+        },
+        # URLs de retorno
+        "back_urls": {
+            "success": url_for('site.pagamento_sucesso', _external=True),
+            "failure": url_for('site.home', _external=True),
+            "pending": url_for('site.home', _external=True)
+        },
+        "auto_return": "approved",
+    }
+
+    return gerar_link_pagamento(preference_data)

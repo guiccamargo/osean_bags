@@ -5,12 +5,14 @@ from flask_babel import Babel
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
 
+
 from admin import UsuarioAdmin, ProdutoAdmin, CarrosselAdmin, MyAdminIndexView, ConfigAdmin
 from db import db
 from models import Usuario, Produto, Carrossel, Config
 from rotas import site_bp
 
 app = Flask(__name__)
+
 app.config["SESSION_PERMANENT"] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['BABEL_DEFAULT_LOCALE'] = 'pt_BR'
@@ -41,5 +43,6 @@ def load_user(user_id):
 
 with app.app_context():
     db.create_all()
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    # 'adhoc' gera um certificado autoassinado temporário
+    app.run(ssl_context='adhoc')

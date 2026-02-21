@@ -1,5 +1,5 @@
 import stripe
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
 from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash
 
@@ -8,7 +8,7 @@ from forms import LoginForm, RegisterForm, AtualizarNomeForm, EnderecoForm, Edit
 from funcoes import soma_itens, acessar_carrossel, registar, listar_produtos, limpar_carrinho, atualizar_quantia, \
     excluir_item_carrinho, acessar_capa, acessar_fotos, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes, \
     acessar_inicial, deletar_usuario, produtos_para_envio, adicionar_endereco, \
-    acessar_enderecos, editar_endereco, atualizar_senha, atualizar_nome
+    acessar_enderecos, editar_endereco, atualizar_senha, atualizar_nome, fechar_pedido
 from models import Usuario, Carrinho, Produto, Endereco
 
 site_bp = Blueprint('site', __name__, template_folder='templates')
@@ -272,35 +272,26 @@ def sobre_nos():
     return render_template('sobre_nos', **renderizar_header(current_user))
 
 
-@site_bp.route("/create-checkout-session", methods=["GET", "POST"])
-def create_checkout_session():
-    """
-    Redirect user to a stripe based checkout page
-    """
-    all_items = db.session.execute(db.select(Carrinho).where(Carrinho.usuario_id == current_user.id)).scalars()
-    line_items = []
-    for item in all_items:
-        if item.produto_id == 0:
-            continue
-        db_produto = db.get_or_404(Produto, item.produto_id)
-        product = stripe.Product.create(name=db_produto.nome)
-        price = stripe.Price.create(
-            product=product.id,
-            unit_amount=int(db_produto.preco * 100),
-            currency="brl",
-        )
-        line_items.append({"price": price.id, "quantity": item.quantity})
-    try:
-        checkout_session = stripe.checkout.Session.create(mode="payment",
-                                                          line_items=line_items,
-                                                          success_url=BASE_DOMAIN + "/success",
-                                                          cancel_url=BASE_DOMAIN + "/cancel"
-                                                          )
-    except Exception as e:
-        return str(e)
+@site_bp.route("/pagamento/<int:user_id>", methods=["GET", "POST"])
+def ir_para_pagamento(user_id):
+    if request.method == "POST":
+        # Pega o ID do endereço do <select name="endereco_id">
+        endereco_escolhido = request.form.get("endereco_id")
 
-    return redirect(checkout_session.url, code=303)
+        # Pega o valor do radio button <input name="envio">
+        metodo_envio = request.form.get("envio")
 
+        if not metodo_envio:
+            # Caso o usuário não tenha selecionado um frete
+            flash("Por favor, selecione uma opção de frete.")
+            return redirect(url_for('site.carrinho'))
+        # Agora você passa esses dados para a função que fecha o pedido
+        link_de_pagamento =fechar_pedido(user_id, endereco_id=endereco_escolhido, frete=metodo_envio)
+        return redirect(link_de_pagamento)
+
+
+    # Se for GET, apenas exibe a página (ou redireciona)
+    return redirect(url_for('site.carrinho'))
 
 @site_bp.route("/cart/clear", methods=["GET", "POST"])
 def clear_checkout():
@@ -348,3 +339,22 @@ def cadastrar_endereco(id_usuario):
     else:
         adicionar_endereco(id_usuario)
         return redirect(url_for('site.ir_para_carrinho'))
+
+
+@site_bp.route("/pagamento/sucesso")
+def pagamento_sucesso():
+    # O Mercado Pago envia parâmetros via GET (ex: payment_id, status)
+    payment_id = request.args.get('payment_id')
+    status = request.args.get('status')
+
+    # Aqui você recuperaria os dados que salvou temporariamente no banco de dados
+    # ou na sessão antes de enviar o usuário para o Mercado Pago.
+    # Exemplo recuperando da sessão (se você salvou lá):
+    resumo_pedido = session.get('ultimo_pedido')
+
+    if status == "approved":
+        # Lógica para limpar o carrinho do usuário no banco de dados
+        # limpar_carrinho(current_user.id)
+        return render_template("redirect/sucesso.html", pedido=resumo_pedido, payment_id=payment_id)
+
+    return redirect(url_for('site.home'))

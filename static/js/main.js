@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Usando template string mas com cuidado ou criando elementos
                 linha.innerHTML = `
-                    <label>
-                        <input type="radio" name="envio" value="${opcao.nome}">
+                    <label class="texto-estilizado">
+                        <input type="radio" name="envio" value="${opcao.nome}|${opcao.preco}|${opcao.prazo}" required>
                         <strong></strong> – R$ ${parseFloat(opcao.preco).toFixed(2)} – ${opcao.prazo} dias
                     </label>
                 `;

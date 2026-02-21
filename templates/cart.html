@@ -43,31 +43,42 @@
     </div>
     {% endfor %}
 </div>
-<div class="container justify-content-center">
-    <div id="opcoes-envio"></div>
+<hr/>
+<form action="{{ url_for('site.ir_para_pagamento', user_id=current_user.id) }}" method="POST">
 
-
-    <select id="select-endereco" name="endereco_id" class="form-select">
-        {% for endereco in enderecos %}
-        <option value="{{ endereco['id'] }}">
-            {{ endereco['rua'] }} nº{{ endereco['numero'] }}
-            {{ endereco['cep'][:5] }}-{{ endereco['cep'][5:] }}
-            {{ endereco['cidade'] }}-{{ endereco['estado'] }}
-        </option>
-        {% endfor %}
-    </select>
-
-    <a href="{{ url_for('site.cadastrar_endereco', id_usuario=current_user['id']) }}"
-       class="btn btn-custom-comprar">Cadastrar
-        Endereço</a>
-    <div class="row container justify-content-center">
-        <a type="button" class="btn btn-outline-danger me-2 col-2" href="{{url_for('site.clear_checkout') }}">Esvaziar
-            Carrinho</a>
-        <a type="button" class="btn btn-custom-comprar col-2"
-           href="{{url_for('site.create_checkout_session')}}">Confirmar
-            Pedido</a>
+    <div class="container justify-content-center">
+        <div class="d-flex justify-content-around align-items-center mt-3 mb-3">
+            <div class="w-40 mt-3">
+                <h5 class="texto-estilizado">Endereço de entrega:</h5>
+                {% if enderecos %}
+                <select id="select-endereco" name="endereco_id" class="form-select texto-estilizado contorno">
+                    {% for endereco in enderecos %}
+                    <option value="{{ endereco['id'] }}">
+                        {{ endereco['rua'] }} nº{{ endereco['numero'] }}...
+                    </option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+                <a href="{{ url_for('site.cadastrar_endereco', id_usuario=current_user['id']) }}"
+                   class="btn btn-primary mt-2">Cadastrar Novo Endereço</a>
+            </div>
+            <div>
+                <h5 class="texto-estilizado">Opções de envio:</h5>
+                <div id="opcoes-envio"></div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <div class="row container mx-auto my-4 justify-content-center">
+        <a type="button" class="btn btn-outline-danger me-2 col-2" href="{{url_for('site.clear_checkout') }}">
+            Esvaziar Carrinho
+        </a>
+        <button type="submit" class="btn btn-primary col-2">
+            Confirmar Pedido
+        </button>
+    </div>
+</form>
+
 <script>
     const URL_CALCULAR_FRETE = "{{ url_for('site.calcular_frete_rota') }}";
 </script>

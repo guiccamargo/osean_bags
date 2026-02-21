@@ -82,6 +82,18 @@ input[type="radio"]:focus {
     place-items: center;
 }
 
+.btn.btn-primary {
+    color: white !important;
+    background-color: #6B5F3B !important;
+    border-color: #6B5F3B !important;
+}
+
+.btn.btn-primary:hover {
+    color: #6B5F3B !important;
+    background-color: transparent !important;
+    border-color: #6B5F3B !important;
+}
+
 .nav {
   align-items: center;
 }
