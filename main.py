@@ -9,7 +9,7 @@ from flask_login import LoginManager
 from admin import UsuarioAdmin, ProdutoAdmin, CarrosselAdmin, MyAdminIndexView, ConfigAdmin
 from db import db
 from models import Usuario, Produto, Carrossel, Config
-from rotas import site_bp
+from rotas import auth_bp, produtos_bp, carrinho_bp, enderecos_bp, pagamento_bp, geral_bp
 
 app = Flask(__name__)
 
@@ -21,7 +21,12 @@ Bootstrap5(app)
 
 db.init_app(app)
 
-app.register_blueprint(site_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(produtos_bp)
+app.register_blueprint(carrinho_bp)
+app.register_blueprint(enderecos_bp)
+app.register_blueprint(pagamento_bp)
+app.register_blueprint(geral_bp)
 
 # Criar interface de Administrador
 admin = Admin(app, name='Osean Bags', theme=Bootstrap4Theme(), index_view=MyAdminIndexView())
@@ -45,4 +50,4 @@ with app.app_context():
     db.create_all()
 if __name__ == '__main__':
     # 'adhoc' gera um certificado autoassinado temporário
-    app.run(ssl_context='adhoc')
+    app.run()

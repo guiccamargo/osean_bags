@@ -70,7 +70,7 @@
                                 <small class="text-muted">R${{produto.preco}}</small>
                             </div>
                             <a class="stretched-link"
-                               href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
+                               href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                                 <small class="text-muted">R${{produto.preco}}</small>
                             </div>
                             <a class="stretched-link"
-                               href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
+                               href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                     <img class="produto-img" id="escolha"
                          src="static/uploads/{{escolha_do_mes.imagem}}"/>
                     <a class="stretched-link"
-                       href="{{ url_for('site.pagina_produto', produto_id=escolha_do_mes.id) }}">
+                       href="{{ url_for('produtos.pagina_produto', produto_id=escolha_do_mes.id) }}">
                     </a>
                 </div>
             </div>

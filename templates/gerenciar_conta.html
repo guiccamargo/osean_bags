@@ -96,7 +96,7 @@
                             {% endif %}
                             {% endwith %}
                             {{ render_form(enderecoform, button_map={"submit_endereco": "btn btn-custom-comprar"},
-                            action=url_for('site.gerenciar', usuario_id=current_user.id)) }}
+                            action=url_for('auth.gerenciar', usuario_id=current_user.id)) }}
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                             Tem certeza que deseja excluir sua conta?
                         </div>
                         <div class="modal-footer">
-                            <a href="{{ url_for('site.deletar_conta', id_usuario=id_usuario) }}" type="button"
+                            <a href="{{ url_for('auth.deletar_conta', id_usuario=id_usuario) }}" type="button"
                                class="btn btn-custom-comprar">Excluir</a>
                             <a type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Fechar</a>
                         </div>

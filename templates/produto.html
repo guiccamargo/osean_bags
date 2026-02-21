@@ -38,10 +38,10 @@
                 <small class="text-muted">R${{produto.preco}}</small>
             </h2>
             {% if logged_in: %}
-            <a href="{{url_for('site.buy_product', produto_id=produto.id)}}" type="button"
+            <a href="{{url_for('produtos.buy_product', produto_id=produto.id)}}" type="button"
                class="btn btn-sm btn-custom-comprar">Adicionar Ao Carrinho</a>
             {% else: %}
-            <a href="{{url_for('site.login')}}" type="button"
+            <a href="{{url_for('auth.login')}}" type="button"
                class="btn btn-sm btn-custom-comprar">Adicionar Ao Carrinho</a>
             {% endif %}
         </div>

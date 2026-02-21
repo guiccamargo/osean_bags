@@ -28,7 +28,7 @@
                     <form method="get">
                         <div class="input-group contorno mb-3">
                            <input type="text" id="busca" name="busca" class="form-control" placeholder="Buscar produto">
-                            <a href="{{ url_for('site.produtos') }}" class="btn btn-custom-comprar" style="border-color: transparent;" type="button" id="button-addon1">x</a>
+                            <a href="{{ url_for('produtos.produtos') }}" class="btn btn-custom-comprar" style="border-color: transparent;" type="button" id="button-addon1">x</a>
 
                         </div>
                     </form>
@@ -45,7 +45,7 @@
                                 <small class="text-muted">R${{produto.preco}}</small>
                             </div>
                             <a class="stretched-link"
-                               href="{{ url_for('site.pagina_produto', produto_id=produto.id) }}">
+                               href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
                     </div>
