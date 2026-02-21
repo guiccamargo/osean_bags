@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="text-success">Pagamento Confirmado!</h1>
+    <p>Obrigado, {{ pedido.usuario.nome }}. Seu pedido está sendo processado.</p>
+    
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <h5>Resumo da Entrega</h5>
+            <p>{{ pedido.endereco.rua }}, nº {{ pedido.endereco.numero }} - {{ pedido.endereco.cidade }}</p>
+            <p><strong>Método de Envio:</strong> {{ pedido.frete.metodo }} (R$ {{ pedido.frete.valor }})</p>
+            
+            <hr>
+            <h5>Produtos</h5>
+            <ul class="list-group list-group-flush">
+                {% for item in pedido.produtos %}
+                <li class="list-group-item d-flex justify-content-between">
+                    {{ item.title }} (x{{ item.quantity }})
+                    <span>R$ {{ item.unit_price }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <a href="{{ url_for('site.home') }}" class="btn btn-primary mt-4">Voltar para a Loja</a>
+</div>
+{% endblock %}
