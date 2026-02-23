@@ -1,11 +1,9 @@
-import os
-
-from flask import Blueprint, request, flash, redirect, url_for, jsonify, session, render_template
+from flask import Blueprint, request, flash, redirect, url_for, jsonify, render_template
 from flask_login import current_user
 
 from db import db
 from funcoes import produtos_para_envio, fechar_pedido
-from models import Pedido, Carrinho, Usuario, ItemPedido, Produto
+from models import Pedido, Carrinho, Usuario, ItemPedido
 
 pagamento_bp = Blueprint('pagamento', __name__, template_folder='templates')
 
@@ -72,11 +70,7 @@ def ir_para_pagamento(user_id):
         if not metodo_envio:
             flash('Por favor, selecione uma opção de frete.')
             return redirect(url_for('carrinho.ir_para_carrinho'))
-        preference_id, init_point = fechar_pedido(
-            user_id,
-            endereco_id=endereco_escolhido,
-            frete=metodo_envio
-        )
+        preference_id, init_point = fechar_pedido(user_id, endereco_id=endereco_escolhido, frete=metodo_envio)
         return redirect(init_point)  # Redireciona direto para o Mercado Pago
 
     return redirect(url_for('carrinho.ir_para_carrinho'))
@@ -124,7 +118,8 @@ def pagamento_sucesso():
         if pedido:
             pedido.status = 'pago'
             pedido.payment_id_mercadopago = payment_id
-            all_items = db.session.execute(db.select(Carrinho).where(Carrinho.usuario_id == pedido.usuario_id)).scalars()
+            all_items = db.session.execute(
+                db.select(Carrinho).where(Carrinho.usuario_id == pedido.usuario_id)).scalars()
             produtos = ItemPedido.query.filter_by(pedido_id=pedido.id).all()
             for item in all_items:
                 if item.produto_id == 0:
@@ -136,3 +131,32 @@ def pagamento_sucesso():
             return render_template('redirect/sucesso.html', pedido=pedido, nome=nome, produtos=produtos)
 
     return redirect(url_for('geral.home'))
+
+
+@pagamento_bp.route('/pagamento/falha')
+def pagamento_falha():
+    """Exibe a página de falha no pagamento.
+
+    Rota de callback chamada pelo Mercado Pago quando o pagamento é
+    recusado ou cancelado pelo usuário durante o checkout.
+
+    :return: Renderiza ``redirect/falha.html``.
+    """
+    return render_template('redirect/falha.html')
+
+
+@pagamento_bp.route('/pagamento/pendente')
+def pagamento_pendente():
+    """Exibe a página de pagamento pendente.
+
+    Rota de callback chamada pelo Mercado Pago quando o pagamento fica
+    aguardando confirmação, como em boletos bancários ou transferências
+    que ainda não foram processadas.
+
+    :return: Renderiza ``redirect/pendente.html``.
+
+    .. note::
+        Um pagamento pendente não significa falha. O status do pedido
+        deve ser atualizado via webhook assim que o pagamento for confirmado.
+    """
+    return render_template('redirect/pendente.html')

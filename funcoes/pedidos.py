@@ -145,8 +145,8 @@ def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, s
                            'email': usuario.email},
                        'back_urls': {
                            'success': url_for('pagamento.pagamento_sucesso', _external=True),
-                           'failure': url_for('geral.home', _external=True),
-                           'pending': url_for('pagamento.pagamento_sucesso', _external=True),
+                           'failure': url_for('pagamento.pagamento_falha', _external=True),
+                           'pending': url_for('pagamento.pagamento_pendente', _external=True),
                        }, 'auto_return': 'approved', }
 
     preference_id, init_point = gerar_link_pagamento(preference_data)

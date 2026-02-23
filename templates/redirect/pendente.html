@@ -1,10 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+{%include "header.html" %}
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Pagamento Pendente</title>
 </head>
-<body>
-
-</body>
+{% block content %}
+<div class="d-flex justify-content-center align-items-center ">
+    <div class="row text-center">
+         <div class="alert alert-warning d-flex justify-content-center align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:">
+                <use xlink:href="#exclamation-triangle-fill"/>
+            </svg>
+            <div>
+                O Pagamento ainda não foi confirmado.
+            </div>
+        </div>
+        <p>Aguarde a confirmção do pagamento.</p>
+        <div class="text-center">
+            <a href="{{ url_for('geral.home') }}" class="btn btn-primary mt-4 w-auto">Voltar para a Loja</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<footer>
+    {% include "footer.html" %}
+</footer>
 </html>

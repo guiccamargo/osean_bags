@@ -3,18 +3,26 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Carrinho</title>
+    <title>Pagamento Concluido</title>
 </head>
 {% block content %}
 <div class="container text-center mt-5">
-    <h1 class="text-success">Pagamento Confirmado!</h1>
+    <div class="alert alert-success d-flex justify-content-center align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-3" width="24" height="24" role="img" aria-label="Success:">
+            <use xlink:href="#check-circle-fill"/>
+        </svg>
+        <div>
+            Pagamento Confirmado!
+        </div>
+    </div>
     <p>Obrigado, {{ nome }}. Seu pedido está sendo processado.</p>
-    
+
     <div class="card mx-auto" style="max-width: 600px;">
         <div class="card-body">
             <h5>Resumo da Entrega</h5>
             <p>{{ pedido.rua }}, nº {{ pedido.numero }} - {{ pedido.cidade }}</p>
-            <p><strong>Método de Envio:</strong> {{ pedido.metodo_envio}}<br/>Prazo de entrega: {{ pedido.prazo_envio }} dias</p>
+            <p><strong>Método de Envio:</strong> {{ pedido.metodo_envio}}<br/>Prazo de entrega: {{ pedido.prazo_envio }}
+                dias</p>
             <hr>
             <h5>Produtos</h5>
             <ul class="list-group list-group-flush">
@@ -27,7 +35,9 @@
             </ul>
         </div>
     </div>
-    <a href="{{ url_for('geral.home') }}" class="btn btn-primary mt-4">Voltar para a Loja</a>
+    <div class="text-center">
+        <a href="{{ url_for('geral.home') }}" class="btn btn-primary mt-4 w-auto">Voltar para a Loja</a>
+    </div>
 </div>
 {% endblock %}
 <footer>
