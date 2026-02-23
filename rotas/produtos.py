@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for
 from flask_login import current_user
 
 from db import db
-from funcoes import listar_produtos, acessar_fotos, acessar_capa
+from funcoes import listar_produtos, acessar_fotos
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
 
@@ -39,7 +39,7 @@ def pagina_produto(produto_id):
     return render_template('produto.html', produto=produto, fotos=fotos, **renderizar_header(current_user))
 
 
-@produtos_bp.route("/produto/<produto_id>")
+@produtos_bp.route('/produto/<produto_id>')
 def buy_product(produto_id):
     """
     Adiciona um produto ao carrinho do usuário autenticado e redireciona para produtos.
@@ -61,4 +61,4 @@ def buy_product(produto_id):
         cart_item = Carrinho(usuario_id=usuario_id, produto_id=produto_id, quantidade=1)
         db.session.add(cart_item)
     db.session.commit()
-    return redirect(url_for("produtos.produtos"))
+    return redirect(url_for('produtos.produtos'))

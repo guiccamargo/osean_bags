@@ -1,7 +1,7 @@
 import os
 
 from PIL import Image
-from flask import url_for, redirect, abort
+from flask import url_for, redirect
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import FileUploadField
@@ -14,6 +14,7 @@ from wtforms.validators import Regexp
 from models import Foto
 
 BASE_UPLOAD = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+
 
 def formatar_imagem(caminho, tamanho=(800, 800)):
     """
@@ -50,6 +51,8 @@ def formatar_imagem(caminho, tamanho=(800, 800)):
     except Exception:
         os.remove(caminho)
         raise ValueError("Arquivo enviado não é uma imagem válida.")
+
+
 class BaseAdmin(ModelView):
     """
     View base para o painel administrativo.
@@ -200,7 +203,7 @@ class FotoAdmin(BaseAdmin):
 
     column_formatters = {
         'arquivo': lambda v, c, m, p: Markup(
-            f'<img src="{ url_for("static", filename="uploads/" + m.arquivo) }" style="max-height:100px;">'
+            f'<img src="{url_for("static", filename="uploads/" + m.arquivo)}" style="max-height:100px;">'
         ) if m.arquivo else ''
     }
 
@@ -264,9 +267,10 @@ class ProdutoAdmin(BaseAdmin):
 
     column_formatters = {
         'imagem': lambda v, c, m, p: Markup(
-            f'<img src="{ url_for("static", filename=f"uploads/{m.id}/{m.capa}") }" style="max-height:100px;">'
+            f'<img src="{url_for("static", filename=f"uploads/{m.id}/{m.capa}")}" style="max-height:100px;">'
         ) if m.imagem else ''
     }
+
 
 class UsuarioAdmin(BaseAdmin):
     """
@@ -384,6 +388,7 @@ class CarrosselAdmin(BaseAdmin):
         ) if m.arquivo else ''
     }
 
+
 class ConfigAdmin(BaseAdmin):
     """
     View administrativa para gerenciamento das configurações da aplicação.
@@ -414,3 +419,7 @@ class ConfigAdmin(BaseAdmin):
         'cep_origem': 'CEP de onde o produto será enviado.',
         'email': 'Email da empresa'
     }
+
+
+class PedidoAdmin(BaseAdmin):
+    pass

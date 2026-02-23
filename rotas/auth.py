@@ -11,12 +11,12 @@ from rotas.utils import renderizar_header
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 
-@auth_bp.route("/login", methods=["POST", "GET"])
+@auth_bp.route('/login', methods=['POST', 'GET'])
 def login():
     """
     Renderiza a página de login e autentica o usuário.
 
-    No método GET, exibe o formulário de login. No método POST, valida as
+    No metodo GET, exibe o formulário de login. No metodo POST, valida as
     credenciais do usuário: verifica se o email está cadastrado e se a senha
     está correta, exibindo mensagens de erro via flash em caso de falha.
 
@@ -25,22 +25,22 @@ def login():
         POST (sucesso): Redirecionamento para home.
         POST (falha): Redirecionamento para login com mensagem de erro via flash.
     """
-    if request.method == "POST":
+    if request.method == 'POST':
         user = db.session.query(Usuario).filter_by(email=request.form.get('email')).first()
         if not user:
-            flash("Este email não está cadastrado", category='error')
-            return redirect(url_for("auth.login"))
+            flash('Este email não está cadastrado', category='error')
+            return redirect(url_for('auth.login'))
         if check_password_hash(pwhash=user.password_hash, password=request.form.get('senha')):
             login_user(user)
-            return redirect(url_for("geral.home"))
+            return redirect(url_for('geral.home'))
         else:
-            flash("Senha incorreta", category='error')
-            return render_template("login.html", form=LoginForm(), **renderizar_header(current_user))
+            flash('Senha incorreta', category='error')
+            return render_template('login.html', form=LoginForm(), **renderizar_header(current_user))
     else:
-        return render_template("login.html", form=LoginForm(), **renderizar_header(current_user))
+        return render_template('login.html', form=LoginForm(), **renderizar_header(current_user))
 
 
-@auth_bp.route("/logout")
+@auth_bp.route('/logout')
 def logout():
     """
     Encerra a sessão do usuário autenticado e redireciona para a página inicial.
@@ -49,15 +49,15 @@ def logout():
         Response: Redirecionamento para geral.home.
     """
     logout_user()
-    return redirect(url_for("geral.home"))
+    return redirect(url_for('geral.home'))
 
 
-@auth_bp.route("/register", methods=["GET", "POST"])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     """
     Renderiza a página de registro e cadastra um novo usuário.
 
-    No método GET, exibe o formulário de registro. No método POST, verifica se
+    No metodo GET, exibe o formulário de registro. No metodo POST, verifica se
     o email já está cadastrado — redirecionando para login com mensagem de erro
     se estiver — ou registra o novo usuário e redireciona para a página inicial.
 
@@ -66,16 +66,16 @@ def register():
         POST (email existente): Redirecionamento para login com mensagem de erro.
         POST (sucesso): Redirecionamento para geral.home.
     """
-    if request.method == "POST":
-        user = db.session.execute(db.select(Usuario).where(Usuario.email == request.form.get("email"))).scalar()
+    if request.method == 'POST':
+        user = db.session.execute(db.select(Usuario).where(Usuario.email == request.form.get('email'))).scalar()
         if user:
-            flash("Esse Email já está cadastrado", category='error')
-            return redirect(url_for("auth.login"))
+            flash('Esse Email já está cadastrado', category='error')
+            return redirect(url_for('auth.login'))
         else:
             registar()
-            return redirect(url_for("geral.home"))
+            return redirect(url_for('geral.home'))
     else:
-        return render_template("register.html", form=RegisterForm(), **renderizar_header(current_user))
+        return render_template('register.html', form=RegisterForm(), **renderizar_header(current_user))
 
 
 @auth_bp.route('/gerenciar/<int:usuario_id>', methods=['GET', 'POST'])
@@ -113,38 +113,38 @@ def gerenciar(usuario_id):
     enderecoform = EditarEnderecoForm()
     enderecos = acessar_enderecos(usuario_id)
 
-    if request.method == "POST" and request.is_json:
+    if request.method == 'POST' and request.is_json:
         data = request.get_json()
-        endereco_id = data.get("endereco_id")
+        endereco_id = data.get('endereco_id')
         endereco = db.get_or_404(Endereco, endereco_id)
         return jsonify({
-            "status": "ok",
-            "apelido": endereco.apelido,
-            "cep": endereco.cep,
-            "cidade": endereco.cidade,
-            "estado": endereco.estado,
-            "rua": endereco.rua,
-            "numero": endereco.numero,
-            "complemento": endereco.complemento
+            'status': 'ok',
+            'apelido': endereco.apelido,
+            'cep': endereco.cep,
+            'cidade': endereco.cidade,
+            'estado': endereco.estado,
+            'rua': endereco.rua,
+            'numero': endereco.numero,
+            'complemento': endereco.complemento
         })
 
     if senha_form.submit_senha.data and senha_form.validate():
         atualizar_senha(usuario_id)
-        flash("Senha atualizada com sucesso!", "senha_success")
+        flash('Senha atualizada com sucesso!', 'senha_success')
         return redirect(url_for('auth.gerenciar', usuario_id=usuario_id))
 
     if nome_form.submit_nome.data and nome_form.validate():
         atualizar_nome(usuario_id)
-        flash("Nome alterado com sucesso!", "nome_success")
+        flash('Nome alterado com sucesso!', 'nome_success')
         return redirect(url_for('auth.gerenciar', usuario_id=usuario_id))
 
     if enderecoform.submit_endereco.data and enderecoform.validate():
         editar_endereco(enderecoform.endereco_id.data)
-        flash("Endereço atualizado!", "endereco_success")
+        flash('Endereço atualizado!', 'endereco_success')
         return redirect(url_for('auth.gerenciar', usuario_id=usuario_id))
 
     return render_template(
-        "gerenciar_conta.html",
+        'gerenciar_conta.html',
         senha_form=senha_form,
         nome_form=nome_form,
         enderecoform=enderecoform,

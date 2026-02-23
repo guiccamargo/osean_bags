@@ -46,6 +46,10 @@ input[type="radio"]:focus {
   height: 100%;
 }
 
+.form-control::placeholder{
+    color: #6B5F3B;
+}
+
 #dropdown-perfil {
   --bs-btn-bg: transparent;
   --bs-btn-border-color: #6B5F3B;
@@ -149,12 +153,12 @@ input[type="radio"]:focus {
   --bs-btn-active-color: #ffffff;
 }
 
-#link-registrar{
+.link-login{
     text-decoration: none;
     color: #6B5F3B;
 }
 
-#link-registrar:hover {
+.link-login:hover {
     text-decoration: underline;
 }
 

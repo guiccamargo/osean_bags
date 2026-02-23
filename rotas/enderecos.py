@@ -3,9 +3,8 @@ from flask_login import current_user
 
 from db import db
 from forms import EnderecoForm
-from funcoes import acessar_enderecos, adicionar_endereco
+from funcoes import adicionar_endereco
 from models import Endereco
-from rotas.utils import renderizar_header
 
 enderecos_bp = Blueprint('enderecos', __name__, template_folder='templates')
 
@@ -15,7 +14,7 @@ def cadastrar_endereco(id_usuario):
     """
     Renderiza o formulário de cadastro de novo endereço e salva o registro.
 
-    No método GET, exibe o formulário vazio. No método POST, coleta os dados
+    No metodo GET, exibe o formulário vazio. No metodo POST, coleta os dados
     do formulário, cria o endereço no banco de dados e redireciona para o carrinho.
 
     Args:
@@ -50,10 +49,10 @@ def deletar_endereco(id_endereco):
     endereco = db.get_or_404(Endereco, id_endereco)
 
     if endereco.usuario_id != current_user.id:
-        flash("Você não tem permissão para deletar este endereço.", "endereco_error")
+        flash('Você não tem permissão para deletar este endereço.', 'endereco_error')
         return redirect(url_for('auth.gerenciar', usuario_id=current_user.id))
 
     db.session.delete(endereco)
     db.session.commit()
-    flash("Endereço removido com sucesso!", "endereco_success")
+    flash('Endereço removido com sucesso!', 'endereco_success')
     return redirect(url_for('auth.gerenciar', usuario_id=current_user.id))

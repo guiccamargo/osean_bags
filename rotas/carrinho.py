@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user
 
 from db import db
-from funcoes import soma_itens, limpar_carrinho, atualizar_quantia, excluir_item_carrinho, acessar_capa, \
+from funcoes import limpar_carrinho, atualizar_quantia, excluir_item_carrinho, acessar_capa, \
     acessar_enderecos, produtos_para_envio
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
@@ -10,15 +10,15 @@ from rotas.utils import renderizar_header
 carrinho_bp = Blueprint('carrinho', __name__, template_folder='templates')
 
 
-@carrinho_bp.route('/carrinho', methods=["GET", "POST"])
+@carrinho_bp.route('/carrinho', methods=['GET', 'POST'])
 def ir_para_carrinho():
     """
     Renderiza a página do carrinho de compras.
 
-    No método GET, exibe os produtos no carrinho do usuário autenticado com
+    No metodo GET, exibe os produtos no carrinho do usuário autenticado com
     nome, imagem, quantidade e valor total por item.
 
-    No método POST (via fetch/JSON), recebe um endereco_id e retorna as opções
+    No metodo POST (via fetch/JSON), recebe um endereco_id e retorna as opções
     de frete disponíveis para aquele endereço. O resultado é passado ao template
     para exibição via envio.
 
@@ -37,22 +37,22 @@ def ir_para_carrinho():
             continue
         produto = db.get_or_404(Produto, item.produto_id)
         produtos_no_carrinho.append({
-            "id": produto.id,
-            "name": produto.nome,
-            "img": acessar_capa(produto.id),
-            "total": round(produto.preco * item.quantidade, 2),
-            "quantidade": item.quantidade
+            'id': produto.id,
+            'name': produto.nome,
+            'img': acessar_capa(produto.id),
+            'total': round(produto.preco * item.quantidade, 2),
+            'quantidade': item.quantidade
         })
 
     if request.method == 'POST':
         data = request.get_json()
-        endereco_id = data["endereco_id"]
+        endereco_id = data['endereco_id']
         opcoes_envio = produtos_para_envio(current_user.id, endereco_id)
     else:
         opcoes_envio = None
 
     return render_template(
-        "cart.html",
+        'cart.html',
         envio=opcoes_envio,
         enderecos=acessar_enderecos(current_user.id),
         products=produtos_no_carrinho,
@@ -60,7 +60,7 @@ def ir_para_carrinho():
     )
 
 
-@carrinho_bp.route("/cart/clear", methods=["GET", "POST"])
+@carrinho_bp.route('/cart/clear', methods=['GET', 'POST'])
 def clear_checkout():
     """
     Remove todos os itens do carrinho do usuário autenticado.
@@ -71,10 +71,10 @@ def clear_checkout():
         Response: Redirecionamento para carrinho.ir_para_carrinho.
     """
     limpar_carrinho(current_user.id)
-    return redirect(url_for("carrinho.ir_para_carrinho"))
+    return redirect(url_for('carrinho.ir_para_carrinho'))
 
 
-@carrinho_bp.route("/atualizar/<int:user_id>/<int:product_id>", methods=["GET", "POST"])
+@carrinho_bp.route('/atualizar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
 def atualizar_item(user_id, product_id):
     """
     Atualiza a quantidade de um produto no carrinho.
@@ -97,10 +97,10 @@ def atualizar_item(user_id, product_id):
         excluir_item_carrinho(user_id, product_id)
     else:
         atualizar_quantia(user_id, product_id, quantidade)
-    return redirect(url_for("carrinho.ir_para_carrinho"))
+    return redirect(url_for('carrinho.ir_para_carrinho'))
 
 
-@carrinho_bp.route("/deletar/<int:user_id>/<int:product_id>", methods=["GET", "POST"])
+@carrinho_bp.route('/deletar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
 def deletar_item(user_id, product_id):
     """
     Remove um produto específico do carrinho do usuário.
@@ -113,4 +113,4 @@ def deletar_item(user_id, product_id):
         Response: Redirecionamento para carrinho.ir_para_carrinho.
     """
     excluir_item_carrinho(user_id, product_id)
-    return redirect(url_for("carrinho.ir_para_carrinho"))
+    return redirect(url_for('carrinho.ir_para_carrinho'))

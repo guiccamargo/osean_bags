@@ -2,18 +2,42 @@ import os
 
 import mercadopago
 
+def gerar_link_pagamento(preference_data: dict) -> tuple[str, str]:
+    """Gera o ID e o link de pagamento no Mercado Pago.
 
-def gerar_link_pagamento(preference_data: dict) -> str:
-    """Gera o link de pagamento.
+    Cria uma preferência de pagamento na API do Mercado Pago e retorna
+    o ID da preferência e o link de redirecionamento para o checkout.
 
-    Utiliza os dados do pedido para gerar um link que direciona o usuário
-    para a plataforma do Mercado Pago onde é possível realizar o pagamento.
+    :param preference_data: Dicionário com os dados da preferência de pagamento.
+                            Deve seguir a estrutura da API do Mercado Pago, contendo
+                            campos como ``items``, ``payer``, ``back_urls``, etc.
 
-    :param preference_data: dicionário contendo as informações do pedido.
-    :return: link de pagamento.
+    :return: Tupla ``(preference_id, init_point)`` onde:
+             - ``preference_id`` é o ID único da preferência criada.
+             - ``init_point`` é a URL de checkout para redirecionar o usuário.
+
+    .. note::
+        Em produção, use ``init_point``.
+        Em desenvolvimento, substitua por ``sandbox_init_point``.
+
+    .. warning::
+        A chave ``mercado_pago_teste`` deve estar definida nas variáveis de ambiente.
+
+    Exemplo de uso::
+
+        preference_data = {
+            'items': [{
+                'title': 'Produto X',
+                'quantity': 1,
+                'unit_price': 99.90
+            }]
+        }
+
+        preference_id, link = gerar_link_pagamento(preference_data)
+        return redirect(link)
     """
 
     sdk = mercadopago.SDK(os.getenv('mercado_pago_teste'))
     result = sdk.preference().create(preference_data)
     print(result['response'])
-    return result['response']['id'], result['response']['init_point'] # init_point para produção ou sandbox_init_point para desenvolvimento
+    return result['response']['id'], result['response']['init_point']

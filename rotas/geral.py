@@ -19,7 +19,7 @@ def home():
         Response: Template index.html com todos os dados da página inicial.
     """
     return render_template(
-        "index.html",
+        'index.html',
         carrossel=acessar_carrossel(),
         bestsellers=acessar_bestsellers(),
         novidades=acessar_novidades(),

@@ -1,27 +1,36 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+{%include "header.html" %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrinho</title>
+</head>
 {% block content %}
 <div class="container text-center mt-5">
     <h1 class="text-success">Pagamento Confirmado!</h1>
-    <p>Obrigado, {{ pedido.usuario.nome }}. Seu pedido está sendo processado.</p>
+    <p>Obrigado, {{ nome }}. Seu pedido está sendo processado.</p>
     
     <div class="card mx-auto" style="max-width: 600px;">
         <div class="card-body">
             <h5>Resumo da Entrega</h5>
-            <p>{{ pedido.endereco.rua }}, nº {{ pedido.endereco.numero }} - {{ pedido.endereco.cidade }}</p>
-            <p><strong>Método de Envio:</strong> {{ pedido.frete.metodo }} (R$ {{ pedido.frete.valor }})</p>
-            
+            <p>{{ pedido.rua }}, nº {{ pedido.numero }} - {{ pedido.cidade }}</p>
+            <p><strong>Método de Envio:</strong> {{ pedido.metodo_envio}}<br/>Prazo de entrega: {{ pedido.prazo_envio }} dias</p>
             <hr>
             <h5>Produtos</h5>
             <ul class="list-group list-group-flush">
-                {% for item in pedido.produtos %}
+                {% for item in produtos %}
                 <li class="list-group-item d-flex justify-content-between">
-                    {{ item.title }} (x{{ item.quantity }})
-                    <span>R$ {{ item.unit_price }}</span>
+                    {{ item['nome'] }} ({{ item['quantidade'] }})
+                    <span>R$ {{ item['quantidade'] * item['preco_unitario'] }}</span>
                 </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
-    <a href="{{ url_for('site.home') }}" class="btn btn-primary mt-4">Voltar para a Loja</a>
+    <a href="{{ url_for('geral.home') }}" class="btn btn-primary mt-4">Voltar para a Loja</a>
 </div>
 {% endblock %}
+<footer>
+    {% include "footer.html" %}
+</footer>
+</html>
