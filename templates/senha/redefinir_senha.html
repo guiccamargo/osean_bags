@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{%include "header.html" %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Redefinir Senha</title>
+</head>
+<body class="bg-light">
+<main class="mb-4">
+    <div class="container">
+        <div class="row container justify-content-center">
+            <div class="card contorno col-lg-4 col-md-10">
+                <div class="card-body text-center">
+                    <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Redefinir Senha</h1>
+                    <br/>
+                    <div>
+                        <form method="POST">
+                            <input type="password" name="senha" class="form-control contorno texto-estilizado mb-2"
+                                   placeholder="Nova senha" required>
+                            <button type="submit" class="btn btn-custom-comprar">Redefinir senha</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<footer>
+    {% include "footer.html" %}
+</footer>
+</html>
