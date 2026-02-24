@@ -1,16 +1,18 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash
 
 from db import db
-from forms import LoginForm, RegisterForm, AtualizarNomeForm, EditarEnderecoForm, AtualizarSenhaForm
-from funcoes import registar, acessar_enderecos, editar_endereco, atualizar_senha, atualizar_nome, deletar_usuario
-from models import Usuario, Endereco
+from extensions import sitemapper
+from forms import LoginForm, RegisterForm
+from funcoes import registar
+from models import Usuario
 from rotas.utils import renderizar_header
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @auth_bp.route('/login', methods=['POST', 'GET'])
 def login():
     """
@@ -40,6 +42,7 @@ def login():
         return render_template('login.html', form=LoginForm(), **renderizar_header(current_user))
 
 
+@sitemapper.include()
 @auth_bp.route('/logout')
 def logout():
     """
@@ -52,6 +55,7 @@ def logout():
     return redirect(url_for('geral.home'))
 
 
+@sitemapper.include()
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     """

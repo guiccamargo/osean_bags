@@ -3,15 +3,16 @@ import os
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.theme import Bootstrap4Theme
-from flask_sitemap import Sitemap
+from flask_sitemapper import Sitemapper
 from werkzeug.middleware.proxy_fix import ProxyFix
 from extensions import mail, db, login_manager, bootstrap, babel
 from seo import SEO
 
-sitemap = Sitemap()
+sitemapper = Sitemapper()
 
 def create_app():
     app = Flask(__name__)
+    sitemapper.init_app(app)
     app.config.from_object('config')
     app.jinja_env.globals['META_PIXEL_ID'] = os.getenv('META_PIXEL_ID')
     app.jinja_env.globals['SEO'] = SEO
@@ -21,7 +22,12 @@ def create_app():
     _init_extensions(app)
     _register_blueprints(app)
     _register_admin(app)
-    _register_sitemap(app)
+    sitemapper.init_app(app)
+
+    # 3. Cria a rota para o XML do sitemap
+    @app.route("/sitemap.xml")
+    def sitemap():
+        return sitemapper.generate()
 
     with app.app_context():
         db.create_all()
@@ -84,25 +90,6 @@ def _register_admin(app):
     adm.add_view(CarrosselAdmin(Carrossel, db.session))
     adm.add_view(ConfigAdmin(Config, db.session))
     adm.add_view(PedidoAdmin(Pedido, db.session))
-
-def _register_sitemap(app):
-    """
-    Registra as URLs públicas da aplicação no sitemap.xml.
-
-    Apenas páginas indexáveis pelos motores de busca devem ser
-    incluídas — rotas de autenticação, carrinho e admin são excluídas.
-    """
-    from models import Produto
-
-    @sitemap.register_generator
-    def sitemap_urls():
-        yield 'geral.home', {}
-        yield 'geral.sobre_nos', {}
-        yield 'produtos.produtos', {}
-
-        with app.app_context():
-            for produto in Produto.query.all():
-                yield 'produtos.pagina_produto', {'produto_id': produto.id}
 
 
 if __name__ == '__main__':

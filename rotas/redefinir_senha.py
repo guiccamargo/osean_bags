@@ -2,12 +2,14 @@ from flask import render_template, redirect, url_for, flash, request, Blueprint,
 from flask_mail import Message
 
 from db import db
+from extensions import sitemapper
 from models import Usuario
 from redefinir_senha import verificar_token, gerar_token
 
 redefinir_bp = Blueprint('redefinir', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @redefinir_bp.route('/esqueci-senha', methods=['GET', 'POST'])
 def esqueci_senha():
     """Exibe e processa o formulário de solicitação de redefinição de senha.
@@ -49,6 +51,7 @@ def esqueci_senha():
     return render_template('senha/esqueci_senha.html')
 
 
+@sitemapper.include()
 @redefinir_bp.route('/redefinir-senha/<token>', methods=['GET', 'POST'])
 def redefinir_senha(token):
     """Exibe e processa o formulário de redefinição de senha via token.

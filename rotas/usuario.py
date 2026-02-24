@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, flash, redirect, url_for, render_template
 from flask_login import current_user, logout_user
-from sqlalchemy.sql.operators import contains
 
 from db import db
+from extensions import sitemapper
 from forms import AtualizarSenhaForm, AtualizarNomeForm, EditarEnderecoForm
 from funcoes import acessar_enderecos, atualizar_senha, atualizar_nome, editar_endereco, deletar_usuario
 from models import Usuario, Endereco, Pedido
@@ -10,6 +10,8 @@ from rotas.utils import renderizar_header
 
 conta_bp = Blueprint('conta', __name__, template_folder='templates')
 
+
+@sitemapper.include()
 @conta_bp.route('/gerenciar/<int:usuario_id>', methods=['GET', 'POST'])
 def gerenciar(usuario_id):
     """
@@ -84,11 +86,15 @@ def gerenciar(usuario_id):
         **renderizar_header(current_user)
     )
 
+
+@sitemapper.include()
 @conta_bp.route('/pedidos/<int:usuario_id>')
 def meus_pedidos(usuario_id):
     pedidos = Pedido.query.filter_by(usuario_id=usuario_id, status='pago').all()
     return render_template('meus_pedidos.html', pedidos=pedidos)
 
+
+@sitemapper.include()
 @conta_bp.route('/deletar/<int:id_usuario>')
 def deletar_conta(id_usuario):
     """

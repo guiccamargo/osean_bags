@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template
 from flask_login import current_user
 
+from extensions import sitemapper
 from funcoes import acessar_carrossel, acessar_bestsellers, acessar_novidades, acessar_escolha_do_mes
 from rotas.utils import renderizar_header
 
 geral_bp = Blueprint('geral', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @geral_bp.route('/')
 def home():
     """
@@ -28,6 +30,7 @@ def home():
     )
 
 
+@sitemapper.include()
 @geral_bp.route('/sobre')
 def sobre_nos():
     """

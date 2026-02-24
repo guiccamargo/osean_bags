@@ -2,12 +2,14 @@ from flask import Blueprint, request, flash, redirect, url_for, jsonify, render_
 from flask_login import current_user
 
 from db import db
+from extensions import sitemapper
 from funcoes import produtos_para_envio, fechar_pedido, atualizar_quantidade_vendas
 from models import Pedido, Carrinho, Usuario, ItemPedido
 
 pagamento_bp = Blueprint('pagamento', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @pagamento_bp.route('/calcular-frete', methods=['POST'])
 def calcular_frete_rota():
     """
@@ -39,6 +41,7 @@ def calcular_frete_rota():
         return jsonify({'erro': str(e)}), 500
 
 
+@sitemapper.include()
 @pagamento_bp.route('/pagamento/<int:user_id>', methods=['GET', 'POST'])
 def ir_para_pagamento(user_id):
     """
@@ -76,6 +79,7 @@ def ir_para_pagamento(user_id):
     return redirect(url_for('carrinho.ir_para_carrinho'))
 
 
+@sitemapper.include()
 @pagamento_bp.route('/pagamento/sucesso')
 def pagamento_sucesso():
     """Processa o retorno do Mercado Pago após um pagamento bem-sucedido.
@@ -138,6 +142,7 @@ def pagamento_sucesso():
     return redirect(url_for('geral.home'))
 
 
+@sitemapper.include()
 @pagamento_bp.route('/pagamento/falha')
 def pagamento_falha():
     """Exibe a página de falha no pagamento.
@@ -150,6 +155,7 @@ def pagamento_falha():
     return render_template('redirect/falha.html')
 
 
+@sitemapper.include()
 @pagamento_bp.route('/pagamento/pendente')
 def pagamento_pendente():
     """Exibe a página de pagamento pendente.

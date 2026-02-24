@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user
 
 from db import db
+from extensions import sitemapper
 from forms import EnderecoForm
 from funcoes import adicionar_endereco
 from models import Endereco
@@ -9,6 +10,7 @@ from models import Endereco
 enderecos_bp = Blueprint('enderecos', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @enderecos_bp.route('/<int:id_usuario>/endereco', methods=['GET', 'POST'])
 def cadastrar_endereco(id_usuario):
     """
@@ -31,6 +33,7 @@ def cadastrar_endereco(id_usuario):
         return redirect(url_for('carrinho.ir_para_carrinho'))
 
 
+@sitemapper.include()
 @enderecos_bp.route('/deletar-endereco/<int:id_endereco>')
 def deletar_endereco(id_endereco):
     """

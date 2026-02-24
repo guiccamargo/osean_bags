@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for
 from flask_login import current_user
 
 from db import db
+from extensions import sitemapper
 from funcoes import listar_produtos, acessar_fotos
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
@@ -9,6 +10,7 @@ from rotas.utils import renderizar_header
 produtos_bp = Blueprint('produtos', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @produtos_bp.route('/produtos')
 def produtos():
     """
@@ -23,6 +25,7 @@ def produtos():
     return render_template('produtos.html', lista_produtos=listar_produtos(), **renderizar_header(current_user))
 
 
+@sitemapper.include()
 @produtos_bp.route('/produtos/<int:produto_id>')
 def pagina_produto(produto_id):
     """
@@ -39,6 +42,7 @@ def pagina_produto(produto_id):
     return render_template('produto.html', produto=produto, fotos=fotos, **renderizar_header(current_user))
 
 
+@sitemapper.include()
 @produtos_bp.route('/produto/<produto_id>')
 def buy_product(produto_id):
     """

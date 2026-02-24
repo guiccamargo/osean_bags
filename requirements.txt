@@ -39,8 +39,7 @@ requests==2.32.3
 python-dotenv==1.0.1
 
 # Sitemap
-flask-sitemap==0.3.0
-
+flask-sitemapper
 # Utilitários
 MarkupSafe==3.0.2
 

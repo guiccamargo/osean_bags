@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user
 
 from db import db
+from extensions import sitemapper
 from funcoes import limpar_carrinho, atualizar_quantia, excluir_item_carrinho, acessar_capa, \
     acessar_enderecos, produtos_para_envio
 from models import Carrinho, Produto
@@ -10,6 +11,7 @@ from rotas.utils import renderizar_header
 carrinho_bp = Blueprint('carrinho', __name__, template_folder='templates')
 
 
+@sitemapper.include()
 @carrinho_bp.route('/carrinho', methods=['GET', 'POST'])
 def ir_para_carrinho():
     """
@@ -60,6 +62,7 @@ def ir_para_carrinho():
     )
 
 
+@sitemapper.include()
 @carrinho_bp.route('/cart/clear', methods=['GET', 'POST'])
 def clear_checkout():
     """
@@ -74,6 +77,7 @@ def clear_checkout():
     return redirect(url_for('carrinho.ir_para_carrinho'))
 
 
+@sitemapper.include()
 @carrinho_bp.route('/atualizar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
 def atualizar_item(user_id, product_id):
     """
@@ -100,6 +104,7 @@ def atualizar_item(user_id, product_id):
     return redirect(url_for('carrinho.ir_para_carrinho'))
 
 
+@sitemapper.include()
 @carrinho_bp.route('/deletar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
 def deletar_item(user_id, product_id):
     """
