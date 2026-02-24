@@ -11,7 +11,7 @@ Werkzeug==3.1.3
 
 # Formulários
 Flask-WTF==1.2.2
-WTForms==3.2.2
+WTForms==3.2.1
 
 # Interface admin
 Flask-Admin==1.6.1
