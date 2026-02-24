@@ -18,7 +18,7 @@ def create_app():
     app.jinja_env.globals['SEO'] = SEO
     app.jinja_env.globals['SITE_NAME'] = 'Osean Bags'
     app.jinja_env.globals['SITE_URL'] = os.getenv('SITE_URL', 'http://127.0.0.1:5000')
-
+    app.jinja_env.filters['preco_br'] = formatar_preco
     _init_extensions(app)
     _register_blueprints(app)
     _register_admin(app)
