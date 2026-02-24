@@ -1,9 +1,8 @@
-# config.py
 import os
 
-
 SECRET_KEY = os.getenv('SECRET_KEY')
-SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///database.db')
+database_url = os.getenv('DATABASE_URL', 'sqlite:///database.db')
+SQLALCHEMY_DATABASE_URI = database_url.replace('postgres://', 'postgresql://', 1)
 BABEL_DEFAULT_LOCALE = 'pt_BR'
 SESSION_PERMANENT = False
 MAIL_SERVER = 'smtp.gmail.com'
