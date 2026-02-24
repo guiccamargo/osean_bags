@@ -14,7 +14,7 @@ Flask-WTF==1.2.2
 WTForms==3.2.1
 
 # Interface admin
-Flask-Admin==1.6.1
+Flask-Admin==2.0.0
 
 # Templates e UI
 bootstrap-flask==2.4.1
