@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.theme import Bootstrap4Theme
+from flask_sitemap import Sitemap
 from werkzeug.middleware.proxy_fix import ProxyFix
 from extensions import mail, db, login_manager, bootstrap, babel
 from seo import SEO

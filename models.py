@@ -331,7 +331,7 @@ class Pedido(db.Model):
     :ivar data_criacao: Data e hora de criação do pedido. Preenchida automaticamente.
     :ivar status: Status atual do pedido. Valores possíveis: ``pendente``, ``pago``, ``cancelado``.
                   Padrão: ``pendente``.
-    :ivar metodo_envio: Nome ou código do método de envio escolhido.
+    :ivar metodo_envio: Nome ou código do metodo de envio escolhido.
     :ivar valor_frete: Valor do frete em reais no momento da compra.
     :ivar prazo_envio: Prazo estimado de entrega em dias úteis.
     :ivar rua: Rua do endereço de entrega no momento da compra.
