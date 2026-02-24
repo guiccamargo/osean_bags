@@ -4,6 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Carrinho</title>
+    <script>
+        fbq('track', 'AddToCart', {
+            content_ids: ['{{ produto_id }}'],
+            content_type: 'product',
+            currency: 'BRL'
+        });
+    </script>
 </head>
 <body class="bg-light">
 <div class="container justify-content-center">
@@ -28,7 +35,7 @@
                             <input type="submit" value="+" class="btn btn-custom-comprar col-2">
                         </form>
                     </div>
-                    <p class="col-8">Total R${{ product["total"] }}</p>
+                    <p class="col-8">Total R${{ product["total"] | preco_br}}</p>
                     <span class="col-2"></span>
                     <a type="button" class="btn btn-outline-danger col-2"
                        href="{{url_for('carrinho.deletar_item', user_id=current_user['id'], product_id=product['id'])}}">
@@ -54,7 +61,8 @@
                 <select id="select-endereco" name="endereco_id" class="form-select texto-estilizado contorno">
                     {% for endereco in enderecos %}
                     <option value="{{ endereco['id'] }}">
-                        {{ endereco['rua'] }} nº{{ endereco['numero'] }}...
+                        {{ endereco['rua'] }} nº{{ endereco['numero'] }} {{ endereco['Complemento'] }} {{
+                        endereco['cidade'] }}-{{ endereco['estado'] }}
                     </option>
                     {% endfor %}
                 </select>
@@ -70,13 +78,12 @@
     </div>
 
     <div class="row container mx-auto my-4 justify-content-center">
-        <a type="button" class="btn btn-outline-danger me-2 col-2" href="{{ url_for('carrinho.clear_checkout') }}">
-            Esvaziar Carrinho
-        </a>
-
-        <button id="btn-confirmar" type="submit" class="btn btn-primary col-2">
+        <button id="btn-confirmar" type="submit" class="btn btn-primary me-2 col-2">
             Confirmar Pedido
         </button>
+        <a type="button" class="btn btn-outline-danger col-2" href="{{ url_for('carrinho.clear_checkout') }}">
+            Esvaziar Carrinho
+        </a>
     </div>
 </form>
 <script>

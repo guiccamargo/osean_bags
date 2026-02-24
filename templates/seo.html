@@ -1,0 +1,19 @@
+<!-- SEO: título e meta tags -->
+<title>{% block title %}{{ seo.title if seo else SITE_NAME }}{% endblock %}</title>
+<meta name="description" content="{{ seo.description if seo else '' }}">
+<meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+<link rel="canonical" href="{{ SITE_URL }}{{ request.path }}">
+
+<!-- Open Graph (Facebook, WhatsApp, Instagram) -->
+<meta property="og:title" content="{{ seo.title if seo else SITE_NAME }}">
+<meta property="og:description" content="{{ seo.description if seo else '' }}">
+<meta property="og:image" content="{{ SITE_URL }}{{ seo.og_image if seo else '' }}">
+<meta property="og:url" content="{{ SITE_URL }}{{ request.path }}">
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:site_name" content="{{ SITE_NAME }}">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ seo.title if seo else SITE_NAME }}">
+<meta name="twitter:description" content="{{ seo.description if seo else '' }}">
+<meta name="twitter:image" content="{{ SITE_URL }}{{ seo.og_image if seo else '' }}">

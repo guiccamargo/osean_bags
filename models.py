@@ -51,6 +51,7 @@ class Usuario(UserMixin, db.Model):
     items_carrinho = db.relationship('Carrinho', lazy='dynamic')
     enderecos = db.relationship('Endereco', backref='usuario', lazy=True)
 
+
     def __init__(self, email, name, last_name, password):
         self.email = email
         self.nome = name
@@ -330,7 +331,7 @@ class Pedido(db.Model):
     :ivar data_criacao: Data e hora de criação do pedido. Preenchida automaticamente.
     :ivar status: Status atual do pedido. Valores possíveis: ``pendente``, ``pago``, ``cancelado``.
                   Padrão: ``pendente``.
-    :ivar metodo_envio: Nome ou código do metodo de envio escolhido.
+    :ivar metodo_envio: Nome ou código do método de envio escolhido.
     :ivar valor_frete: Valor do frete em reais no momento da compra.
     :ivar prazo_envio: Prazo estimado de entrega em dias úteis.
     :ivar rua: Rua do endereço de entrega no momento da compra.
@@ -341,20 +342,31 @@ class Pedido(db.Model):
     :ivar payment_id_mercadopago: ID do pagamento gerado pelo Mercado Pago.
                                    Utilizado para rastreio e conciliação financeira.
     :ivar itens: Lista de :class:`ItemPedido` vinculados a este pedido.
+                 Deleção em cascata não configurada — remover pedidos manualmente
+                 antes de remover itens associados.
+    :ivar usuario: Instância de :class:`Usuario` que realizou o pedido.
+                   Acessível via relationship para evitar queries adicionais
+                   ao exibir dados do cliente (ex: ``pedido.usuario.nome``).
 
     .. note::
         Os dados de endereço e frete são armazenados diretamente no pedido
         (snapshot), e não como referência ao cadastro do usuário. Isso preserva
         o histórico mesmo que o usuário altere seus dados posteriormente.
+
+    .. warning::
+        O backref ``'pedidos'`` é usado tanto em ``itens`` quanto em ``usuario``,
+        o que causará um conflito no SQLAlchemy. Renomeie um dos backrefs para
+        evitar o erro — por exemplo, ``backref='pedidos_usuario'`` na relationship
+        com ``Usuario``.
     """
 
     __tablename__ = 'pedidos'
 
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    data_criacao = db.Column(db.DateTime, default=datetime.now())
+    data_criacao = db.Column(db.DateTime, default=datetime.today())
 
-    status = db.Column(db.String(20), default='pendente')  # pendente, pago, cancelado
+    status = db.Column(db.String(20), default='pendente')
     metodo_envio = db.Column(db.String(50))
     valor_frete = db.Column(db.Float)
     prazo_envio = db.Column(db.Integer)
@@ -367,8 +379,8 @@ class Pedido(db.Model):
     total_pedido = db.Column(db.Float)
     payment_id_mercadopago = db.Column(db.String(100))
 
-    itens = db.relationship('ItemPedido', backref='pedidos', lazy=True)
-
+    itens = db.relationship('ItemPedido', backref='pedido', lazy=True)
+    usuario = db.relationship('Usuario', backref='pedidos', lazy=True)
 
 class ItemPedido(db.Model):
     """Representa um item individual dentro de um pedido.

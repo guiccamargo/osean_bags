@@ -110,16 +110,25 @@ def acessar_escolha_do_mes() -> dict[str, str] | None:
         return None
     return {'id': escolha.id, 'imagem': acessar_capa(escolha.id), 'nome': escolha.nome, }
 
-
-def acessar_inicial(usuario_id: int) -> str:
-    """Acessa a inicial do nome do usuário logado.
-
-    Acessa a inicial do usuário para exibir na barra de nagevação.
-
-    :param usuario_id: id do usuário logado.
-    :return: Inicial do usuário.
+def atualizar_quantidade_vendas(id_produto: int, quantidade_adicional: int) -> None:
     """
+    Incrementa o contador de vendas de um produto.
 
-    usuario = db.get_or_404(Usuario, usuario_id)
+    Acessa o produto no banco de dados e adiciona a quantidade informada
+    ao total de vendas acumulado. Utilizado após a confirmação de um pedido
+    para manter o ranking de bestsellers atualizado.
 
-    return usuario.get_inicial()
+    Args:
+        id_produto (int): ID do produto a ser atualizado.
+        quantidade_adicional (int): Quantidade vendida a ser somada ao total.
+
+    Raises:
+        404: Se nenhum produto for encontrado com o id informado.
+
+    Example:
+        # Após confirmar um pedido com 3 unidades do produto 42:
+        atualizar_quantidade_vendas(id_produto=42, quantidade_adicional=3)
+    """
+    produto = db.get_or_404(Produto, id_produto)
+    produto.vendas += quantidade_adicional
+    db.session.commit()

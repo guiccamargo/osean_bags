@@ -422,4 +422,89 @@ class ConfigAdmin(BaseAdmin):
 
 
 class PedidoAdmin(BaseAdmin):
-    pass
+    can_create = False
+    can_edit = True
+
+    column_list = (
+        'id',
+        'data_criacao',
+        'status',
+        'nome_usuario',
+        'email_usuario',
+        'metodo_envio',
+        'valor_frete',
+        'prazo_envio',
+        'endereco',
+        'total_pedido',
+        'itens_comprados',
+    )
+
+    column_labels = {
+        'id': 'Pedido',
+        'data_criacao': 'Data',
+        'status': 'Status',
+        'nome_usuario': 'Cliente',
+        'email_usuario': 'Email',
+        'metodo_envio': 'Envio',
+        'valor_frete': 'Frete (R$)',
+        'prazo_envio': 'Prazo (dias)',
+        'endereco': 'Endereço',
+        'total_pedido': 'Total (R$)',
+        'itens_comprados': 'Itens',
+    }
+
+    # Largura máxima das colunas em pixels
+    column_display_pk = True
+    column_filters = ('status', 'data_criacao')
+    column_searchable_list = ('id',)
+
+    column_formatters = {
+        'nome_usuario': lambda v, c, m, p: (
+            m.usuario.nome if m.usuario else 'Removido'
+        ),
+
+        'email_usuario': lambda v, c, m, p: (
+            m.usuario.email if m.usuario else '—'
+        ),
+
+        # Data formatada: 23/02/2026 14:30
+        'data_criacao': lambda v, c, m, p: (
+            m.data_criacao.strftime('%d/%m/%Y %H:%M')
+            if m.data_criacao else '—'
+        ),
+
+        # Status com badge colorido
+        'status': lambda v, c, m, p: Markup(
+            f'<span style="'
+            f'background:{"#28a745" if m.status == "pago" else "#ffc107" if m.status == "pendente" else "#dc3545"};'
+            f'color:white; padding:2px 8px; border-radius:4px; font-size:0.85em;">'
+            f'{m.status}</span>'
+        ),
+
+        # Endereço compacto em duas linhas
+        'endereco': lambda v, c, m, p: Markup(
+            f'<small>{m.rua}, {m.numero}<br>{m.cidade} — {m.cep}</small>'
+            if m.rua else '—'
+        ),
+
+        # Frete formatado
+        'valor_frete': lambda v, c, m, p: (
+            f'R$ {m.valor_frete:.2f}' if m.valor_frete else '—'
+        ),
+
+        # Total formatado
+        'total_pedido': lambda v, c, m, p: (
+            f'R$ {m.total_pedido:.2f}' if m.total_pedido else '—'
+        ),
+
+        # Itens em lista compacta
+        'itens_comprados': lambda v, c, m, p: Markup(
+            '<div style="min-width:300px; white-space:normal;">'
+            '<small>' + '<br>'.join(
+                f'{item.quantidade}x {item.nome} (ID: {item.produto_id})'
+                for item in m.itens
+            ) + '</small>'
+                '</div>'
+            if m.itens else '—'
+        ),
+    }

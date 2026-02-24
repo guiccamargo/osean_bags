@@ -2,7 +2,7 @@ from flask import Blueprint, request, flash, redirect, url_for, jsonify, render_
 from flask_login import current_user
 
 from db import db
-from funcoes import produtos_para_envio, fechar_pedido
+from funcoes import produtos_para_envio, fechar_pedido, atualizar_quantidade_vendas
 from models import Pedido, Carrinho, Usuario, ItemPedido
 
 pagamento_bp = Blueprint('pagamento', __name__, template_folder='templates')
@@ -121,6 +121,11 @@ def pagamento_sucesso():
             all_items = db.session.execute(
                 db.select(Carrinho).where(Carrinho.usuario_id == pedido.usuario_id)).scalars()
             produtos = ItemPedido.query.filter_by(pedido_id=pedido.id).all()
+
+            # atualizar quantidade de vendas
+            for produto in produtos:
+                atualizar_quantidade_vendas(id_produto=produto.produto_id, quantidade_adicional=produto.quantidade)
+
             for item in all_items:
                 if item.produto_id == 0:
                     continue

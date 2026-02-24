@@ -3,6 +3,24 @@
 <head>
     {% block styles %}
     {{ bootstrap.load_css() }}
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '{{ META_PIXEL_ID }}');
+    fbq('track', 'PageView');
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=SEU_PIXEL_ID&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Meta Pixel Code -->
     <link
             href="{{url_for('static', filename='css/styles.css') }}"
             type="text/css"
@@ -68,9 +86,9 @@
                         <strong>{{ inicial_nome }}</strong>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item texto-estilizado" href="#">Meus Pedidos</a></li>
+                        <li><a class="dropdown-item texto-estilizado" href="{{ url_for('conta.meus_pedidos', usuario_id=id_usuario) }}">Meus Pedidos</a></li>
                         <li><a class="dropdown-item texto-estilizado"
-                               href="{{ url_for('auth.gerenciar', usuario_id=id_usuario) }}">Gerenciar Conta</a></li>
+                               href="{{ url_for('conta.gerenciar', usuario_id=id_usuario) }}">Gerenciar Conta</a></li>
                         <li><a class="dropdown-item texto-estilizado" href="{{ url_for('auth.logout') }}">Sair</a></li>
                     </ul>
                 </div>
@@ -87,7 +105,7 @@
     </div>
 </header>
 <a href="#"
-   class="btn btn-flutuante btn-lg rounded-circle shadow d-flex justify-content-center align-items-center"
+   class="btn btn-flutuante btn-lg rounded-circle shadow d-flex justify-content-center align-items-center mb-5 me-2"
    style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 40px; height: 40px;">
 
     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-whatsapp"

@@ -1,5 +1,6 @@
 body {
     padding-top: 110px;
+    padding-bottom: 42px;
 }
 
 input[type="radio"] {
@@ -153,12 +154,12 @@ input[type="radio"]:focus {
   --bs-btn-active-color: #ffffff;
 }
 
-.link-login{
+.link{
     text-decoration: none;
     color: #6B5F3B;
 }
 
-.link-login:hover {
+.link:hover {
     text-decoration: underline;
 }
 

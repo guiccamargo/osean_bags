@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Osean Bags</title>
+    {% with seo = SEO['home'] %}
+    {% include 'seo.html' %}
+    {% endwith %}
 </head>
 <body data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
 <main class="bg-light">
@@ -52,7 +55,7 @@
             </h5>
         </div>
         <div class="info-item">
-            <img src="static/formas_pagamento.png" width="250"/>
+            <img src="static/MP_RGB_HANDSHAKE_color_horizontal.png" width="200"/>
         </div>
     </div>
     {% if novidades %}
@@ -66,8 +69,9 @@
                         <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
                         <div class="card-body">
                             <p class="card-text">{{produto.nome}}</p>
+                            <hr/>
                             <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">R${{produto.preco}}</small>
+                                <small class="text-muted">{{produto.preco | preco_br}}</small>
                             </div>
                             <a class="stretched-link"
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
@@ -91,8 +95,9 @@
                         <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
                         <div class="card-body">
                             <p class="card-text">{{produto.nome}}</p>
+                            <hr/>
                             <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">R${{produto.preco}}</small>
+                                <small class="text-muted">{{produto.preco | preco_br}}</small>
                             </div>
                             <a class="stretched-link"
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">

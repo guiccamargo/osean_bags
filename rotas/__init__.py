@@ -31,3 +31,4 @@ from rotas.carrinho import carrinho_bp
 from rotas.enderecos import enderecos_bp
 from rotas.pagamento import pagamento_bp
 from rotas.geral import geral_bp
+from rotas.usuario import conta_bp

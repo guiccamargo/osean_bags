@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% include "header.html" %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Pedidos</title>
+</head>
+<body class="bg-light" data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
+<main>
+    {% if pedidos %}
+    {% for pedido in pedidos: %}
+    <div class="card mb-3 mx-auto" style="max-width: 540px;">
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ pedido.id }}</h5>
+                <div class="align-items-center justify-content-center">
+                </div>
+                <p>Data: {{ pedido.data_criacao }}</p>
+                <p class="col-8">Total R${{ pedido.total_pedido }}</p>
+                <p>Entrega em: {{ pedido.prazo_envio }} dias</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</main>

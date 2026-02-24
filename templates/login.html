@@ -8,7 +8,6 @@
 <body class="bg-light">
 <header
         class="masthead"
-        style="background-image: url('../static/assets/img/login-bg.jpg')"
 >
     <div class="container position-relative px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
@@ -45,9 +44,9 @@
                         <div class="">
                             {{render_form(form, novalidate=True, button_map={"submit": "btn btn-custom-comprar"})}}
                             <br/>
-                            <a id="esqueci-senha" class="link-login" href="{{ url_for('redefinir.esqueci_senha') }}">Esqueci Minha Senha</a>
+                            <a id="esqueci-senha" class="link" href="{{ url_for('redefinir.esqueci_senha') }}">Esqueci Minha Senha</a>
                             <br />
-                            <a id="link-registrar" class="link-login" href="{{ url_for('auth.register') }}">Criar Conta</a>
+                            <a id="link-registrar" class="link" href="{{ url_for('auth.register') }}">Criar Conta</a>
                         </div>
                     </div>
                 </div>

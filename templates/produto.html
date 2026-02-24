@@ -3,6 +3,22 @@
 {%include "header.html" %}
 <head>
     <title>{{ produto.nome }}</title>
+    <script>
+        fbq('track', 'ViewContent', {
+            content_name: '{{ produto.nome }}',
+            content_ids: ['{{ produto.id }}'],
+            content_type: 'product',
+            value: {{ produto.preco }},
+            currency: 'BRL'
+        });
+    </script>
+    {% with seo = {
+    'title': produto.nome + ' | Osean Bags',
+    'description': produto.descricao[:160],
+    'og_image': '/static/uploads/' + produto.id|string + '/' + produto.fotos[0].arquivo if produto.fotos else ''
+    } %}
+    {% include 'seo.html' %}
+    {% endwith %}
 </head>
 <body class="bg-light">
 <div class="container">
@@ -34,8 +50,8 @@
             <h1>
                 {{ produto.nome }}
             </h1>
-            <h2>
-                <small class="text-muted">R${{produto.preco}}</small>
+            <h2 class="mb-3">
+                <small class="text-muted">{{produto.preco | preco_br}}</small>
             </h2>
             {% if logged_in: %}
             <a href="{{url_for('produtos.buy_product', produto_id=produto.id)}}" type="button"
@@ -47,7 +63,7 @@
         </div>
     </div>
 </div>
-<div class="container">
+<div class="container mt-4">
     <p>
         {{ produto.descricao }}
     </p>

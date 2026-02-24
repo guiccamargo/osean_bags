@@ -4,6 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Pagamento Concluido</title>
+    <script>
+        fbq('track', 'Purchase', {
+            value: {{ pedido.total_pedido }},
+            currency: 'BRL'
+        });
+    </script>
 </head>
 {% block content %}
 <div class="container text-center mt-5">

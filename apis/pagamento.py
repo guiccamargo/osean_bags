@@ -39,5 +39,4 @@ def gerar_link_pagamento(preference_data: dict) -> tuple[str, str]:
 
     sdk = mercadopago.SDK(os.getenv('mercado_pago_teste'))
     result = sdk.preference().create(preference_data)
-    print(result['response'])
     return result['response']['id'], result['response']['init_point']
