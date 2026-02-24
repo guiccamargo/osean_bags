@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask_login import UserMixin
+from sqlalchemy import event
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
@@ -57,6 +58,31 @@ class Usuario(UserMixin, db.Model):
         self.nome = name
         self.sobrenome = last_name
         self.password_hash = password
+
+        @event.listens_for(Usuario, 'before_insert')
+        def definir_primeiro_admin(mapper, connection, target):
+            """
+            Define o primeiro usuário inserido no banco como administrador.
+
+            Executado automaticamente pelo SQLAlchemy antes de cada INSERT
+            na tabela de usuários. Verifica se a tabela está vazia e, se sim,
+            atribui admin=True ao usuário sendo criado.
+
+            Args:
+                mapper: Mapper do SQLAlchemy (injetado automaticamente).
+                connection: Conexão ativa com o banco (injetada automaticamente).
+                target (Usuario): Instância do usuário prestes a ser inserida.
+
+            Note:
+                Utiliza a conexão direta (connection.execute) em vez de db.session
+                para evitar conflito com a sessão ativa durante o evento before_insert.
+            """
+            resultado = connection.execute(
+                db.select(db.func.count()).select_from(Usuario)
+            ).scalar()
+
+            if resultado == 0:
+                target.admin = True
 
     def set_password(self, senha):
         """Atualiza a senha do usuário aplicando hash antes de armazenar.
