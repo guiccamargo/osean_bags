@@ -91,7 +91,7 @@ def gerenciar(usuario_id):
 @conta_bp.route('/pedidos/<int:usuario_id>')
 def meus_pedidos(usuario_id):
     pedidos = Pedido.query.filter_by(usuario_id=usuario_id, status='pago').all()
-    return render_template('meus_pedidos.html', pedidos=pedidos)
+    return render_template('meus_pedidos.html', pedidos=pedidos, **renderizar_header(current_user))
 
 
 @sitemapper.include()
