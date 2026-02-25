@@ -231,7 +231,8 @@ class ProdutoAdmin(BaseAdmin):
     Example:
         admin.add_view(ProdutoAdmin(Produto, db.session, name='Produtos'))
     """
-
+    form_excluded_columns = ('vendas',)  # remove do formulário de edição
+    column_list = ('nome', 'preco', 'vendas', 'novidade', 'escolha_do_mes')  # exibe como leitura
     column_labels = {
         'preco': 'Preço',
         'descricao': 'Descrição',
@@ -469,7 +470,7 @@ class PedidoAdmin(BaseAdmin):
 
         # Data formatada: 23/02/2026 14:30
         'data_criacao': lambda v, c, m, p: (
-            m.data_criacao.strftime('%d/%m/%Y %H:%M')
+            m.data_criacao.strftime('%d/%m/%Yx')
             if m.data_criacao else '—'
         ),
 

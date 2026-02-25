@@ -15,7 +15,7 @@
                 <h5 class="card-title">{{ pedido.id }}</h5>
                 <div class="align-items-center justify-content-center">
                 </div>
-                <p>Data: {{ pedido.data_criacao }}</p>
+                <p>Data: {{ pedido.data_criacao.strftime('%d/%m/%Y') }}</p>
                 <p class="col-8">Total R${{ pedido.total_pedido }}</p>
                 <p>Entrega em: {{ pedido.prazo_envio }} dias</p>
             </div>
