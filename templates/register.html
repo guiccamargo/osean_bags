@@ -24,7 +24,7 @@
                     <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Criar Conta</h1>
                     <br/>
                     <div>
-                                                {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                         <ul class="list-group flashes">
                             {% for category, message in messages %}

@@ -53,10 +53,10 @@
             <h2 class="mb-3">
                 <small class="text-muted">{{produto.preco | preco_br}}</small>
             </h2>
-            {% if logged_in: %}
+            {% if logged_in %}
             <a href="{{url_for('produtos.buy_product', produto_id=produto.id)}}" type="button"
                class="btn btn-sm btn-custom-comprar">Adicionar Ao Carrinho</a>
-            {% else: %}
+            {% else %}
             <a href="{{url_for('auth.login')}}" type="button"
                class="btn btn-sm btn-custom-comprar">Adicionar Ao Carrinho</a>
             {% endif %}

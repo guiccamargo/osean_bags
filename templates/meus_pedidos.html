@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-{% include "header.html" %}
 <html lang="pt-br">
+{% include "header.html" %}
 <head>
     <meta charset="UTF-8">
     <title>Meus Pedidos</title>
@@ -8,7 +8,7 @@
 <body class="bg-light" data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
 <main>
     {% if pedidos %}
-    {% for pedido in pedidos: %}
+    {% for pedido in pedidos %}
     <div class="card mb-3 mx-auto" style="max-width: 540px;">
         <div class="col-md-8">
             <div class="card-body">
@@ -24,3 +24,8 @@
     {% endfor %}
     {% endif %}
 </main>
+</body>
+<footer>
+    {% include "footer.html" %}
+</footer>
+</html>

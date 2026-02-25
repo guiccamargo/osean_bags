@@ -10,7 +10,7 @@
 </head>
 <body data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
 <main class="bg-light">
-    {% if carrossel: %}
+    {% if carrossel %}
     <div id="carousel-inicial" class="carousel slide w-100 mb-5" data-bs-ride="carousel">
         <div class="carousel-inner">
 
@@ -63,7 +63,7 @@
         <h1 class="texto-estilizado mt-2 mb-3 julius-sans-one-regular">Novidades</h1>
         <div class="container position-relative">
             <div class="row g-2">
-                {% for produto in novidades: %}
+                {% for produto in novidades %}
                 <div class="col-lg-3 col-md-4 me-3">
                     <div class="card shadow-sm">
                         <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
