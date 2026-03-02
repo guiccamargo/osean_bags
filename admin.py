@@ -5,6 +5,7 @@ from flask import url_for, redirect
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import FileUploadField
+from flask_admin.menu import MenuLink
 from flask_login import current_user
 from flask_wtf.file import FileAllowed
 from markupsafe import Markup
@@ -199,7 +200,7 @@ class FotoAdmin(BaseAdmin):
                 os.replace(origem, destino)
                 model.arquivo = f"{model.produto_id}/{nome}"
 
-            formatar_imagem(destino, (800, 800))
+            formatar_imagem(destino, (600, 600))
 
     column_formatters = {
         'arquivo': lambda v, c, m, p: Markup(
@@ -509,3 +510,33 @@ class PedidoAdmin(BaseAdmin):
             if m.itens else '—'
         ),
     }
+
+
+class HomeMenuLink(MenuLink):
+    """Link de navegação para a página inicial exibido no painel do Flask-Admin.
+
+    Estende :class:`flask_admin.menu.MenuLink` para gerar dinamicamente
+    a URL da página inicial usando ``url_for``, evitando URLs fixas e
+    mantendo compatibilidade com qualquer prefixo de rota configurado
+    na aplicação.
+
+    Registrado no painel com::
+
+        admin.add_link(HomeMenuLink(name='Voltar ao Site'))
+
+    O link aparecerá na barra de navegação superior do painel administrativo.
+
+    .. note::
+        Substitua ``'geral.home'`` pelo nome correto da rota
+        da página inicial da sua aplicação.
+    """
+
+    def get_url(self):
+        """Retorna a URL da página inicial da aplicação.
+
+        Sobrescreve :meth:`MenuLink.get_url` para resolver a URL
+        dinamicamente via ``url_for`` no momento da requisição.
+
+        :return: URL absoluta da rota ``geral.home``.
+        """
+        return url_for('geral.home')

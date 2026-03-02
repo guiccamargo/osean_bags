@@ -3,6 +3,11 @@ body {
     padding-bottom: 42px;
 }
 
+hr{
+    margin-top:0;
+    margin-bottom:0;
+}
+
 input[type="radio"] {
   /* Remove a aparência padrão do navegador */
   -webkit-appearance: none; /* Para navegadores WebKit/Blink */
@@ -98,15 +103,18 @@ input[type="radio"]:focus {
     background-color: transparent !important;
     border-color: #6B5F3B !important;
 }
+.card {
+    border: 1px solid #C8BC9A;
+}
 
 .nav {
   align-items: center;
 }
 
 .produto-img {
-    height: 300px;
-    width: 400px:
-    object-fit: cover;
+    aspect-ratio: 1/1;      /* mantém proporção quadrada */
+    object-fit: cover;    /* imagem inteira visível sem distorção */
+    width: 100%;            /* ocupa toda a largura do card */
 }
 .carousel_out{
     height: 400px;

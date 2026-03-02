@@ -5,6 +5,8 @@ from flask_admin import Admin
 from flask_admin.theme import Bootstrap4Theme
 from flask_sitemapper import Sitemapper
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+from admin import HomeMenuLink
 from extensions import mail, db, login_manager, bootstrap, babel
 from seo import SEO
 
@@ -90,6 +92,7 @@ def _register_admin(app):
     adm.add_view(CarrosselAdmin(Carrossel, db.session))
     adm.add_view(ConfigAdmin(Config, db.session))
     adm.add_view(PedidoAdmin(Pedido, db.session))
+    adm.add_link(HomeMenuLink(name='Voltar ao Site'))
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@
     {% include 'seo.html' %}
     {% endwith %}
 </head>
-<body class="bg-light" data-new-gr-c-s-check-loaded="8.932.0" data-gr-ext-installed="">
+<body class="bg-light" data-gr-ext-installed="" data-new-gr-c-s-check-loaded="8.932.0">
 <header
         class="masthead">
     <div class="container position-relative px-4 px-lg-5">
@@ -29,10 +29,10 @@
                 <div class="col-lg-3 col-sm-8">
                     <form method="get">
                         <div class="input-group contorno mb-3">
-                            <input type="text" id="busca" name="busca" class="form-control"
-                                   placeholder="Buscar produto">
-                            <a href="{{ url_for('produtos.produtos') }}" class="btn btn-custom-comprar"
-                               style="border-color: transparent;" type="button" id="button-addon1">x</a>
+                            <input class="form-control" id="busca" name="busca" placeholder="Buscar produto"
+                                   type="text">
+                            <a class="btn btn-custom-comprar" href="{{ url_for('produtos.produtos') }}"
+                               id="button-addon1" style="border-color: transparent;" type="button">x</a>
 
                         </div>
                     </form>
@@ -40,15 +40,13 @@
             </div>
             <div class="row g-2">
                 {% for produto in lista_produtos %}
-                <div class="col-lg-3 col-sm-5 me-3">
+                <div class="col-lg-5 col-sm-5 me-3 mb-3">
                     <div class="card shadow-sm">
                         <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
-                        <div class="card-body">
-                            <p class="card-text">{{produto.nome}}</p>
-                            <hr/>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">{{produto.preco | preco_br}}</small>
-                            </div>
+                        <hr/>
+                        <div class="card-body text-center">
+                            <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
+                            <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
                             <a class="stretched-link"
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
