@@ -3,8 +3,9 @@ from flask_login import current_user, logout_user
 
 from db import db
 from extensions import sitemapper
-from forms import AtualizarSenhaForm, AtualizarNomeForm, EditarEnderecoForm
-from funcoes import acessar_enderecos, atualizar_senha, atualizar_nome, editar_endereco, deletar_usuario
+from forms import AtualizarSenhaForm, AtualizarNomeForm, EditarEnderecoForm, EnderecoForm
+from funcoes import acessar_enderecos, atualizar_senha, atualizar_nome, editar_endereco, deletar_usuario, \
+    adicionar_endereco
 from models import Usuario, Endereco, Pedido
 from rotas.utils import renderizar_header
 
@@ -44,8 +45,9 @@ def gerenciar(usuario_id):
     usuario = db.get_or_404(Usuario, usuario_id)
     senha_form = AtualizarSenhaForm()
     nome_form = AtualizarNomeForm(nome_atual=usuario.nome, sobrenome_atual=usuario.sobrenome)
-    enderecoform = EditarEnderecoForm()
-    enderecos = acessar_enderecos(usuario_id)
+    editarenderecoform = EditarEnderecoForm()
+    criarenderecoform = EnderecoForm()
+    lista_enderecos = acessar_enderecos(usuario_id)
 
     if request.method == 'POST' and request.is_json:
         data = request.get_json()
@@ -65,24 +67,30 @@ def gerenciar(usuario_id):
     if senha_form.submit_senha.data and senha_form.validate():
         atualizar_senha(usuario_id)
         flash('Senha atualizada com sucesso!', 'senha_success')
-        return redirect(url_for('usuario.gerenciar', usuario_id=usuario_id))
+        return redirect(url_for('conta.gerenciar', usuario_id=usuario_id))
 
     if nome_form.submit_nome.data and nome_form.validate():
         atualizar_nome(usuario_id)
         flash('Nome alterado com sucesso!', 'nome_success')
-        return redirect(url_for('usuario.gerenciar', usuario_id=usuario_id))
+        return redirect(url_for('conta.gerenciar', usuario_id=usuario_id))
 
-    if enderecoform.submit_endereco.data and enderecoform.validate():
-        editar_endereco(enderecoform.endereco_id.data)
+    if editarenderecoform.submit_endereco.data and editarenderecoform.validate():
+        editar_endereco(editarenderecoform.endereco_id.data)
         flash('Endereço atualizado!', 'endereco_success')
-        return redirect(url_for('usuario.gerenciar', usuario_id=usuario_id))
+        return redirect(url_for('conta.gerenciar', usuario_id=usuario_id))
+
+    if criarenderecoform.submit_criar_endereco.data and criarenderecoform.validate():
+        adicionar_endereco(usuario_id)
+        flash('Endereço Registrado!', 'endereco_success')
+        return redirect(url_for('conta.gerenciar', usuario_id=usuario_id))
 
     return render_template(
         'gerenciar_conta.html',
         senha_form=senha_form,
         nome_form=nome_form,
-        enderecoform=enderecoform,
-        enderecos=enderecos,
+        editarenderecoform=editarenderecoform,
+        criarenderecoform=criarenderecoform,
+        lista_enderecos=lista_enderecos,
         **renderizar_header(current_user)
     )
 

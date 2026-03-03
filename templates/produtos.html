@@ -21,43 +21,52 @@
     </div>
 </header>
 <main>
-    <form method="get">
-    </form>
+
     <div class="album py-5 ">
         <div class="container position-relative">
             <div class="row g-2">
-                <div class="col-lg-3 col-sm-8">
-                    <form method="get">
-                        <div class="input-group contorno mb-3">
-                            <input class="form-control" id="busca" name="busca" placeholder="Buscar produto"
-                                   type="text">
-                            <a class="btn btn-custom-comprar" href="{{ url_for('produtos.produtos') }}"
-                               id="button-addon1" style="border-color: transparent;" type="button">x</a>
 
-                        </div>
-                    </form>
+                <!--Barra de pesquisa-->
+                <div class="col-lg-5 col-sm-5 mx-auto mb-5">
+                    <div class="input-group contorno mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">
+                            <svg class="bi bi-search" fill="#6B5F3B" height="22" viewBox="0 0 16 16"
+                                 width="16" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </span>
+                        <input class="form-control py-2" id="busca" name="busca"
+                               oninput="buscarProdutos(this.value)" placeholder="Buscar produto"
+                               type="text"/>
+                    </div>
                 </div>
             </div>
-            <div class="row g-2">
-                {% for produto in lista_produtos %}
-                <div class="col-lg-5 col-sm-5 me-3 mb-3">
+        </div>
+
+        <div class="row g-2" id="lista-produtos">
+            <!--Listagem de produtos-->
+            {% for produto in lista_produtos %}
+
+            <div class="col-lg-5 col-sm-5 me-3">
+                <a class="text-decoration-none text-dark"
+                   href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                     <div class="card shadow-sm">
-                        <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
+                        <img class="card-img-top produto-img" src="static/uploads/{{ acessar_capa(produto.id) }}"/>
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
                             <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
-                            <a class="stretched-link"
-                               href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
-                            </a>
                         </div>
                     </div>
-                </div>
-                {% endfor %}
+                </a>
             </div>
+
+            {% endfor %}
+
         </div>
     </div>
 </main>
+<script src="{{ url_for('static', filename='js/busca_produtos.js') }}"></script>
 </body>
 <footer>
     {% include "footer.html" %}

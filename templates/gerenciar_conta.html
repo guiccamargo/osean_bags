@@ -11,6 +11,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-10 d-flex align-items-stretch gap-4 flex-nowrap">
 
+                <!--Editar Senha-->
                 <div class="card contorno w-50">
                     <div class="card-body text-center">
                         <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Atualizar Senha</h1>
@@ -33,6 +34,7 @@
                     </div>
                 </div>
 
+                <!--Editar Nome-->
                 <div class="card contorno w-50">
                     <div class="card-body text-center">
                         <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Alterar Nome do
@@ -55,9 +57,11 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
+
+        {% if lista_enderecos %}
+        <!--Editar Endereço-->
         <div class="container">
             <div class="row container justify-content-center mt-4">
                 <div class="card contorno col-lg-4">
@@ -67,21 +71,25 @@
                         </h1>
                         <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
                             <div class="w-40">
-                                <select class="form-select contorno texto-estilizado" id="select-endereco-editar"
-                                        data-user-id="{{ current_user.id }}">
-                                    {% for endereco in enderecos %}
+                                <select class="form-select contorno texto-estilizado"
+                                        data-user-id="{{ current_user.id }}"
+                                        id="select-endereco-editar">
+                                    {% for endereco in lista_enderecos %}
                                     <option value="{{ endereco.id }}">
                                         {{ endereco.apelido }}
                                     </option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <a class="btn btn-outline-danger" href="#" id="btn-deletar-endereco">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-trash3" viewBox="0 0 16 16">
+                            <a class="btn btn-outline-danger"
+                               href="#"
+                               id="btn-deletar-endereco">
+                                <svg class="bi bi-trash3" fill="currentColor" height="16" viewBox="0 0 16 16"
+                                     width="16" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
                                 </svg>
                             </a>
+
                         </div>
                         <div class="text-center">
                             {% with messages = get_flashed_messages(category_filter=["endereco_error",
@@ -94,35 +102,72 @@
                             </ul>
                             {% endif %}
                             {% endwith %}
-                            {{ render_form(enderecoform, button_map={"submit_endereco": "btn btn-custom-comprar"},
-                            action=url_for('conta.gerenciar', usuario_id=current_user.id)) }}
+                            {{ render_form(editarenderecoform,
+                            button_map={"submit_endereco": "btn btn-custom-comprar"},
+                            action=url_for('conta.gerenciar',
+                            usuario_id=current_user.id)) }}
                         </div>
                     </div>
                 </div>
             </div>
 
+            {% else %}
+
+            <!--Cadastrar Endereço-->
+            <div class="container">
+                <div class="row container justify-content-center mt-4">
+                    <div class="card contorno col-lg-4">
+                        <div class="card-body">
+                            <h1 class="card-title texto-estilizado m-0 julius-sans-one-regular">
+                                Cadastrar Novo Endereço
+                            </h1>
+                            <div class="text-center">
+                                {% with messages = get_flashed_messages(category_filter=["endereco_error",
+                                "endereco_success"]) %}
+                                {% if messages %}
+                                <ul class="list-group flashes">
+                                    {% for message in messages %}
+                                    <li class="list-group-item success">{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                {% endwith %}
+                                {{ render_form(criarenderecoform,
+                                button_map={"submit_criar_endereco":
+                                "btn btn-custom-comprar"},
+                                action=url_for('conta.gerenciar',
+                                usuario_id=current_user.id)) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="row container justify-content-center mt-4">
-                <button type="button" class="btn btn-outline-danger col-2" data-bs-toggle="modal"
-                        data-bs-target="#excluir">
+                <button class="btn btn-outline-danger col-2" data-bs-target="#excluir" data-bs-toggle="modal"
+                        type="button">
                     Excluir conta
                 </button>
             </div>
 
-            <div class="modal fade" id="excluir" tabindex="-1" aria-labelledby="modal-excluir" aria-hidden="true">
+            <div aria-hidden="true" aria-labelledby="modal-excluir" class="modal fade" id="excluir" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir
                                 Conta</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                    type="button"></button>
                         </div>
                         <div class="modal-body texto-estilizado">
                             Tem certeza que deseja excluir sua conta?
                         </div>
                         <div class="modal-footer">
-                            <a href="{{ url_for('conta.deletar_conta', id_usuario=id_usuario) }}" type="button"
-                               class="btn btn-custom-comprar">Excluir</a>
-                            <a type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Fechar</a>
+                            <a class="btn btn-custom-comprar"
+                               href="{{ url_for('conta.deletar_conta', id_usuario=id_usuario) }}"
+                               type="button">Excluir</a>
+                            <a class="btn btn-outline-danger" data-bs-dismiss="modal" type="button">Fechar</a>
                         </div>
                     </div>
                 </div>
@@ -130,6 +175,7 @@
         </div>
     </div>
 </main>
+<script src="{{ url_for('static', filename='js/edita_enderecos.js') }}"></script>
 {% include "footer.html" %}
 </body>
 </html>

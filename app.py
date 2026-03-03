@@ -8,6 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from admin import HomeMenuLink
 from extensions import mail, db, login_manager, bootstrap, babel
+from funcoes import acessar_capa
 from seo import SEO
 
 sitemapper = Sitemapper()
@@ -21,6 +22,7 @@ def create_app():
     app.jinja_env.globals['SITE_NAME'] = 'Osean Bags'
     app.jinja_env.globals['SITE_URL'] = os.getenv('SITE_URL', 'http://127.0.0.1:5000')
     app.jinja_env.filters['preco_br'] = formatar_preco
+    app.jinja_env.globals['acessar_capa'] = acessar_capa
     _init_extensions(app)
     _register_blueprints(app)
     _register_admin(app)

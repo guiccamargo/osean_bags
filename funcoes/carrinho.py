@@ -1,5 +1,5 @@
 from db import db
-from models import Carrinho
+from models import Carrinho, Produto
 
 
 def soma_itens(id_usuario: int) -> int:
@@ -16,6 +16,13 @@ def soma_itens(id_usuario: int) -> int:
         soma += item.quantidade
     return soma
 
+def somar_valor_dos_items(id_usuario):
+    soma = 0
+    todos_itens = db.session.execute(db.select(Carrinho).where(Carrinho.usuario_id == id_usuario)).scalars()
+    for item in todos_itens:
+        produto = db.get_or_404(Produto, item.produto_id)
+        soma += item.quantidade * produto.preco
+    return soma
 
 def limpar_carrinho(id_usuario: int):
     """Deleta produtos do carrinho.

@@ -4,8 +4,9 @@ from flask_login import current_user
 from db import db
 from extensions import sitemapper
 from forms import EnderecoForm
-from funcoes import adicionar_endereco
+from funcoes import adicionar_endereco, deletar_endereco
 from models import Endereco
+from rotas.utils import renderizar_header
 
 enderecos_bp = Blueprint('enderecos', __name__, template_folder='templates')
 
@@ -27,7 +28,7 @@ def cadastrar_endereco(id_usuario):
         POST: Redirecionamento para carrinho.ir_para_carrinho.
     """
     if request.method == 'GET':
-        return render_template('novo_endereco.html', form=EnderecoForm())
+        return render_template('novo_endereco.html', form=EnderecoForm(), **renderizar_header(current_user))
     else:
         adicionar_endereco(id_usuario)
         return redirect(url_for('carrinho.ir_para_carrinho'))
@@ -35,7 +36,7 @@ def cadastrar_endereco(id_usuario):
 
 @sitemapper.include()
 @enderecos_bp.route('/deletar-endereco/<int:id_endereco>')
-def deletar_endereco(id_endereco):
+def deletar_endereco_form(id_endereco):
     """
     Remove um endereço cadastrado pelo usuário autenticado.
 
@@ -49,13 +50,6 @@ def deletar_endereco(id_endereco):
         Response: Redirecionamento para auth.gerenciar com mensagem flash
                   de sucesso ou erro dependendo da autorização.
     """
-    endereco = db.get_or_404(Endereco, id_endereco)
-
-    if endereco.usuario_id != current_user.id:
-        flash('Você não tem permissão para deletar este endereço.', 'endereco_error')
-        return redirect(url_for('auth.gerenciar', usuario_id=current_user.id))
-
-    db.session.delete(endereco)
-    db.session.commit()
+    deletar_endereco(id_endereco)
     flash('Endereço removido com sucesso!', 'endereco_success')
-    return redirect(url_for('auth.gerenciar', usuario_id=current_user.id))
+    return redirect(url_for('conta.gerenciar', usuario_id=current_user.id))

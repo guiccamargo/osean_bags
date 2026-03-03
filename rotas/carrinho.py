@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from flask_login import current_user
 
 from db import db
 from extensions import sitemapper
 from funcoes import limpar_carrinho, atualizar_quantia, excluir_item_carrinho, acessar_capa, \
-    acessar_enderecos, produtos_para_envio
+    acessar_enderecos, produtos_para_envio, somar_valor_dos_items
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
 
@@ -57,6 +57,7 @@ def ir_para_carrinho():
         'cart.html',
         envio=opcoes_envio,
         enderecos=acessar_enderecos(current_user.id),
+        total_carrinho=somar_valor_dos_items(current_user.id),
         products=produtos_no_carrinho,
         **renderizar_header(current_user)
     )
@@ -78,31 +79,44 @@ def clear_checkout():
 
 
 @sitemapper.include()
-@carrinho_bp.route('/atualizar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
-def atualizar_item(user_id, product_id):
-    """
-    Atualiza a quantidade de um produto no carrinho.
+@carrinho_bp.route('/carrinho/atualizar/<int:user_id>/<int:product_id>')
+def atualizar_item(user_id: int, product_id: int):
+    """Atualiza a quantidade de um item no carrinho e retorna os totais em JSON.
 
-    Se a nova quantidade for 0, o item é removido do carrinho.
-    Caso contrário, a quantidade é atualizada para o valor informado.
+    :param user_id: ID do usuário dono do carrinho.
+    :param product_id: ID do produto a ser atualizado.
 
-    Args:
-        user_id (int): ID do usuário dono do carrinho.
-        product_id (int): ID do produto a ser atualizado.
+    :queryparam quantidade: Nova quantidade do item. Deve ser um inteiro positivo.
 
-    Query Params:
-        quantidade (int): Nova quantidade desejada para o produto.
+    :return: JSON com o novo total do item e o total geral do carrinho::
 
-    Returns:
-        Response: Redirecionamento para carrinho.ir_para_carrinho.
+                {
+                    "novo_total": 199.80,
+                    "total_carrinho": 349.70
+                }
+
+             Onde:
+
+             - ``novo_total`` é o subtotal do item atualizado (``preco * quantidade``).
+             - ``total_carrinho`` é a soma de todos os itens do carrinho do usuário.
+
+    .. note::
+        Ambos os valores são utilizados pelo frontend para atualizar os totais
+        exibidos na página sem recarregar.
+
+    .. warning::
+        O ``total_carrinho`` é recalculado consultando todos os itens do carrinho
+        após a atualização. Em carrinhos com muitos itens isso pode impactar
+        a performance, considere otimizar com uma query agregada se necessário.
     """
     quantidade = request.args.get('quantidade', type=int)
-    if quantidade == 0:
-        excluir_item_carrinho(user_id, product_id)
-    else:
-        atualizar_quantia(user_id, product_id, quantidade)
-    return redirect(url_for('carrinho.ir_para_carrinho'))
-
+    item = Carrinho.query.filter_by(usuario_id=user_id, produto_id=product_id).first_or_404()
+    produto = Produto.query.get_or_404(product_id)
+    item.quantidade = quantidade
+    db.session.commit()
+    novo_total = produto.preco * quantidade
+    total_carrinho = somar_valor_dos_items(user_id)
+    return jsonify({'novo_total': novo_total, 'total_carrinho': total_carrinho})
 
 @sitemapper.include()
 @carrinho_bp.route('/deletar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])

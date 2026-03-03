@@ -167,7 +167,7 @@ class EnderecoForm(FlaskForm):
     rua = StringField('Rua', validators=[DataRequired()], render_kw={'class': 'contorno'})
     numero = StringField('Número', validators=[DataRequired()], render_kw={'class': 'contorno'})
     complemento = StringField('Complemento', render_kw={'class': 'contorno'})
-    submit = SubmitField('Adicionar')
+    submit_criar_endereco = SubmitField('Adicionar')
 
 
 class EditarEnderecoForm(FlaskForm):

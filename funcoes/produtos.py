@@ -4,14 +4,14 @@ import sqlalchemy
 from flask import request
 
 from db import db
-from models import Produto, Foto, Usuario
+from models import Produto, Foto
 
 
 def listar_produtos() -> List[dict]:
     """Lista os produtos do banco de dados.
 
     Acessa os produtos do banco de dados, gera dicionários com as informações
-    relevantes dos produtos e implementa a barra de buscas.
+    relevantes dos produtos.
 
 
     :return: lista de produtos.
@@ -19,10 +19,8 @@ def listar_produtos() -> List[dict]:
     busca = request.args.get('busca')  # Buscar por produtos pelo nome
 
     # Realizar busca
-    if busca:
-        produtos = Produto.query.filter(Produto.nome.ilike(f'%{busca}%')).all()
-    else:
-        produtos = Produto.query.all()
+    produtos = Produto.query.filter(Produto.nome.ilike(f'%{busca}%')).all()
+
 
     lista_produtos = []
 
@@ -109,6 +107,7 @@ def acessar_escolha_do_mes() -> dict[str, str] | None:
     if not escolha:  # Checa se a escolha do mês existe
         return None
     return {'id': escolha.id, 'imagem': acessar_capa(escolha.id), 'nome': escolha.nome, }
+
 
 def atualizar_quantidade_vendas(id_produto: int, quantidade_adicional: int) -> None:
     """

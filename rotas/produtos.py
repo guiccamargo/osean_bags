@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_login import current_user
 
 from db import db
 from extensions import sitemapper
-from funcoes import listar_produtos, acessar_fotos
+from funcoes import acessar_fotos, acessar_capa
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
 
@@ -22,7 +22,7 @@ def produtos():
     Returns:
         Response: Template produtos.html com a lista de produtos encontrados.
     """
-    return render_template('produtos.html', lista_produtos=listar_produtos(), **renderizar_header(current_user))
+    return render_template('produtos.html', **renderizar_header(current_user))
 
 
 @sitemapper.include()
@@ -66,3 +66,43 @@ def buy_product(produto_id):
         db.session.add(cart_item)
     db.session.commit()
     return redirect(url_for('produtos.produtos'))
+
+
+@sitemapper.include()
+@produtos_bp.route('/produtos/buscar')
+def buscar_produtos():
+    """Busca produtos pelo nome e retorna os resultados em formato JSON.
+
+    Rota utilizada pela busca dinâmica do frontend para filtrar produtos
+    sem recarregar a página. Aceita um termo de busca via query parameter
+    e retorna a lista de produtos cujo nome contenha o termo informado,
+    ignorando maiúsculas e minúsculas.
+
+    :queryparam busca: Termo de busca para filtrar produtos pelo nome.
+                       Se não informado, retorna todos os produtos.
+
+    :return: JSON contendo uma lista de produtos no formato::
+
+                [
+                    {
+                        "id": 1,
+                        "nome": "Produto X",
+                        "preco": 99.90,
+                        "imagem": "produto_x.png"
+                    },
+                    ...
+                ]
+
+    .. note::
+        A busca utiliza ``ilike`` do SQLAlchemy, que é case-insensitive
+        e funciona com o operador ``%termo%``, retornando qualquer produto
+        cujo nome contenha o termo em qualquer posição.
+    """
+    termo = request.args.get('busca', '')
+    resultado = Produto.query.filter(Produto.nome.ilike(f'%{termo}%')).all()
+    return jsonify([{
+        'id': p.id,
+        'nome': p.nome,
+        'preco': p.preco,
+        'imagem': acessar_capa(p.id)
+    } for p in resultado])

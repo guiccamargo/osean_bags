@@ -74,3 +74,15 @@ def editar_endereco(id_endereco: int) -> None:
     endereco.complemento = complemento
 
     db.session.commit()
+
+def deletar_endereco(id_endereco):
+    """
+    Remove um endereço cadastrado pelo usuário autenticado.
+
+    Args:
+        id_endereco (int): ID do endereço a ser removido.
+
+    """
+    endereco = db.get_or_404(Endereco, id_endereco)
+    db.session.delete(endereco)
+    db.session.commit()

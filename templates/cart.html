@@ -18,29 +18,33 @@
     <div class="card mb-3 mx-auto" style="max-width: 540px;">
         <div class="row g-0">
             <div class="col-md-4">
-                <img class="img-fluid rounded-start" src="static/uploads/{{ product['img'] }}" alt="..." width="400"
-                     height="500">
+                <img alt="..." class="img-fluid rounded-start" height="500" src="static/uploads/{{ product['img'] }}"
+                     width="400">
             </div>
             <div class="col-md-8">
                 <div class="card-body">
                     <h5 class="card-title">{{ product["name"] }}</h5>
                     <div class="align-items-center justify-content-center">
-                        <form class="row"
-                              action="{{ url_for('carrinho.atualizar_item', user_id=current_user['id'], product_id=product['id'])  }}">
-                            <label for="quantidade" class="col-6">Quantidade:</label>
-                            <input class="form-control contorno col-4 me-2" type="number" id="quantidade"
-                                   name="quantidade" step="1"
-                                   value="{{ product['quantidade'] }}"
-                                   min="0">
-                            <input type="submit" value="+" class="btn btn-custom-comprar col-2">
-                        </form>
+                        <div class="row">
+                            <label class="col-6" for="quantidade">Quantidade:</label>
+                            <input class="form-control contorno col-4 me-2"
+                                   id="quantidade"
+                                   min="1"
+                                   name="quantidade"
+                                   onchange="atualizarQuantidade({{ current_user['id'] }}, {{ product['id'] }}, this.value)"
+                                   step="1"
+                                   type="number"
+                                   value="{{ product['quantidade'] }}">
+                        </div>
                     </div>
-                    <p class="col-8">Total R${{ product["total"] | preco_br}}</p>
-                    <span class="col-2"></span>
-                    <a type="button" class="btn btn-outline-danger col-2"
-                       href="{{url_for('carrinho.deletar_item', user_id=current_user['id'], product_id=product['id'])}}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-trash3" viewBox="0 0 16 16">
+                    <p class="col-8" id="total-{{ product['id'] }}">
+                        Total {{ product["total"] | preco_br }}
+                    </p>
+                    <a class="btn btn-outline-danger col-2"
+                       href="{{url_for('carrinho.deletar_item', user_id=current_user['id'], product_id=product['id'])}}"
+                       type="button">
+                        <svg class="bi bi-trash3" fill="currentColor" height="16" viewBox="0 0 16 16"
+                             width="16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
                         </svg>
                     </a>
@@ -50,6 +54,10 @@
     </div>
     {% endfor %}
 </div>
+<div class="container col-4 contorno text-center mt-5 mb-3 py-3">
+    <h5 class="texto-estilizado mb-2"><strong>Total do carrinho:</strong></h5>
+    <h5 id="total-carrinho" class="texto-estilizado">{{ total_carrinho | preco_br }}</h5>
+</div>
 <hr/>
 <form action="{{ url_for('pagamento.ir_para_pagamento', user_id=current_user.id) }}" method="POST">
 
@@ -58,7 +66,7 @@
             <div class="w-40 mt-3">
                 <h5 class="texto-estilizado">Endereço de entrega:</h5>
                 {% if enderecos %}
-                <select id="select-endereco" name="endereco_id" class="form-select texto-estilizado contorno">
+                <select class="form-select texto-estilizado contorno" id="select-endereco" name="endereco_id">
                     {% for endereco in enderecos %}
                     <option value="{{ endereco['id'] }}">
                         {{ endereco['rua'] }} nº{{ endereco['numero'] }} {{ endereco['Complemento'] }} {{
@@ -67,8 +75,9 @@
                     {% endfor %}
                 </select>
                 {% endif %}
-                <a href="{{ url_for('enderecos.cadastrar_endereco', id_usuario=current_user['id']) }}"
-                   class="btn btn-primary mt-2">Cadastrar Novo Endereço</a>
+                <a class="btn btn-primary mt-2"
+                   href="{{ url_for('enderecos.cadastrar_endereco', id_usuario=current_user['id']) }}">Cadastrar Novo
+                    Endereço</a>
             </div>
             <div>
                 <h5 class="texto-estilizado">Opções de envio:</h5>
@@ -78,10 +87,10 @@
     </div>
 
     <div class="row container mx-auto my-4 justify-content-center">
-        <button id="btn-confirmar" type="submit" class="btn btn-primary me-2 col-2">
+        <button class="btn btn-primary me-2 col-2" id="btn-confirmar" type="submit">
             Confirmar Pedido
         </button>
-        <a type="button" class="btn btn-outline-danger col-2" href="{{ url_for('carrinho.clear_checkout') }}">
+        <a class="btn btn-outline-danger col-2" href="{{ url_for('carrinho.clear_checkout') }}" type="button">
             Esvaziar Carrinho
         </a>
     </div>
@@ -90,7 +99,8 @@
     const URL_CALCULAR_FRETE = "{{ url_for('pagamento.calcular_frete_rota') }}";
 </script>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/calcula_frete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/atualiza_quantidade.js') }}"></script>
 </body>
 <footer>
     {% include "footer.html" %}

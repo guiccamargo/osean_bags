@@ -220,7 +220,7 @@ def produtos():
     """
     Renderiza página de produtos
     """
-    return render_template('produtos.html', lista_produtos=listar_produtos(), **renderizar_header(current_user))
+    return render_template('produtos.html', **renderizar_header(current_user))
 
 
 @site_bp.route('/produto/<produto_id>')
