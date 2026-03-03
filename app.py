@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_admin import Admin
 from flask_admin.theme import Bootstrap4Theme
 from flask_sitemapper import Sitemapper
@@ -37,6 +37,11 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    @app.route("/static/<path:filename>")
+    def static_files(filename):
+        response = send_from_directory("static", filename)
+        response.headers["Cache-Control"] = "public, max-age=31536000"
+        return response
     return app
 
 

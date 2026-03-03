@@ -26,13 +26,11 @@ def calcular_frete(produtos: List[dict], cep_destino: str, cep_origem: str, emai
     payload = {'from': {'postal_code': cep_origem}, 'to': {'postal_code': cep_destino}, 'products': produtos}
 
     response = requests.post(os.getenv('url_melhor_envio'), headers=headers, json=payload)
-
     lista_envios = []
     # Filtra opções ofertadas pelos Correios
     for i in range(len(response.json())):
         envio = response.json()[i]
         if envio['company']['name'] == 'Correios' and not envio.get('error'):
-            # TODO adicionar tempo de produção ao prazo de entrega
-            lista_envios.append({'nome': envio['name'], 'preco': envio['price'], 'prazo': envio['delivery_time']})
+            lista_envios.append({'nome': envio['name'], 'preco': envio['price'], 'prazo': max(produtos, key=lambda x:x['time'])['time'] + envio['delivery_time']})
 
     return lista_envios

@@ -12,7 +12,7 @@
 <body data-gr-ext-installed="" data-new-gr-c-s-check-loaded="8.932.0">
 <main class="bg-light">
 
-    <!--    Carrossel-->
+    <!--Carrossel-->
     {% if carrossel %}
 
     <div class="carousel slide w-100 mb-5" data-bs-interval="4000" data-bs-ride="carousel" id="carousel-inicial">
@@ -52,7 +52,7 @@
 
     {% endif %}
 
-    <!--    Barra de benefícios-->
+    <!--Barra de benefícios-->
     <div class="info-barra mt-4">
         <div class="info-item d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 py-3 py-md-2">
             <svg class="bi bi-truck" fill="#6B5F3B" height="40" viewBox="0 0 16 16" width="40"
@@ -80,7 +80,7 @@
                  width="199" height="81"/>
         </div>
     </div>
-    <!--    Seção de novidades-->
+    <!--Seção de novidades-->
     {% if novidades %}
 
     <div class="container album py-5 ">
@@ -114,7 +114,7 @@
     </div>
 
     {% endif %}
-    <!--    Seção de bestsellers-->
+    <!--Seção de bestsellers-->
     {% if bestsellers: %}
 
     <div class="container album py-5 ">
@@ -133,7 +133,7 @@
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
-                            <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
+                            <h4 class="text-muted">{{produto.preco | preco_br}}</h4>
                             <a aria-label="Visualizar página do produto entre os mais vendidos." class="stretched-link"
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>

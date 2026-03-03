@@ -256,7 +256,8 @@ class ProdutoAdmin(BaseAdmin):
         'preco': 'Preço',
         'descricao': 'Descrição',
         'novidade': 'Novidades',
-        'escolha_do_mes': 'Produto do Mês'
+        'escolha_do_mes': 'Produto do Mês',
+        'producao': 'Tempo de Produção'
     }
 
     column_descriptions = {
@@ -267,7 +268,8 @@ class ProdutoAdmin(BaseAdmin):
         'peso': 'Peso do produto em quilogramas',
         'altura': 'Altura do pacote em centímetros',
         'largura': 'Largura do pacote em centímetros',
-        'comprimento': 'Comprimento do pacote em centímetros'
+        'comprimento': 'Comprimento do pacote em centímetros',
+        'producao': 'Prazo para que o item seja enviado'
     }
 
     column_searchable_list = ('nome',)

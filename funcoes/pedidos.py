@@ -25,7 +25,7 @@ def produtos_para_envio(id_usuario: int, endereco_id: int) -> List[dict]:
         produto = db.get_or_404(Produto, item.produto_id)
         lista_de_produtos.append(
             {'id': produto.id, 'width': produto.largura, 'height': produto.altura, 'length': produto.comprimento,
-             'weight': produto.peso, 'quantity': item.quantidade})
+             'weight': produto.peso, 'quantity': item.quantidade, 'time': produto.producao})
     config_info = Config.query.first().__dict__  # Acessa informações sobre o endereço de envio
 
     return calcular_frete(produtos=lista_de_produtos, cep_destino=endereco.cep, cep_origem=config_info['cep_origem'],
