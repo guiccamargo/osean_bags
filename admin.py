@@ -12,6 +12,7 @@ from markupsafe import Markup
 from werkzeug.utils import secure_filename
 from wtforms.validators import Regexp
 
+from db import db
 from models import Foto
 
 BASE_UPLOAD = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
@@ -181,8 +182,8 @@ class FotoAdmin(BaseAdmin):
         Executado automaticamente após criação ou edição de uma Foto.
 
         Se um arquivo foi enviado, move-o para uma subpasta nomeada com o
-        produto_id (ex: static/uploads/42/foto.jpg), atualiza o campo arquivo
-        do model com o caminho relativo e aplica redimensionamento.
+        produto_id (ex: static/uploads/42/foto.webp), converte para WebP,
+        e atualiza o campo arquivo do model com o caminho relativo.
 
         Args:
             form (Form): Formulário submetido contendo os dados do upload.
@@ -193,15 +194,10 @@ class FotoAdmin(BaseAdmin):
             ValueError: Propagado de formatar_imagem() se o arquivo enviado
                         não for uma imagem válida. O arquivo é removido do disco.
 
-        Note:
-            A verificação `if origem != destino` evita mover o arquivo quando
-            ele já se encontra no destino correto, o que ocorre em edições
-            onde nenhum novo arquivo foi enviado.
-
         Example:
             # Arquivo enviado: static/uploads/foto.jpg
-            # Após on_model_change: static/uploads/42/foto.jpg
-            # model.arquivo: '42/foto.jpg'
+            # Após on_model_change: static/uploads/42/foto.webp
+            # model.arquivo: '42/foto.webp'
         """
         if form.arquivo.data:
             pasta = os.path.join(BASE_UPLOAD, str(model.produto_id))
@@ -214,13 +210,15 @@ class FotoAdmin(BaseAdmin):
             if origem != destino:
                 os.replace(origem, destino)
 
-            # formatar_imagem retorna o caminho final (pode ser .webp)
-            caminho_final = formatar_imagem(destino, (600, 600))
+            try:
+                caminho_final = formatar_imagem(destino, (600, 600))
+            except Exception:
+                if os.path.exists(destino):
+                    os.remove(destino)
+                raise
 
-            # Atualiza o model com o nome do arquivo final (ex: 42/foto.webp)
             nome_final = os.path.basename(caminho_final)
             model.arquivo = f"{model.produto_id}/{nome_final}"
-
 
     column_formatters = {
         'arquivo': lambda v, c, m, p: Markup(
@@ -292,6 +290,43 @@ class ProdutoAdmin(BaseAdmin):
             f'<img src="{url_for("static", filename=f"uploads/{m.id}/{m.capa}")}" style="max-height:100px;">'
         ) if m.imagem else ''
     }
+
+    def after_model_change(self, form, model, is_created):
+        """
+        Executado após salvar o Produto. Percorre todas as fotos inline
+        recém-salvas, move-as para a subpasta do produto e converte para WebP.
+
+        Usa after_model_change (e não on_model_change) pois o model.id
+        só está disponível após o commit — necessário para nomear a subpasta.
+        """
+        for foto in model.fotos:
+            caminho_atual = os.path.join(BASE_UPLOAD, foto.arquivo)
+
+            # Pula se o arquivo já está na subpasta correta
+            esperado = os.path.join(BASE_UPLOAD, str(model.id))
+            if caminho_atual.startswith(esperado):
+                continue
+
+            if not os.path.exists(caminho_atual):
+                continue
+
+            pasta = os.path.join(BASE_UPLOAD, str(model.id))
+            os.makedirs(pasta, exist_ok=True)
+
+            destino = os.path.join(pasta, os.path.basename(foto.arquivo))
+            os.replace(caminho_atual, destino)
+
+            try:
+                caminho_final = formatar_imagem(destino, (600, 600))
+            except Exception:
+                if os.path.exists(destino):
+                    os.remove(destino)
+                raise
+
+            nome_final = os.path.basename(caminho_final)
+            foto.arquivo = f"{model.id}/{nome_final}"
+
+        db.session.commit()
 
 
 class UsuarioAdmin(BaseAdmin):
@@ -412,6 +447,7 @@ class CarrosselAdmin(BaseAdmin):
             f'<img src="{url_for("static", filename="uploads/" + m.arquivo)}" style="max-height:100px;">'
         ) if m.arquivo else ''
     }
+
 
 class ConfigAdmin(BaseAdmin):
     """
