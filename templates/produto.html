@@ -3,6 +3,8 @@
 {%include "header.html" %}
 <head>
     <title>{{ produto.nome }}</title>
+    <meta charset="UTF-8">
+    <meta content="Produto paraa venda." name="description">
     <script>
         fbq('track', 'ViewContent', {
             content_name: '{{ produto.nome }}',
@@ -23,25 +25,27 @@
 <body class="bg-light">
 <div class="container">
     <div class="row">
-        <div id="carouselExampleControls" data-bs-interval="6000" class="carousel carousel-dark slide col-lg-4 col-sm-12 mb-sm-4" data-bs-ride="carousel">
+        <div class="carousel carousel-dark slide col-lg-4 col-sm-12 mb-sm-4" data-bs-interval="6000"
+             data-bs-ride="carousel" id="carouselExampleControls">
             <div class="carousel-inner">
 
                 {% for foto in fotos %}
                 <div class="carousel-item {% if loop.first %}active{% endif %}">
-                    <img src="{{ url_for('static', filename='uploads/' ~ foto.arquivo) }}"
+                    <img alt="Foto {{fot.id}} do produto"
                          class="d-block w-100"
+                         src="{{ url_for('static', filename='uploads/' ~ foto.arquivo) }}"
                          style="max-height:400px; object-fit:cover;">
                 </div>
                 {% endfor %}
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-                    data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <button id="voltar-imagem"  aria-label="Visulizar imagem anterior." class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExampleControls"
+                    type="button">
+                <span aria-hidden="true" class="carousel-control-prev-icon"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-                    data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <button id="avançar-imagem"  aria-label="Visualizar próxima imagem." class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExampleControls"
+                    type="button">
+                <span aria-hidden="true" class="carousel-control-next-icon"></span>
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
@@ -54,11 +58,11 @@
                 <small class="text-muted">{{produto.preco | preco_br}}</small>
             </h2>
             {% if logged_in %}
-            <a href="{{url_for('produtos.buy_product', produto_id=produto.id)}}" type="button"
-               class="btn btn-sm btn-custom-comprar">Adicionar Ao Carrinho</a>
+            <a aria-label="Adicionar este produto ao carrinho." class="btn btn-sm btn-custom-comprar" href="{{url_for('produtos.buy_product', produto_id=produto.id)}}"
+               type="button">Adicionar Ao Carrinho</a>
             {% else %}
-            <a href="{{url_for('auth.login')}}" type="button"
-               class="btn btn-sm btn-custom-comprar">Adicionar Ao Carrinho</a>
+            <a aria-label="Adicionar este produto ao carrinho após vazer login." class="btn btn-sm btn-custom-comprar" href="{{url_for('auth.login')}}"
+               type="button">Adicionar Ao Carrinho</a>
             {% endif %}
         </div>
     </div>

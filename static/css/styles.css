@@ -38,7 +38,7 @@ input[type="radio"]:focus {
 }
 
 #logo {
-  background-image: url('../logo.png');
+  background-image: url('../img/logo.webp');
   background-size: contain; /* 'contain' evita que o logo seja cortado */
   background-repeat: no-repeat;
   background-position: center;

@@ -2,6 +2,8 @@
 <html lang="pt-br">
 {%include "header.html" %}
 <head>
+    <meta charset="UTF-8">
+    <meta content="Catálogo de produtos." name="description">
     <title>Produtos</title>
     {% with seo = SEO['produtos'] %}
     {% include 'seo.html' %}
@@ -43,19 +45,20 @@
             </div>
         </div>
 
+        <!--Listagem de produtos-->
         <div class="row g-2" id="lista-produtos">
-            <!--Listagem de produtos-->
             {% for produto in lista_produtos %}
 
             <div class="col-lg-5 col-sm-5 me-3">
-                <a class="text-decoration-none text-dark"
+                <a aria-label="Visualizar detalhes do produto selecionado." class="text-decoration-none text-dark"
                    href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                     <div class="card shadow-sm">
-                        <img class="card-img-top produto-img" src="static/uploads/{{ acessar_capa(produto.id) }}"/>
+                        <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
+                             src="static/uploads/{{ acessar_capa(produto.id) }}"/>
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
-                            <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
+                            <h4 class="text-muted">{{produto.preco | preco_br}}</h4>
                         </div>
                     </div>
                 </a>

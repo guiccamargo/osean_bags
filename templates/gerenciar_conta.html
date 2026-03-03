@@ -4,6 +4,8 @@
 {%include "header.html" %}
 <head>
     <title>Gerenciar Conta</title>
+    <meta charset="UTF-8">
+    <meta content="Gerneciamento de conta do usuário." name="description">
 </head>
 <body class="bg-light">
 <main class="mb-4" style="padding-top: 100px;">
@@ -83,6 +85,7 @@
                             </div>
                             <a class="btn btn-outline-danger"
                                href="#"
+                               aria-label="Deletar endereço."
                                id="btn-deletar-endereco">
                                 <svg class="bi bi-trash3" fill="currentColor" height="16" viewBox="0 0 16 16"
                                      width="16" xmlns="http://www.w3.org/2000/svg">
@@ -145,7 +148,7 @@
             {% endif %}
 
             <div class="row container justify-content-center mt-4">
-                <button class="btn btn-outline-danger col-2" data-bs-target="#excluir" data-bs-toggle="modal"
+                <button id="excluir-conta" class="btn btn-outline-danger col-2" data-bs-target="#excluir" data-bs-toggle="modal"
                         type="button">
                     Excluir conta
                 </button>
@@ -157,7 +160,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir
                                 Conta</h5>
-                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                            <button id="fechar-popup" aria-label="Close" class="btn-close" data-bs-dismiss="modal"
                                     type="button"></button>
                         </div>
                         <div class="modal-body texto-estilizado">
@@ -165,9 +168,10 @@
                         </div>
                         <div class="modal-footer">
                             <a class="btn btn-custom-comprar"
+                               aria-label="Excluir conta."
                                href="{{ url_for('conta.deletar_conta', id_usuario=id_usuario) }}"
                                type="button">Excluir</a>
-                            <a class="btn btn-outline-danger" data-bs-dismiss="modal" type="button">Fechar</a>
+                            <a class="btn btn-outline-danger" aria-label="Fechar Pop-up." data-bs-dismiss="modal" type="button">Fechar</a>
                         </div>
                     </div>
                 </div>

@@ -3,13 +3,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta content="Erro no pagamento." name="description">
     <title>Falha no Pagamento</title>
 </head>
 {% block content %}
 <div class="d-flex justify-content-center align-items-center ">
     <div class="row text-center">
         <div class="alert alert-danger d-flex justify-content-center align-items-center" role="alert">
-            <svg class="bi flex-shrink-0 me-3" width="24" height="24" role="img" aria-label="Danger:">
+            <svg aria-label="Danger:" class="bi flex-shrink-0 me-3" height="24" role="img" width="24">
                 <use xlink:href="#exclamation-triangle-fill"/>
             </svg>
             <div>
@@ -19,7 +20,7 @@
 
         <p>Ocorreu um erro no processamento do pagamento, volte ao site e tente novamente.</p>
         <div class="text-center">
-            <a href="{{ url_for('geral.home') }}" class="btn btn-primary mt-4 w-auto">Voltar para a Loja</a>
+            <a aria-label="Redirecionar para a loja." class="btn btn-primary mt-4 w-auto" href="{{ url_for('geral.home') }}">Voltar para a Loja</a>
         </div>
     </div>
 </div>

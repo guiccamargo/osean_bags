@@ -19,38 +19,53 @@ BASE_UPLOAD = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 
 def formatar_imagem(caminho, tamanho=(800, 800)):
     """
-    Valida, redimensiona e salva uma imagem no caminho especificado.
+    Valida, redimensiona, converte para WebP e salva a imagem otimizada.
 
     Abre o arquivo, verifica se é uma imagem válida, redimensiona respeitando
-    a proporção original (thumbnail) e sobrescreve o arquivo. Caso o arquivo
-    não seja uma imagem válida, ele é removido e uma exceção é lançada.
+    a proporção original, converte para WebP com qualidade 82 e salva.
+    O arquivo original (ex: .png, .jpg) é removido após a conversão.
 
     Args:
-        caminho (str): Caminho absoluto ou relativo do arquivo de imagem.
+        caminho (str): Caminho absoluto do arquivo de imagem.
         tamanho (tuple[int, int]): Dimensão máxima (largura, altura) em pixels.
-                                   O redimensionamento preserva a proporção.
                                    Padrão: (800, 800).
+
+    Returns:
+        str: Caminho do novo arquivo WebP gerado.
 
     Raises:
         ValueError: Se o arquivo não for uma imagem válida. O arquivo é
                     removido do disco antes da exceção ser lançada.
-
-    Note:
-        O arquivo é aberto duas vezes intencionalmente: Image.verify() invalida
-        o objeto após a verificação, exigindo uma nova abertura para manipulação.
-
-    Example:
-        formatar_imagem('/uploads/foto.jpg')
-        formatar_imagem('/uploads/banner.png', tamanho=(1200, 600))
     """
     try:
         img = Image.open(caminho)
-        img.verify()  # verifica se é imagem válida
+        img.verify()
         img = Image.open(caminho)  # reabre após verify
-        img.thumbnail(tamanho)
-        img.save(caminho)
+
+        # Converte para RGB (necessário para WebP — remove canal alpha se houver)
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGBA")
+            fundo = Image.new("RGB", img.size, (255, 255, 255))
+            fundo.paste(img, mask=img.split()[3])
+            img = fundo
+        else:
+            img = img.convert("RGB")
+
+        img.thumbnail(tamanho, Image.LANCZOS)
+
+        # Define o novo caminho com extensão .webp
+        caminho_webp = os.path.splitext(caminho)[0] + ".webp"
+        img.save(caminho_webp, format="WEBP", quality=82, method=6)
+
+        # Remove o arquivo original se era de outro formato
+        if caminho != caminho_webp:
+            os.remove(caminho)
+
+        return caminho_webp
+
     except Exception:
-        os.remove(caminho)
+        if os.path.exists(caminho):
+            os.remove(caminho)
         raise ValueError("Arquivo enviado não é uma imagem válida.")
 
 
@@ -198,9 +213,14 @@ class FotoAdmin(BaseAdmin):
 
             if origem != destino:
                 os.replace(origem, destino)
-                model.arquivo = f"{model.produto_id}/{nome}"
 
-            formatar_imagem(destino, (600, 600))
+            # formatar_imagem retorna o caminho final (pode ser .webp)
+            caminho_final = formatar_imagem(destino, (600, 600))
+
+            # Atualiza o model com o nome do arquivo final (ex: 42/foto.webp)
+            nome_final = os.path.basename(caminho_final)
+            model.arquivo = f"{model.produto_id}/{nome_final}"
+
 
     column_formatters = {
         'arquivo': lambda v, c, m, p: Markup(
@@ -306,7 +326,7 @@ class CarrosselAdmin(BaseAdmin):
     View administrativa para gerenciamento de imagens do carrossel.
 
     Estende BaseAdmin com suporte a upload de imagens, redimensionamento
-    automático e renderização de preview na listagem.
+    automático, conversão para WebP e renderização de preview na listagem.
 
     Diferente de FotoAdmin, as imagens do carrossel são salvas diretamente
     em BASE_UPLOAD sem organização em subpastas, pois não estão vinculadas
@@ -342,8 +362,8 @@ class CarrosselAdmin(BaseAdmin):
         Executado automaticamente após criação ou edição de um item do Carrossel.
 
         Se um arquivo foi enviado, salva-o diretamente em BASE_UPLOAD,
-        aplica redimensionamento máximo de 1000x1000px e atualiza o campo
-        arquivo do model com o nome do arquivo.
+        converte para WebP com qualidade 82, aplica redimensionamento máximo
+        de 1000x1000px e atualiza o campo arquivo do model com o nome final.
 
         Args:
             form (Form): Formulário submetido contendo os dados do upload.
@@ -360,9 +380,9 @@ class CarrosselAdmin(BaseAdmin):
             stream tenha sido lido anteriormente durante a validação.
 
         Example:
-            # Arquivo enviado: foto.jpg
-            # Após on_model_change: static/uploads/foto.jpg
-            # model.arquivo: 'foto.jpg'
+            # Arquivo enviado: banner.jpg
+            # Após on_model_change: static/uploads/banner.webp
+            # model.arquivo: 'banner.webp'
         """
         if form.arquivo.data:
             pasta = BASE_UPLOAD
@@ -377,19 +397,21 @@ class CarrosselAdmin(BaseAdmin):
             file.save(caminho)
 
             try:
-                formatar_imagem(caminho, (1000, 1000))
+                # formatar_imagem retorna o caminho final em .webp
+                caminho_final = formatar_imagem(caminho, (1000, 1000))
             except Exception:
-                os.remove(caminho)
+                if os.path.exists(caminho):
+                    os.remove(caminho)
                 raise
 
-            model.arquivo = nome
+            # Atualiza o model com o nome do arquivo final (ex: banner.webp)
+            model.arquivo = os.path.basename(caminho_final)
 
     column_formatters = {
         'arquivo': lambda v, c, m, p: Markup(
             f'<img src="{url_for("static", filename="uploads/" + m.arquivo)}" style="max-height:100px;">'
         ) if m.arquivo else ''
     }
-
 
 class ConfigAdmin(BaseAdmin):
     """

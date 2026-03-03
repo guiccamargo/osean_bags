@@ -3,6 +3,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta content="Página inicial da loja Osean Bags." name="description">
     <title>Osean Bags</title>
     {% with seo = SEO['home'] %}
     {% include 'seo.html' %}
@@ -16,22 +17,30 @@
 
     <div class="carousel slide w-100 mb-5" data-bs-interval="4000" data-bs-ride="carousel" id="carousel-inicial">
         <div class="carousel-inner">
-
             {% for banner in carrossel %}
             <div class="carousel-item {% if loop.first %}active{% endif %}">
-                <img class="d-block w-100"
+                {% if loop.first %}
+                <img alt="Banner {{ loop.index }}"
+                     class="d-block w-100"
+                     fetchpriority="high"
+                     loading="eager"
                      src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}">
+                {% else %}
+                <img alt="Banner {{ loop.index }}"
+                     class="d-block w-100"
+                     loading="lazy"
+                     src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}">
+                {% endif %}
             </div>
             {% endfor %}
-
         </div>
 
-        <button class="carousel-control-prev" data-bs-slide="prev"
+        <button id="voltar"  aria-label="Visualizar imagem anterior." class="carousel-control-prev" data-bs-slide="prev"
                 data-bs-target="#carousel-inicial" type="button">
             <span class="carousel-control-prev-icon"></span>
         </button>
 
-        <button class="carousel-control-next" data-bs-slide="next"
+        <button id="avançar"  aria-label="Visualizar próxima imagem." class="carousel-control-next" data-bs-slide="next"
                 data-bs-target="#carousel-inicial" type="button">
             <span class="carousel-control-next-icon"></span>
         </button>
@@ -61,7 +70,8 @@
             </h5>
         </div>
         <div class="info-item">
-            <img alt="Logo do Mercado Pago" class="img-fluid" src="static/MP_RGB_HANDSHAKE_color_horizontal.png"
+            <img alt="Logo do Mercado Pago" class="img-fluid"
+                 src="static/img/MP_RGB_HANDSHAKE_color_horizontal.webp"
                  width="200"/>
         </div>
     </div>
@@ -77,12 +87,13 @@
 
                 <div class="col-lg-5 col-sm-5 me-3">
                     <div class="card shadow-sm">
-                        <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
+                        <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
+                             src="static/uploads/{{produto.imagem}}"/>
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
-                            <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
-                            <a class="stretched-link"
+                            <h4 class="text-muted">{{produto.preco | preco_br}}</h4>
+                            <a class="stretched-link" aria-label="Visualizar detalhes do produto."
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
@@ -108,12 +119,13 @@
 
                 <div class="col-lg-5 col-sm-5 me-3">
                     <div class="card shadow-sm">
-                        <img class="card-img-top produto-img" src="static/uploads/{{produto.imagem}}"/>
+                        <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
+                             src="static/uploads/{{produto.imagem}}"/>
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
                             <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
-                            <a class="stretched-link"
+                            <a class="stretched-link" aria-label="Visualizar página do produto entre os mais vendidos."
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
@@ -136,11 +148,11 @@
         <div class="container position-relative">
             <div class="row g-2 justify-content-center">
                 <div class="card col-5 px-0">
-                    <img class="produto-img" id="escolha"
+                    <img alt="Foto da escolha do mês" class="produto-img" id="escolha"
                          src="static/uploads/{{escolha_do_mes.imagem}}"/>
                     <hr/>
                     <h3 class="texto-estilizado text-center py-3">{{ escolha_do_mes.nome }}</h3>
-                    <a class="stretched-link"
+                    <a class="stretched-link" aria-label="Visualizar escolha do mês."
                        href="{{ url_for('produtos.pagina_produto', produto_id=escolha_do_mes.id) }}">
                     </a>
                 </div>
