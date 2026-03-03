@@ -5,72 +5,72 @@
     {{ bootstrap.load_css() }}
     <!-- Meta Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '{{ META_PIXEL_ID }}');
-    fbq('track', 'PageView');
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '{{ META_PIXEL_ID }}');
+        fbq('track', 'PageView');
     </script>
     <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=SEU_PIXEL_ID&ev=PageView&noscript=1"/>
+        <img height="1" src="https://www.facebook.com/tr?id=SEU_PIXEL_ID&ev=PageView&noscript=1" style="display:none"
+             width="1"/>
     </noscript>
     <!-- End Meta Pixel Code -->
     <link
             href="{{url_for('static', filename='css/styles.css') }}"
-            type="text/css"
             rel="stylesheet"
+            type="text/css"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net" rel="stylesheet">
     {% endblock %}
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+    <symbol fill="currentColor" id="check-circle-fill" viewBox="0 0 16 16">
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
     </symbol>
-    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+    <symbol fill="currentColor" id="info-fill" viewBox="0 0 16 16">
         <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
     </symbol>
-    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+    <symbol fill="currentColor" id="exclamation-triangle-fill" viewBox="0 0 16 16">
         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
     </symbol>
 </svg>
 <header class="px-3 pb-2 bg-light text-white row fixed-top">
     <div class="d-flex flex-wrap py-2 justify-content-between">
         <ul class="nav nav-pills my-3">
-            <li class="nav-item"><a href="{{ url_for('produtos.produtos') }}" class="btn btn-custom">
+            <li class="nav-item"><a class="btn btn-custom" href="{{ url_for('produtos.produtos') }}">
                 <strong>Produtos</strong>
             </a></li>
-            <li class="nav-item"><a href="{{ url_for('geral.sobre_nos') }}" class="btn btn-custom">
+            <li class="nav-item"><a class="btn btn-custom" href="{{ url_for('geral.sobre_nos') }}">
                 <strong>Sobre Nós</strong>
             </a></li>
         </ul>
-        <div id="logo" class="mx-1">
-            <a href="{{ url_for('geral.home') }}" class="btn btn-custom"></a>
+        <div class="mx-1" id="logo">
+            <a class="btn btn-custom" href="{{ url_for('geral.home') }}"></a>
         </div>
         <ul class="nav nav-pills">
             {% if admin: %}
-            <li class="nav-item"><a href="/admin" class="btn btn-custom mx-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#6B5F3B" class="bi bi-gear"
-                     viewBox="0 0 16 16">
+            <li class="nav-item"><a class="btn btn-custom mx-1" href="/admin">
+                <svg class="bi bi-gear" fill="#6B5F3B" height="25" viewBox="0 0 16 16" width="25"
+                     xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
                     <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
                 </svg>
             </a></li>
             {% endif %}
             {% if logged_in %}
-            <li class="nav-item"><a href="{{url_for('carrinho.ir_para_carrinho') }}" class="btn btn-custom mx-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#6B5F3B" class="bi bi-bag"
-                     viewBox="0 0 16 16">
+            <li class="nav-item"><a class="btn btn-custom mx-1" href="{{url_for('carrinho.ir_para_carrinho') }}">
+                <svg class="bi bi-bag" fill="#6B5F3B" height="25" viewBox="0 0 16 16" width="25"
+                     xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                 </svg>
                 {% if total_items %}
@@ -81,12 +81,13 @@
             </a></li>
             <li class="nav-item">
                 <div class="dropdown mx-2">
-                    <button class="btn rounded-circle btn-circle" type="button" id="dropdown-perfil"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                    <button aria-expanded="false" class="btn rounded-circle btn-circle" data-bs-toggle="dropdown"
+                            id="dropdown-perfil" type="button">
                         <strong>{{ inicial_nome }}</strong>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item texto-estilizado" href="{{ url_for('conta.meus_pedidos', usuario_id=id_usuario) }}">Meus Pedidos</a></li>
+                    <ul aria-labelledby="dropdownMenuButton1" class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item texto-estilizado"
+                               href="{{ url_for('conta.meus_pedidos', usuario_id=id_usuario) }}">Meus Pedidos</a></li>
                         <li><a class="dropdown-item texto-estilizado"
                                href="{{ url_for('conta.gerenciar', usuario_id=id_usuario) }}">Gerenciar Conta</a></li>
                         <li><a class="dropdown-item texto-estilizado" href="{{ url_for('auth.logout') }}">Sair</a></li>
@@ -94,9 +95,9 @@
                 </div>
             </li>
             {% else: %}
-            <li class="nav-item"><a href="{{ url_for('auth.login') }}" class="btn btn-custom mx-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#6B5F3B" class="bi bi-person"
-                     viewBox="0 0 16 16">
+            <li class="nav-item"><a class="btn btn-custom mx-1" href="{{ url_for('auth.login') }}">
+                <svg class="bi bi-person" fill="#6B5F3B" height="25" viewBox="0 0 16 16" width="25"
+                     xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
                 </svg>
             </a></li>
@@ -104,12 +105,13 @@
         </ul>
     </div>
 </header>
-<a href="#"
-   class="btn btn-flutuante btn-lg rounded-circle shadow d-flex justify-content-center align-items-center mb-5 me-2"
+<!--Botão do whatsapp-->
+<a class="btn btn-flutuante btn-lg rounded-circle shadow d-flex justify-content-center align-items-center mb-5 me-2"
+   href="https://wa.me/5515981775702"
    style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 40px; height: 40px;">
 
-    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-whatsapp"
-         viewBox="0 0 16 16">
+    <svg class="bi bi-whatsapp" fill="currentColor" height="25" viewBox="0 0 16 16" width="25"
+         xmlns="http://www.w3.org/2000/svg">
         <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
     </svg>
 </a>
