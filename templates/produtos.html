@@ -46,26 +46,34 @@
         </div>
 
         <!--Listagem de produtos-->
-        <div class="row g-2" id="lista-produtos">
-            {% for produto in lista_produtos %}
+        <div class="container album py-5 ">
+            <h1 class="texto-estilizado mt-2 mb-4 julius-sans-one-regular">Produtos</h1>
+            <div class="container position-relative">
+                <div class="row g-2" id="lista-produtos">
+                    {% for produto in lista_produtos %}
 
-            <div class="col-lg-5 col-sm-5 me-3">
-                <a aria-label="Visualizar detalhes do produto selecionado." class="text-decoration-none text-dark"
-                   href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
-                    <div class="card shadow-sm">
-                        <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
-                             src="static/uploads/{{ acessar_capa(produto.id) }}"/>
-                        <hr/>
-                        <div class="card-body text-center">
-                            <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
-                            <h4 class="text-muted">{{produto.preco | preco_br}}</h4>
-                        </div>
+                    <div class="col-lg-5 col-sm-5 me-3">
+                        <a aria-label="Visualizar detalhes do produto selecionado."
+                           class="text-decoration-none text-dark"
+                           href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
+                            <div class="card shadow-sm">
+                                <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
+                                     height="600"
+                                     src="static/uploads/{{ acessar_capa(produto.id) }}"
+                                     width="600"/>
+                                <hr/>
+                                <div class="card-body text-center">
+                                    <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
+                                    <h4 class="text-muted">{{produto.preco | preco_br}}</h4>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </a>
+
+                    {% endfor %}
+
+                </div>
             </div>
-
-            {% endfor %}
-
         </div>
     </div>
 </main>

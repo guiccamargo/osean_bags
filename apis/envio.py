@@ -32,6 +32,7 @@ def calcular_frete(produtos: List[dict], cep_destino: str, cep_origem: str, emai
     for i in range(len(response.json())):
         envio = response.json()[i]
         if envio['company']['name'] == 'Correios' and not envio.get('error'):
+            # TODO adicionar tempo de produção ao prazo de entrega
             lista_envios.append({'nome': envio['name'], 'preco': envio['price'], 'prazo': envio['delivery_time']})
 
     return lista_envios

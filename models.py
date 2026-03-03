@@ -169,6 +169,7 @@ class Produto(db.Model):
     vendas = db.Column(db.Integer, nullable=False, default=0)
     novidade = db.Column(db.Boolean, default=False)
     escolha_do_mes = db.Column(db.Boolean, default=False)
+    # TODO adicionar tempo de produção
 
     fotos = db.relationship(
         'Foto',

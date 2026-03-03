@@ -23,8 +23,10 @@
                 <img alt="Banner {{ loop.index }}"
                      class="d-block w-100"
                      fetchpriority="high"
+                     height="1000"
                      loading="eager"
-                     src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}">
+                     src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}"
+                     width="1000">
                 {% else %}
                 <img alt="Banner {{ loop.index }}"
                      class="d-block w-100"
@@ -35,13 +37,15 @@
             {% endfor %}
         </div>
 
-        <button id="voltar"  aria-label="Visualizar imagem anterior." class="carousel-control-prev" data-bs-slide="prev"
-                data-bs-target="#carousel-inicial" type="button">
+        <button aria-label="Visualizar imagem anterior." class="carousel-control-prev" data-bs-slide="prev"
+                data-bs-target="#carousel-inicial"
+                id="voltar" type="button">
             <span class="carousel-control-prev-icon"></span>
         </button>
 
-        <button id="avançar"  aria-label="Visualizar próxima imagem." class="carousel-control-next" data-bs-slide="next"
-                data-bs-target="#carousel-inicial" type="button">
+        <button aria-label="Visualizar próxima imagem." class="carousel-control-next" data-bs-slide="next"
+                data-bs-target="#carousel-inicial"
+                id="avançar" type="button">
             <span class="carousel-control-next-icon"></span>
         </button>
     </div>
@@ -60,7 +64,7 @@
                 todo o Brasil
             </h5>
         </div>
-        <div class="info-item d-flex flex-column align-items-center text-center col-12 col-md-auto border-bottom border-md-0 pb-3 pb-md-0">
+        <div class="info-item d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 py-3 py-md-2">
             <svg class="bi bi-wallet2" fill="#6B5F3B" height="40" viewBox="0 0 16 16" width="40"
                  xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/>
@@ -72,7 +76,8 @@
         <div class="info-item">
             <img alt="Logo do Mercado Pago" class="img-fluid"
                  src="static/img/MP_RGB_HANDSHAKE_color_horizontal.webp"
-                 width="200"/>
+
+                 width="199" height="81"/>
         </div>
     </div>
     <!--    Seção de novidades-->
@@ -88,12 +93,14 @@
                 <div class="col-lg-5 col-sm-5 me-3">
                     <div class="card shadow-sm">
                         <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
-                             src="static/uploads/{{produto.imagem}}"/>
+                             height="600"
+                             src="static/uploads/{{produto.imagem}}"
+                             width="600"/>
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
                             <h4 class="text-muted">{{produto.preco | preco_br}}</h4>
-                            <a class="stretched-link" aria-label="Visualizar detalhes do produto."
+                            <a aria-label="Visualizar detalhes do produto." class="stretched-link"
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
@@ -120,12 +127,14 @@
                 <div class="col-lg-5 col-sm-5 me-3">
                     <div class="card shadow-sm">
                         <img alt="Foto do produto {{produto.nome}}" class="card-img-top produto-img"
-                             src="static/uploads/{{produto.imagem}}"/>
+                             height="600"
+                             src="static/uploads/{{produto.imagem}}"
+                             width="600"/>
                         <hr/>
                         <div class="card-body text-center">
                             <h3 class="card-text texto-estilizado">{{produto.nome}}</h3>
                             <h5 class="text-muted">{{produto.preco | preco_br}}</h5>
-                            <a class="stretched-link" aria-label="Visualizar página do produto entre os mais vendidos."
+                            <a aria-label="Visualizar página do produto entre os mais vendidos." class="stretched-link"
                                href="{{ url_for('produtos.pagina_produto', produto_id=produto.id) }}">
                             </a>
                         </div>
@@ -148,11 +157,13 @@
         <div class="container position-relative">
             <div class="row g-2 justify-content-center">
                 <div class="card col-5 px-0">
-                    <img alt="Foto da escolha do mês" class="produto-img" id="escolha"
-                         src="static/uploads/{{escolha_do_mes.imagem}}"/>
+                    <img alt="Foto da escolha do mês" class="produto-img" height="600"
+                         id="escolha"
+                         src="static/uploads/{{escolha_do_mes.imagem}}"
+                         width="600"/>
                     <hr/>
                     <h3 class="texto-estilizado text-center py-3">{{ escolha_do_mes.nome }}</h3>
-                    <a class="stretched-link" aria-label="Visualizar escolha do mês."
+                    <a aria-label="Visualizar escolha do mês." class="stretched-link"
                        href="{{ url_for('produtos.pagina_produto', produto_id=escolha_do_mes.id) }}">
                     </a>
                 </div>

@@ -32,18 +32,21 @@
                 {% for foto in fotos %}
                 <div class="carousel-item {% if loop.first %}active{% endif %}">
                     <img alt="Foto {{fot.id}} do produto"
-                         class="d-block w-100"
+                         class="d-block w-100" height="600"
                          src="{{ url_for('static', filename='uploads/' ~ foto.arquivo) }}"
-                         style="max-height:400px; object-fit:cover;">
+                         style="max-height:400px; object-fit:cover;"
+                         width="600">
                 </div>
                 {% endfor %}
             </div>
-            <button id="voltar-imagem"  aria-label="Visulizar imagem anterior." class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExampleControls"
+            <button aria-label="Visulizar imagem anterior." class="carousel-control-prev" data-bs-slide="prev"
+                    data-bs-target="#carouselExampleControls" id="voltar-imagem"
                     type="button">
                 <span aria-hidden="true" class="carousel-control-prev-icon"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button id="avançar-imagem"  aria-label="Visualizar próxima imagem." class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExampleControls"
+            <button aria-label="Visualizar próxima imagem." class="carousel-control-next" data-bs-slide="next"
+                    data-bs-target="#carouselExampleControls" id="avançar-imagem"
                     type="button">
                 <span aria-hidden="true" class="carousel-control-next-icon"></span>
                 <span class="visually-hidden">Next</span>
@@ -58,10 +61,12 @@
                 <small class="text-muted">{{produto.preco | preco_br}}</small>
             </h2>
             {% if logged_in %}
-            <a aria-label="Adicionar este produto ao carrinho." class="btn btn-sm btn-custom-comprar" href="{{url_for('produtos.buy_product', produto_id=produto.id)}}"
+            <a aria-label="Adicionar este produto ao carrinho." class="btn btn-sm btn-custom-comprar"
+               href="{{url_for('produtos.buy_product', produto_id=produto.id)}}"
                type="button">Adicionar Ao Carrinho</a>
             {% else %}
-            <a aria-label="Adicionar este produto ao carrinho após vazer login." class="btn btn-sm btn-custom-comprar" href="{{url_for('auth.login')}}"
+            <a aria-label="Adicionar este produto ao carrinho após vazer login." class="btn btn-sm btn-custom-comprar"
+               href="{{url_for('auth.login')}}"
                type="button">Adicionar Ao Carrinho</a>
             {% endif %}
         </div>

@@ -2,9 +2,7 @@
 <html lang="pt-br">
 <head>
     {% block styles %}
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
     <!-- CSS Crítico inline (above-the-fold): header, logo, nav, body base -->
     <style>
@@ -67,33 +65,14 @@
             background-color: #f8f9fa;
         }
     </style>
-
-    <!-- Preconnects -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-
-    <!-- Google Fonts com display=swap (não bloqueia renderização) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap">
-
-    <!-- Bootstrap assíncrono -->
-    <link rel="preload"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-          as="style"
-          onload="this.onload=null;this.rel='stylesheet'">
+    <link as="style"
+          href="{{ url_for('static', filename='css/styles.css') }}"
+          onload="this.onload=null;this.rel='stylesheet'"
+          rel="preload">
     <noscript>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+        <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     </noscript>
-
-    <!-- CSS próprio assíncrono -->
-    <link rel="preload"
-          href="{{url_for('static', filename='css/styles.css')}}"
-          as="style"
-          onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
-    </noscript>
-
+    <link href="{{url_for('static', filename='css/bootstrap.custom.css')}}" rel="stylesheet">
     <!-- Meta Pixel Code -->
     <script>
         !function(f,b,e,v,n,t,s)
@@ -108,10 +87,18 @@
         fbq('track', 'PageView');
     </script>
     <noscript>
-        <img height="1" src="https://www.facebook.com/tr?id=SEU_PIXEL_ID&ev=PageView&noscript=1"
-             style="display:none" width="1"/>
+        <img height="1" src="https://www.facebook.com/tr?id=SEU_PIXEL_ID&ev=PageView&noscript=1" style="display:none"
+             width="1"/>
     </noscript>
     <!-- End Meta Pixel Code -->
+    <link
+            href="{{url_for('static', filename='css/styles.css') }}"
+            rel="stylesheet"
+            type="text/css"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
 
     {% endblock %}
 </head>
@@ -130,19 +117,19 @@
 <header class="px-3 pb-2 bg-light text-white row fixed-top">
     <div class="d-flex flex-wrap py-2 justify-content-between">
         <ul class="nav nav-pills my-3">
-            <li class="nav-item"><a class="btn btn-custom" href="{{url_for('produtos.produtos')}}" aria-label="Direcionar para a página de produtos.">
+            <li class="nav-item"><a class="btn btn-custom" href="{{ url_for('produtos.produtos') }}">
                 <strong>Produtos</strong>
             </a></li>
-            <li class="nav-item"><a class="btn btn-custom" href="{{url_for('geral.sobre_nos')}}" aria-label="Direcionar para a página Sobre Nós.">
+            <li class="nav-item"><a class="btn btn-custom" href="{{ url_for('geral.sobre_nos') }}">
                 <strong>Sobre Nós</strong>
             </a></li>
         </ul>
-        <div aria-label="Osean Bags - Logo" class="mx-1" id="logo" role="img">
-            <a class="btn btn-custom" href="{{url_for('geral.home')}}" aria-label="Direcionar para a página inicial."></a>
+        <div class="mx-1" id="logo">
+            <a class="btn btn-custom" href="{{ url_for('geral.home') }}"></a>
         </div>
         <ul class="nav nav-pills">
             {% if admin: %}
-            <li class="nav-item"><a class="btn btn-custom mx-1" href="/admin" aria-label="Ir para a página de configurações.">
+            <li class="nav-item"><a class="btn btn-custom mx-1" href="/admin">
                 <svg class="bi bi-gear" fill="#6B5F3B" height="25" viewBox="0 0 16 16" width="25"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
@@ -151,7 +138,7 @@
             </a></li>
             {% endif %}
             {% if logged_in %}
-            <li class="nav-item"><a class="btn btn-custom mx-1" href="{{url_for('carrinho.ir_para_carrinho') }}" aria-label="Visualizar carrinho de compras.">
+            <li class="nav-item"><a class="btn btn-custom mx-1" href="{{url_for('carrinho.ir_para_carrinho') }}">
                 <svg class="bi bi-bag" fill="#6B5F3B" height="25" viewBox="0 0 16 16" width="25"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
@@ -169,16 +156,16 @@
                         <strong>{{ inicial_nome }}</strong>
                     </button>
                     <ul aria-labelledby="dropdownMenuButton1" class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item texto-estilizado" aria-label="Visualizar pedidos feitos pelo usuário."
+                        <li><a class="dropdown-item texto-estilizado"
                                href="{{ url_for('conta.meus_pedidos', usuario_id=id_usuario) }}">Meus Pedidos</a></li>
-                        <li><a class="dropdown-item texto-estilizado" aria-label="Gerenciar conta do usuário."
+                        <li><a class="dropdown-item texto-estilizado"
                                href="{{ url_for('conta.gerenciar', usuario_id=id_usuario) }}">Gerenciar Conta</a></li>
-                        <li><a class="dropdown-item texto-estilizado" href="{{url_for('auth.logout')}}" aria-label="Deslogar da conta atual.">Sair</a></li>
+                        <li><a class="dropdown-item texto-estilizado" href="{{ url_for('auth.logout') }}">Sair</a></li>
                     </ul>
                 </div>
             </li>
             {% else: %}
-            <li class="nav-item"><a aria-label="Acessar ações da conta." class="btn btn-custom mx-1" href="{{url_for('auth.login')}}">
+            <li class="nav-item"><a class="btn btn-custom mx-1" href="{{ url_for('auth.login') }}">
                 <svg class="bi bi-person" fill="#6B5F3B" height="25" viewBox="0 0 16 16" width="25"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
@@ -189,9 +176,10 @@
     </div>
 </header>
 <!--Botão do whatsapp-->
-<a aria-label="Direcionar para link do Whatsapp." class="btn btn-flutuante btn-lg rounded-circle shadow d-flex justify-content-center align-items-center mb-5 me-2"
+<a class="btn btn-flutuante btn-lg rounded-circle shadow d-flex justify-content-center align-items-center mb-5 me-2"
    href="https://wa.me/5515981775702"
    style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 40px; height: 40px;">
+
     <svg class="bi bi-whatsapp" fill="currentColor" height="25" viewBox="0 0 16 16" width="25"
          xmlns="http://www.w3.org/2000/svg">
         <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>

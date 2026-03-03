@@ -17,6 +17,7 @@ def create_app():
     app = Flask(__name__)
     sitemapper.init_app(app)
     app.config.from_object('config')
+    app.config['BOOTSTRAP_SERVE_LOCAL'] = True
     app.jinja_env.globals['META_PIXEL_ID'] = os.getenv('META_PIXEL_ID')
     app.jinja_env.globals['SEO'] = SEO
     app.jinja_env.globals['SITE_NAME'] = 'Osean Bags'
