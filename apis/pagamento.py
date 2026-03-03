@@ -1,6 +1,8 @@
 import os
 
 import mercadopago
+from flask import url_for
+
 
 def gerar_link_pagamento(preference_data: dict) -> tuple[str, str]:
     """Gera o ID e o link de pagamento no Mercado Pago.
@@ -39,5 +41,6 @@ def gerar_link_pagamento(preference_data: dict) -> tuple[str, str]:
 
     sdk = mercadopago.SDK(os.getenv('mercado_pago_teste'))
     result = sdk.preference().create(preference_data)
-
+    if result['status'] == 400:
+        return result['status'], url_for('pagamento.pagamento_falha')
     return result['response']['id'], result['response']['init_point']

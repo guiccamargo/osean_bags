@@ -520,7 +520,7 @@ class PedidoAdmin(BaseAdmin):
 
     column_formatters = {
         'nome_usuario': lambda v, c, m, p: (
-            m.usuario.nome if m.usuario else 'Removido'
+            m.usuario.nome + m.usuario.sobrenome if m.usuario else 'Removido'
         ),
 
         'email_usuario': lambda v, c, m, p: (
@@ -529,7 +529,7 @@ class PedidoAdmin(BaseAdmin):
 
         # Data formatada: 23/02/2026 14:30
         'data_criacao': lambda v, c, m, p: (
-            m.data_criacao.strftime('%d/%m/%Yx')
+            m.data_criacao.strftime('%d/%m/%Y')
             if m.data_criacao else '—'
         ),
 

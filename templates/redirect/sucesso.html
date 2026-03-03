@@ -36,7 +36,7 @@
                 {% for item in produtos %}
                 <li class="list-group-item d-flex justify-content-between">
                     {{ item['nome'] }} ({{ item['quantidade'] }})
-                    <span>R$ {{ item['quantidade'] * item['preco_unitario'] }}</span>
+                    <span>R$ {{ item['quantidade'] * item['preco_unitario'] | preco_br }}</span>
                 </li>
                 {% endfor %}
             </ul>
