@@ -31,7 +31,7 @@
 
                 {% for foto in fotos %}
                 <div class="carousel-item {% if loop.first %}active{% endif %}">
-                    <img alt="Foto {{fot.id}} do produto"
+                    <img alt="Foto {{foto.id}} do produto"
                          class="d-block w-100" height="600"
                          src="{{ url_for('static', filename='uploads/' ~ foto.arquivo) }}"
                          style="max-height:400px; object-fit:cover;"
