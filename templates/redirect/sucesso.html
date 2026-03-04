@@ -36,14 +36,14 @@
                 {% for item in produtos %}
                 <li class="list-group-item d-flex justify-content-between">
                     {{ item['nome'] }} ({{ item['quantidade'] }})
-                    <span>R$ {{ item['quantidade'] * item['preco_unitario'] | preco_br }}</span>
+                   <span>{{ (item['quantidade'] * item['preco_unitario']) | preco_br }}</span>
                 </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
     <div class="text-center">
-        <a aria-label="Redirecionar para a loja." class="btn btn-primary mt-4 w-auto" href="{{ url_for('geral.home') }}">Voltar para a Loja</a>
+        <a aria-label="Redirecionar para a loja." class="btn btn-primary mt-4 w-auto" href="{{url_for('geral.home')}}">Voltar para a Loja</a>
     </div>
 </div>
 {% endblock %}
