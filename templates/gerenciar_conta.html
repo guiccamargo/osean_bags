@@ -5,59 +5,76 @@
 <head>
     <title>Gerenciar Conta</title>
     <meta charset="UTF-8">
-    <meta content="Gerneciamento de conta do usuário." name="description">
+    <meta content="Gerenciamento de conta do usuário." name="description">
+    <style>
+        /* Responsividade da página de gerenciar conta */
+        @media (max-width: 767.98px) {
+            .account-cards-row {
+                flex-direction: column !important;
+            }
+            .account-cards-row > .card {
+                width: 100% !important;
+            }
+
+            #excluir-conta {
+                width: 100% !important;
+                max-width: 320px;
+            }
+        }
+    </style>
 </head>
-<body >
-<main class="mb-4" style="padding-top: 100px;">
+<body>
+<main class="mb-4" style="padding-top: 80px;">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10 d-flex align-items-stretch gap-4 flex-nowrap">
+            <!-- Cards de Senha e Nome: lado a lado em desktop, empilhados em mobile -->
+            <div class="col-12 col-lg-10">
+                <div class="d-flex flex-column flex-md-row align-items-stretch gap-4 account-cards-row">
 
-                <!--Editar Senha-->
-                <div class="card contorno w-50">
-                    <div class="card-body text-center">
-                        <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Atualizar Senha</h1>
-                        <br/>
-                        <div>
-                            {% with messages = get_flashed_messages(category_filter=["senha_error", "senha_success"]) %}
-                            {% if messages %}
-                            <ul class="list-group flashes">
-                                {% for message in messages %}
-                                <li class="list-group-item success">{{ message }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            {% endwith %}
+                    <!--Editar Senha-->
+                    <div class="card contorno flex-fill">
+                        <div class="card-body text-center">
+                            <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Atualizar Senha</h1>
+                            <br/>
                             <div>
-                                {{ render_form(senha_form, novalidate=True, button_map={"submit_senha": "btn
-                                btn-custom-comprar mt-3"}) }}
+                                {% with messages = get_flashed_messages(category_filter=["senha_error", "senha_success"]) %}
+                                {% if messages %}
+                                <ul class="list-group flashes">
+                                    {% for message in messages %}
+                                    <li class="list-group-item success">{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                {% endwith %}
+                                <div>
+                                    {{ render_form(senha_form, novalidate=True, button_map={"submit_senha": "btn btn-custom-comprar mt-3"}) }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!--Editar Nome-->
-                <div class="card contorno w-50">
-                    <div class="card-body text-center">
-                        <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Alterar Nome do
-                            Usuário</h1>
-                        <br/>
-                        <div>
-                            {% with messages = get_flashed_messages(category_filter=["nome_error", "nome_success"]) %}
-                            {% if messages %}
-                            <ul class="list-group flashes">
-                                {% for message in messages %}
-                                <li class="list-group-item success">{{ message }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            {% endwith %}
+                    <!--Editar Nome-->
+                    <div class="card contorno flex-fill">
+                        <div class="card-body text-center">
+                            <h1 class="card-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Alterar Nome do Usuário</h1>
+                            <br/>
                             <div>
-                                {{ render_form(nome_form, novalidate=True, button_map={"submit_nome": "btn
-                                btn-custom-comprar"}) }}
+                                {% with messages = get_flashed_messages(category_filter=["nome_error", "nome_success"]) %}
+                                {% if messages %}
+                                <ul class="list-group flashes">
+                                    {% for message in messages %}
+                                    <li class="list-group-item success">{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                {% endwith %}
+                                <div>
+                                    {{ render_form(nome_form, novalidate=True, button_map={"submit_nome": "btn btn-custom-comprar"}) }}
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -65,14 +82,14 @@
         {% if lista_enderecos %}
         <!--Editar Endereço-->
         <div class="container">
-            <div class="row container justify-content-center mt-4">
-                <div class="card contorno col-lg-4">
+            <div class="row justify-content-center mt-4">
+                <div class="card contorno col-12 col-md-8 col-lg-4">
                     <div class="card-body">
                         <h1 class="card-title texto-estilizado m-0 julius-sans-one-regular">
                             Editar Endereço
                         </h1>
-                        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-                            <div class="w-40">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3 gap-2">
+                            <div class="flex-fill">
                                 <select class="form-select contorno texto-estilizado"
                                         data-user-id="{{ current_user.id }}"
                                         id="select-endereco-editar">
@@ -83,7 +100,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <a class="btn btn-outline-danger"
+                            <a class="btn btn-outline-danger flex-shrink-0"
                                href="#"
                                aria-label="Deletar endereço."
                                id="btn-deletar-endereco">
@@ -92,11 +109,9 @@
                                     <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
                                 </svg>
                             </a>
-
                         </div>
                         <div class="text-center">
-                            {% with messages = get_flashed_messages(category_filter=["endereco_error",
-                            "endereco_success"]) %}
+                            {% with messages = get_flashed_messages(category_filter=["endereco_error", "endereco_success"]) %}
                             {% if messages %}
                             <ul class="list-group flashes">
                                 {% for message in messages %}
@@ -106,77 +121,81 @@
                             {% endif %}
                             {% endwith %}
                             {{ render_form(editarenderecoform,
-                            button_map={"submit_endereco": "btn btn-custom-comprar"},
-                            action=url_for('conta.gerenciar',
-                            usuario_id=current_user.id)) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {% else %}
-
-            <!--Cadastrar Endereço-->
-            <div class="container">
-                <div class="row container justify-content-center mt-4">
-                    <div class="card contorno col-lg-4">
-                        <div class="card-body">
-                            <h1 class="card-title texto-estilizado m-0 julius-sans-one-regular">
-                                Cadastrar Novo Endereço
-                            </h1>
-                            <div class="text-center">
-                                {% with messages = get_flashed_messages(category_filter=["endereco_error",
-                                "endereco_success"]) %}
-                                {% if messages %}
-                                <ul class="list-group flashes">
-                                    {% for message in messages %}
-                                    <li class="list-group-item success">{{ message }}</li>
-                                    {% endfor %}
-                                </ul>
-                                {% endif %}
-                                {% endwith %}
-                                {{ render_form(criarenderecoform,
-                                button_map={"submit_criar_endereco":
-                                "btn btn-custom-comprar"},
+                                button_map={"submit_endereco": "btn btn-custom-comprar"},
                                 action=url_for('conta.gerenciar',
                                 usuario_id=current_user.id)) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="row container justify-content-center mt-4">
-                <button id="excluir-conta" class="btn btn-outline-danger col-2" data-bs-target="#excluir" data-bs-toggle="modal"
-                        type="button">
-                    Excluir conta
-                </button>
-            </div>
-
-            <div aria-hidden="true" aria-labelledby="modal-excluir" class="modal fade" id="excluir" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir
-                                Conta</h5>
-                            <button id="fechar-popup" aria-label="Close" class="btn-close" data-bs-dismiss="modal"
-                                    type="button"></button>
-                        </div>
-                        <div class="modal-body texto-estilizado">
-                            Tem certeza que deseja excluir sua conta?
-                        </div>
-                        <div class="modal-footer">
-                            <a class="btn btn-custom-comprar"
-                               aria-label="Excluir conta."
-                               href="{{ url_for('conta.deletar_conta', id_usuario=id_usuario) }}"
-                               type="button">Excluir</a>
-                            <a class="btn btn-outline-danger" aria-label="Fechar Pop-up." data-bs-dismiss="modal" type="button">Fechar</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        {% else %}
+
+        <!--Cadastrar Endereço-->
+        <div class="container">
+            <div class="row justify-content-center mt-4">
+                <div class="card contorno col-12 col-md-8 col-lg-4">
+                    <div class="card-body">
+                        <h1 class="card-title texto-estilizado m-0 julius-sans-one-regular">
+                            Cadastrar Novo Endereço
+                        </h1>
+                        <div class="text-center">
+                            {% with messages = get_flashed_messages(category_filter=["endereco_error", "endereco_success"]) %}
+                            {% if messages %}
+                            <ul class="list-group flashes">
+                                {% for message in messages %}
+                                <li class="list-group-item success">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% endwith %}
+                            {{ render_form(criarenderecoform,
+                                button_map={"submit_criar_endereco": "btn btn-custom-comprar"},
+                                action=url_for('conta.gerenciar',
+                                usuario_id=current_user.id)) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Botão excluir conta -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-12 col-sm-auto text-center">
+                <button id="excluir-conta" class="btn btn-outline-danger px-4"
+                        data-bs-target="#excluir" data-bs-toggle="modal" type="button">
+                    Excluir conta
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Excluir Conta -->
+        <div aria-hidden="true" aria-labelledby="modal-excluir" class="modal fade" id="excluir" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title texto-estilizado mt-3 mb-1 julius-sans-one-regular">Excluir Conta</h5>
+                        <button id="fechar-popup" aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                type="button"></button>
+                    </div>
+                    <div class="modal-body texto-estilizado">
+                        Tem certeza que deseja excluir sua conta?
+                    </div>
+                    <div class="modal-footer flex-column flex-sm-row">
+                        <a class="btn btn-custom-comprar w-100 w-sm-auto"
+                           aria-label="Excluir conta."
+                           href="{{ url_for('conta.deletar_conta', id_usuario=id_usuario) }}"
+                           type="button">Excluir</a>
+                        <a class="btn btn-outline-danger w-100 w-sm-auto"
+                           aria-label="Fechar Pop-up."
+                           data-bs-dismiss="modal" type="button">Fechar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 <script src="{{ url_for('static', filename='js/edita_enderecos.js') }}"></script>

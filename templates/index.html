@@ -8,6 +8,58 @@
     {% with seo = SEO['home'] %}
     {% include 'seo.html' %}
     {% endwith %}
+    <style>
+        .info-barra {
+            display: flex;
+            flex-direction: row;
+            border: 1px solid #6B5F3B;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 70%;
+            margin: 20px auto;
+        }
+
+        .info-item {
+            flex: 1;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .info-item:not(:last-child) {
+            border-right: 1px solid #6B5F3B;
+        }
+
+        @media (max-width: 575.98px) {
+            .info-barra {
+                width: 95%;
+            }
+
+            .info-item {
+                padding: 8px 6px;
+                gap: 4px;
+            }
+
+            .info-item svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .info-item h5 {
+                font-size: 0.65rem;
+                margin: 0;
+            }
+
+            .info-item img {
+                width: 90px;
+                height: auto;
+            }
+        }
+    </style>
 </head>
 <body data-gr-ext-installed="" data-new-gr-c-s-check-loaded="8.932.0">
 <main>
@@ -53,31 +105,28 @@
     {% endif %}
 
     <!--Barra de benefícios-->
+    <!--Barra de benefícios-->
     <div class="info-barra mt-4">
-        <div class="info-item d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 py-3 py-md-2">
+        <div class="info-item">
             <svg class="bi bi-truck" fill="#6B5F3B" height="40" viewBox="0 0 16 16" width="40"
                  xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
             </svg>
-            <h5 class="texto-estilizado mt-2">
-                Envio para
-                todo o Brasil
-            </h5>
+            <h5 class="texto-estilizado mb-0">Envio para todo o Brasil</h5>
         </div>
-        <div class="info-item d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 py-3 py-md-2">
+
+        <div class="info-item">
             <svg class="bi bi-wallet2" fill="#6B5F3B" height="40" viewBox="0 0 16 16" width="40"
                  xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/>
             </svg>
-            <h5 class="texto-estilizado mt-2 d-flex flex-column align-items-center text-center col-12 col-md-auto">
-                Pagamento Seguro
-            </h5>
+            <h5 class="texto-estilizado mb-0">Pagamento Seguro</h5>
         </div>
+
         <div class="info-item">
             <img alt="Logo do Mercado Pago" class="img-fluid"
-                 src="static/img/MP_RGB_HANDSHAKE_color_horizontal.webp"
-
-                 width="199" height="81"/>
+                 height="81"
+                 src="static/img/MP_RGB_HANDSHAKE_color_horizontal.webp" width="199"/>
         </div>
     </div>
     <!--Seção de novidades-->
