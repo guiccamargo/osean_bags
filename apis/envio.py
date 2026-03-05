@@ -21,11 +21,11 @@ def calcular_frete(produtos: List[dict], cep_destino: str, cep_origem: str, emai
     """
 
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json',
-               'Authorization': f'Bearer {os.getenv("token_envio")}', 'User-Agent': f'Aplicação {email_contato}'}
+               'Authorization': f'Bearer {os.getenv("TOKEN_DE_ENVIO")}', 'User-Agent': f'Aplicação {email_contato}'}
 
     payload = {'from': {'postal_code': cep_origem}, 'to': {'postal_code': cep_destino}, 'products': produtos}
 
-    response = requests.post(os.getenv('url_melhor_envio'), headers=headers, json=payload)
+    response = requests.post(os.getenv('URL_MELHOR_ENVIO'), headers=headers, json=payload)
     lista_envios = []
     # Filtra opções ofertadas pelos Correios
     for i in range(len(response.json())):

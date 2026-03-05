@@ -8,5 +8,5 @@ SESSION_PERMANENT = False
 MAIL_SERVER = os.getenv('SERVIDOR_DE_EMAIL')
 MAIL_PORT = 587
 MAIL_USE_TLS = True
-MAIL_USERNAME = os.getenv('email_de_redefinicao')
-MAIL_PASSWORD = os.getenv('senha_email')
+MAIL_USERNAME = os.getenv('EMAIL_DE_REDEFINICAO')
+MAIL_PASSWORD = os.getenv('SENHA_DE_APP')

@@ -23,7 +23,7 @@ def gerar_link_pagamento(preference_data: dict) -> tuple[str, str]:
         Em desenvolvimento, substitua por ``sandbox_init_point``.
 
     .. warning::
-        A chave ``mercado_pago_teste`` deve estar definida nas variáveis de ambiente.
+        A chave ``CHAVE_MERCADO_PAGO`` deve estar definida nas variáveis de ambiente.
 
     Exemplo de uso::
 
@@ -39,7 +39,7 @@ def gerar_link_pagamento(preference_data: dict) -> tuple[str, str]:
         return redirect(link)
     """
 
-    sdk = mercadopago.SDK(os.getenv('mercado_pago_teste'))
+    sdk = mercadopago.SDK(os.getenv('CHAVE_MERCADO_PAGO'))
     result = sdk.preference().create(preference_data)
     if result['status'] == 400:
         return result['status'], url_for('pagamento.pagamento_falha')
