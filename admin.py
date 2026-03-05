@@ -522,7 +522,7 @@ class PedidoAdmin(BaseAdmin):
 
     column_formatters = {
         'nome_usuario': lambda v, c, m, p: (
-            m.usuario.nome + m.usuario.sobrenome if m.usuario else 'Removido'
+            m.usuario.nome + ' ' + m.usuario.sobrenome if m.usuario else 'Removido'
         ),
 
         'email_usuario': lambda v, c, m, p: (
