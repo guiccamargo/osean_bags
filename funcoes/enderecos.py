@@ -1,6 +1,7 @@
 from typing import List
 
 from flask import request
+from flask_login import current_user
 
 from db import db
 from models import Endereco
@@ -22,7 +23,7 @@ def adicionar_endereco(id_usuario: int) -> None:
 
     Cria um novo registro na tabela de endereços usando as informções passadas através do formulário.
 
-    :param id_usuario: id do usuário atual/
+    :param id_usuario: id do usuário atual
     :return: None
     """
 
@@ -84,5 +85,8 @@ def deletar_endereco(id_endereco):
 
     """
     endereco = db.get_or_404(Endereco, id_endereco)
+    if endereco.usuario_id != current_user.id:
+        return 'error'
     db.session.delete(endereco)
     db.session.commit()
+    return None

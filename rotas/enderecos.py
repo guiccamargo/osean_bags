@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from db import db
 from extensions import sitemapper
@@ -12,6 +12,7 @@ enderecos_bp = Blueprint('enderecos', __name__, template_folder='templates')
 
 
 @sitemapper.include()
+@login_required
 @enderecos_bp.route('/<int:id_usuario>/endereco', methods=['GET', 'POST'])
 def cadastrar_endereco(id_usuario):
     """
@@ -35,6 +36,7 @@ def cadastrar_endereco(id_usuario):
 
 
 @sitemapper.include()
+@login_required
 @enderecos_bp.route('/deletar-endereco/<int:id_endereco>')
 def deletar_endereco_form(id_endereco):
     """
@@ -50,6 +52,10 @@ def deletar_endereco_form(id_endereco):
         Response: Redirecionamento para auth.gerenciar com mensagem flash
                   de sucesso ou erro dependendo da autorização.
     """
-    deletar_endereco(id_endereco)
-    flash('Endereço removido com sucesso!', 'endereco_success')
-    return redirect(url_for('conta.gerenciar', usuario_id=current_user.id))
+    resp = deletar_endereco(id_endereco)
+    if resp == 'error':
+        flash('Ação não permitida.', 'endereco_error')
+        return redirect(url_for("conta.gerenciar", usuario_id=current_user.id))
+    else:
+        flash('Endereço removido com sucesso!', 'endereco_success')
+        return redirect(url_for('conta.gerenciar', usuario_id=current_user.id))

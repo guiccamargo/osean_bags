@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from db import db
 from extensions import sitemapper
@@ -12,6 +12,7 @@ carrinho_bp = Blueprint('carrinho', __name__, template_folder='templates')
 
 
 @sitemapper.include()
+@login_required
 @carrinho_bp.route('/carrinho', methods=['GET', 'POST'])
 def ir_para_carrinho():
     """
@@ -64,6 +65,7 @@ def ir_para_carrinho():
 
 
 @sitemapper.include()
+@login_required
 @carrinho_bp.route('/cart/clear', methods=['GET', 'POST'])
 def clear_checkout():
     """
@@ -79,6 +81,7 @@ def clear_checkout():
 
 
 @sitemapper.include()
+@login_required
 @carrinho_bp.route('/carrinho/atualizar/<int:user_id>/<int:product_id>')
 def atualizar_item(user_id: int, product_id: int):
     """Atualiza a quantidade de um item no carrinho e retorna os totais em JSON.
@@ -119,6 +122,7 @@ def atualizar_item(user_id: int, product_id: int):
     return jsonify({'novo_total': novo_total, 'total_carrinho': total_carrinho})
 
 @sitemapper.include()
+@login_required
 @carrinho_bp.route('/deletar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
 def deletar_item(user_id, product_id):
     """

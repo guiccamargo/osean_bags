@@ -16,7 +16,15 @@ def soma_itens(id_usuario: int) -> int:
         soma += item.quantidade
     return soma
 
-def somar_valor_dos_items(id_usuario):
+def somar_valor_dos_items(id_usuario: int) -> float:
+    """Calcula o valor total dos itens no carrinho do usuário.
+
+    Acessa todos os itens do carrinho e soma o produto entre
+    quantidade e preço unitário de cada produto.
+
+    :param id_usuario: ID do usuário cujo carrinho será somado.
+    :return: Valor total dos itens em reais (float).
+    """
     soma = 0
     todos_itens = db.session.execute(db.select(Carrinho).where(Carrinho.usuario_id == id_usuario)).scalars()
     for item in todos_itens:

@@ -33,6 +33,11 @@ def renderizar_header(usuario) -> dict:
 
     Example:
         return render_template('index.html', **renderizar_header(current_user))
+    warning::
+        Os blocos try/except capturam AttributeError silenciosamente.
+        Se usuario não for uma instância de Usuario ou AnonymousUser
+        do Flask-Login, o comportamento pode ser inesperado.
+
     """
     try:
         logged_in = usuario.is_authenticated

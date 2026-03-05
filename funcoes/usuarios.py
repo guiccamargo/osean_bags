@@ -68,9 +68,9 @@ def atualizar_nome(usuario_id: int) -> None:
 
     usuario = db.get_or_404(Usuario, usuario_id)
     nome = request.form.get('nome')
-    sobrebnome = request.form.get('sobrenome')
+    sobrenome = request.form.get('sobrenome')
     usuario.nome = nome
-    usuario.sobrenome = sobrebnome
+    usuario.sobrenome = sobrenome
     db.session.commit()
 
 

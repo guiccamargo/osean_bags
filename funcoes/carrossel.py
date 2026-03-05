@@ -13,7 +13,6 @@ def acessar_carrossel() -> List[str]:
     :return: lista com o caminho das imagens do carrossel ou None.
     """
     try:
-        banners = []
         return Carrossel.query.all()
     except sqlalchemy.exc.OperationalError:
         return None

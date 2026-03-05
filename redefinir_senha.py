@@ -5,20 +5,13 @@ Utiliza :class:`itsdangerous.URLSafeTimedSerializer` para criar tokens
 assinados com prazo de expiração, garantindo que apenas links válidos
 e recentes possam ser utilizados para redefinir a senha de um usuário.
 
-.. warning::
-    Substitua ``SECRET_KEY`` por uma chave forte e armazene-a em uma
-    variável de ambiente. Nunca exponha essa chave no código-fonte.
-
-    Exemplo::
-
-        import os
-        SECRET_KEY = os.getenv('SECRET_KEY')
 """
 import logging
+import os
 
 from itsdangerous import URLSafeTimedSerializer
 
-SECRET_KEY = 'sua-chave-secreta'
+SECRET_KEY = os.getenv('SECRET_KEY')
 s = URLSafeTimedSerializer(SECRET_KEY)
 
 

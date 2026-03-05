@@ -2,6 +2,7 @@ from typing import List
 
 import sqlalchemy
 from flask import request
+from sqlalchemy.orm import joinedload
 
 from db import db
 from models import Produto, Foto
@@ -19,15 +20,14 @@ def listar_produtos() -> List[dict]:
     busca = request.args.get('busca')  # Buscar por produtos pelo nome
 
     # Realizar busca
-    produtos = Produto.query.filter(Produto.nome.ilike(f'%{busca}%')).all()
-
+    produtos = (Produto.query.options(joinedload(Produto.fotos)).filter(Produto.nome.ilike(f'%{busca}%')).all())
 
     lista_produtos = []
 
     # Listar produtos
     for produto in produtos:
         lista_produtos.append(
-            {'id': produto.id, 'imagem': acessar_capa(produto.id), 'nome': produto.nome, 'preco': produto.preco, })
+            {'id': produto.id, 'imagem': produto.fotos[0].arquivo, 'nome': produto.nome, 'preco': produto.preco, })
 
     return lista_produtos
 
@@ -66,11 +66,16 @@ def acessar_bestsellers() -> List[dict]:
 
     lista_produtos = []
 
-    todos_produtos = Produto.query.order_by(Produto.vendas).limit(5).all()  # Acessa os 5 produtos mais vendidos
+    # Acessa os cinco itens mais vendidos
+    todos_produtos = (Produto.query
+                      .options(joinedload(Produto.fotos))
+                      .order_by(Produto.vendas.desc())
+                      .limit(5).all())
 
     for produto in todos_produtos:
         lista_produtos.append(
-            {'id': produto.id, 'imagem': acessar_capa(produto.id), 'nome': produto.nome, 'preco': produto.preco, })
+            {'id': produto.id, 'imagem': produto.fotos[0].arquivo if produto.fotos else None, 'nome': produto.nome,
+             'preco': produto.preco, })
 
     return lista_produtos
 
@@ -85,11 +90,11 @@ def acessar_novidades() -> List[dict]:
 
     lista_produtos = []
 
-    novidades = Produto.query.filter_by(novidade=True).all()
+    novidades = (Produto.query.options(joinedload(Produto.fotos)).filter_by(novidade=True).all())
 
     for produto in novidades:
         lista_produtos.append(
-            {'id': produto.id, 'imagem': acessar_capa(produto.id), 'nome': produto.nome, 'preco': produto.preco, })
+            {'id': produto.id, 'imagem': produto.fotos[0].arquivo, 'nome': produto.nome, 'preco': produto.preco, })
 
     return lista_produtos
 

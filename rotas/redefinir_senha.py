@@ -38,7 +38,7 @@ def esqueci_senha():
 
             msg = Message(
                 subject='Redefinição de senha',
-                sender='seu@email.com',
+                sender=current_app.config['MAIL_USERNAME'],
                 recipients=[email]
             )
             msg.body = f'Clique no link para redefinir sua senha: {link}\nO link expira em 1 hora.'

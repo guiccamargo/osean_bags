@@ -26,7 +26,11 @@ def produtos_para_envio(id_usuario: int, endereco_id: int) -> List[dict]:
         lista_de_produtos.append(
             {'id': produto.id, 'width': produto.largura, 'height': produto.altura, 'length': produto.comprimento,
              'weight': produto.peso, 'quantity': item.quantidade, 'time': produto.producao})
-    config_info = Config.query.first().__dict__  # Acessa informações sobre o endereço de envio
+
+    config = Config.query.first() # Acessa informações sobre o endereço de envio
+    if not config:
+        raise RuntimeError("Configurações da loja não encontradas.")
+    config_info = config.__dict__
 
     return calcular_frete(produtos=lista_de_produtos, cep_destino=endereco.cep, cep_origem=config_info['cep_origem'],
                           email_contato=config_info['email'])
@@ -113,24 +117,21 @@ def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, s
     )
 
     lista_de_produtos = []
-    for item in itens:
-        produto = db.get_or_404(Produto, item.produto_id)
-        lista_de_produtos.append(
-            {'id': str(produto.id), 'title': produto.nome, 'quantity': int(item.quantidade), 'currency_id': 'BRL',
-             'unit_price': float(produto.preco),
-             })
+    total = 0
 
-    total = float(preco_frete)
     for item in itens:
         produto = db.get_or_404(Produto, item.produto_id)
+        lista_de_produtos.append({
+            'id': str(produto.id), 'title': produto.nome,
+            'quantity': int(item.quantidade), 'currency_id': 'BRL',
+            'unit_price': float(produto.preco),
+        })
         item_venda = ItemPedido(
-            produto_id=produto.id,
-            nome=produto.nome,
-            quantidade=item.quantidade,
-            preco_unitario=produto.preco
+            produto_id=produto.id, nome=produto.nome,
+            quantidade=item.quantidade, preco_unitario=produto.preco
         )
         novo_pedido.itens.append(item_venda)
-        total += (produto.preco * item.quantidade)
+        total += produto.preco * item.quantidade
 
     novo_pedido.total_pedido = total
     db.session.add(novo_pedido)

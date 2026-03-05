@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, flash, redirect, url_for, render_template
-from flask_login import current_user, logout_user
+from flask_login import current_user, logout_user, login_required
 
 from db import db
 from extensions import sitemapper
@@ -13,6 +13,7 @@ conta_bp = Blueprint('conta', __name__, template_folder='templates')
 
 
 @sitemapper.include()
+@login_required
 @conta_bp.route('/gerenciar/<int:usuario_id>', methods=['GET', 'POST'])
 def gerenciar(usuario_id):
     """
@@ -96,6 +97,7 @@ def gerenciar(usuario_id):
 
 
 @sitemapper.include()
+@login_required
 @conta_bp.route('/pedidos/<int:usuario_id>')
 def meus_pedidos(usuario_id):
     pedidos = Pedido.query.filter_by(usuario_id=usuario_id, status='pago').all()
@@ -103,6 +105,7 @@ def meus_pedidos(usuario_id):
 
 
 @sitemapper.include()
+@login_required
 @conta_bp.route('/deletar/<int:id_usuario>')
 def deletar_conta(id_usuario):
     """
