@@ -191,5 +191,6 @@ def aplicar_cupom():
     total_com_desconto = aplicar_desconto(total_original, cupom)
     desconto_aplicado = round(total_original - total_com_desconto, 2)
     session['cupom_id'] = cupom.id
+    session['desconto_percentual'] = cupom.desconto
     return jsonify(
         {'total_com_desconto': total_com_desconto, 'desconto_aplicado': desconto_aplicado, 'cupom_id': cupom.id, })

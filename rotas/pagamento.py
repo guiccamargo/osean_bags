@@ -43,31 +43,9 @@ def calcular_frete_rota():
 
 
 @sitemapper.include()
-@login_required
 @pagamento_bp.route('/pagamento/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def ir_para_pagamento(user_id):
-    """
-    Processa o fechamento do pedido e redireciona para o link de pagamento.
-
-    No metodo POST, coleta o endereço e o meodo de envio selecionados pelo
-    usuário, gera o link de pagamento via API e redireciona para ele.
-    Exibe mensagem de erro via flash se nenhum frete for selecionado.
-
-    No metodo GET, redireciona para o carrinho pois o acesso direto a esta
-    rota sem submissão de formulário não é suportado.
-
-    Args:
-        user_id (int): ID do usuário realizando o pedido.
-
-    Returns:
-        POST (sucesso): Redirecionamento para o link de pagamento externo.
-        POST (sem frete): Redirecionamento para carrinho.ir_para_carrinho com flash.
-        GET: Redirecionamento para carrinho.ir_para_carrinho.
-
-    Note:
-        O frete é recebido no formato 'nome|preco|prazo' e parseado
-        internamente por fechar_pedido().
-    """
     if request.method == 'POST':
         endereco_escolhido = request.form.get('endereco_id')
         metodo_envio = request.form.get('envio')
@@ -75,11 +53,17 @@ def ir_para_pagamento(user_id):
         if not metodo_envio:
             flash('Por favor, selecione uma opção de frete.')
             return redirect(url_for('carrinho.ir_para_carrinho'))
-        preference_id, init_point = fechar_pedido(user_id, endereco_id=endereco_escolhido, frete=metodo_envio)
-        return redirect(init_point)  # Redireciona direto para o Mercado Pago
+
+        desconto_percentual = session.get('desconto_percentual', 0.0)
+        preference_id, init_point = fechar_pedido(
+            user_id,
+            endereco_id=endereco_escolhido,
+            frete=metodo_envio,
+            desconto_percentual=desconto_percentual,
+        )
+        return redirect(init_point)
 
     return redirect(url_for('carrinho.ir_para_carrinho'))
-
 
 @sitemapper.include()
 @login_required

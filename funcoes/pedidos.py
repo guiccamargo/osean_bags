@@ -36,7 +36,7 @@ def produtos_para_envio(id_usuario: int, endereco_id: int) -> List[dict]:
                           email_contato=config_info['email'])
 
 
-def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, str]:
+def fechar_pedido(id_usuario: int, endereco_id: int, frete: str, desconto_percentual: float = 0.0) -> tuple[str, str]:
     """Consolida o carrinho em um pedido e gera o link de pagamento.
 
     Reúne os dados do usuário, endereço de entrega, itens do carrinho e frete
@@ -52,6 +52,10 @@ def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, s
                   - ``prazo``: prazo de entrega em dias úteis (convertido para ``int``).
 
                   Exemplo: ``'PAC|29.90|8'``
+
+    :param desconto_percentual: Percentual de desconto de cupom a ser aplicado
+                                sobre o total dos produtos. Ex: 10.0 equivale a 10%.
+                                Padrão: 0.0 (sem desconto).
 
     :return: Tupla ``(preference_id, init_point)`` onde:
 
@@ -119,6 +123,7 @@ def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, s
     lista_de_produtos = []
     total = 0
 
+    total_produtos = 0
     for item in itens:
         produto = db.get_or_404(Produto, item.produto_id)
         lista_de_produtos.append({
@@ -131,9 +136,23 @@ def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, s
             quantidade=item.quantidade, preco_unitario=produto.preco
         )
         novo_pedido.itens.append(item_venda)
-        total += produto.preco * item.quantidade
+        total_produtos += produto.preco * item.quantidade
 
-    novo_pedido.total_pedido = total
+    # Aplica o desconto e adiciona como item negativo na preferência do Mercado Pago
+    valor_desconto = 0.0
+
+    if desconto_percentual > 0:
+        valor_desconto = round(total_produtos * (desconto_percentual / 100), 2)
+        lista_de_produtos.append({
+            'id': 'desconto',
+            'title': f'Desconto ({desconto_percentual}%)',
+            'quantity': 1,
+            'currency_id': 'BRL',
+            'unit_price': -valor_desconto,
+        })
+
+    total = round(total_produtos - valor_desconto, 2)
+    novo_pedido.total_pedido = total + custo_envio
     db.session.add(novo_pedido)
     db.session.commit()  # Pedido agora tem um ID
 
