@@ -406,7 +406,7 @@ class Pedido(db.Model):
     total_pedido = db.Column(db.Float)
     payment_id_mercadopago = db.Column(db.String(100))
 
-    itens = db.relationship('ItemPedido', backref='pedido', lazy=True)
+    itens = db.relationship('ItemPedido', backref='pedido', lazy=True, cascade='all, delete-orphan')
     usuario = db.relationship('Usuario', backref='pedidos', lazy=True)
 
 class ItemPedido(db.Model):
