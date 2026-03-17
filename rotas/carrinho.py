@@ -1,10 +1,14 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from flask_login import current_user, login_required
 
 from db import db
 from extensions import sitemapper
-from funcoes import limpar_carrinho, atualizar_quantia, excluir_item_carrinho, acessar_capa, \
-    acessar_enderecos, produtos_para_envio, somar_valor_dos_items, aplicar_desconto, checar_cupom
+from funcoes import (
+    limpar_carrinho, atualizar_quantia, excluir_item_carrinho,
+    acessar_capa, acessar_enderecos, produtos_para_envio,
+    somar_valor_dos_items, checar_cupom, aplicar_desconto,
+    cupom_ja_usado, usuario_tem_pedido_pago,
+)
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
 
@@ -39,13 +43,8 @@ def ir_para_carrinho():
         if item.produto_id == 0:
             continue
         produto = db.get_or_404(Produto, item.produto_id)
-        produtos_no_carrinho.append({
-            'id': produto.id,
-            'name': produto.nome,
-            'img': acessar_capa(produto.id),
-            'total': round(produto.preco * item.quantidade, 2),
-            'quantidade': item.quantidade
-        })
+        produtos_no_carrinho.append({'id': produto.id, 'name': produto.nome, 'img': acessar_capa(produto.id),
+            'total': round(produto.preco * item.quantidade, 2), 'quantidade': item.quantidade})
 
     if request.method == 'POST':
         data = request.get_json()
@@ -54,14 +53,9 @@ def ir_para_carrinho():
     else:
         opcoes_envio = None
 
-    return render_template(
-        'cart.html',
-        envio=opcoes_envio,
-        enderecos=acessar_enderecos(current_user.id),
-        total_carrinho=somar_valor_dos_items(current_user.id),
-        products=produtos_no_carrinho,
-        **renderizar_header(current_user)
-    )
+    return render_template('cart.html', envio=opcoes_envio, enderecos=acessar_enderecos(current_user.id),
+        total_carrinho=somar_valor_dos_items(current_user.id), products=produtos_no_carrinho,
+        **renderizar_header(current_user))
 
 
 @sitemapper.include()
@@ -145,29 +139,38 @@ def deletar_item(user_id, product_id):
 def aplicar_cupom():
     """Valida e aplica um cupom de desconto ao total do carrinho.
 
-    Recebe o código do cupom via JSON, verifica sua validade e,
-    caso exista, calcula o novo total com o desconto aplicado.
+    Executa as seguintes verificações em ordem antes de aplicar o desconto:
+
+    1. Presença do campo ``codigo`` no JSON da requisição.
+    2. Existência do cupom na base de dados.
+    3. Se o cupom já foi utilizado pelo usuário em um pedido pago anterior.
+    4. Se o cupom é do tipo ``primeira_compra`` e o usuário já possui pedidos pagos.
+
+    O desconto é calculado sobre o valor dos produtos e não inclui o frete.
 
     Request JSON:
         codigo (str): Código do cupom enviado pelo usuário.
 
     Returns:
-        JSON (200): Dicionário com ``total_com_desconto`` (float) e
-            ``desconto_aplicado`` (float) em caso de sucesso.
-        JSON (404): Mensagem de erro se o cupom não for encontrado.
-        JSON (400): Mensagem de erro se o campo ``codigo`` estiver ausente.
+        JSON (200): ``total_com_desconto`` (float), ``desconto_aplicado`` (float)
+            e ``cupom_id`` (int) em caso de sucesso. O ``cupom_id`` deve ser
+            armazenado pelo frontend para ser enviado ao confirmar o pedido.
+        JSON (400): Campo ``codigo`` ausente na requisição.
+        JSON (404): Cupom não encontrado ou inválido.
+        JSON (409): Cupom já utilizado pelo usuário, ou cupom de primeira
+            compra sendo aplicado por usuário com compras anteriores.
 
     Example::
 
         # Request
         POST /carrinho/cupom
-        { "codigo": "OSEAN10" }
+        { "codigo": "BEMVINDO10" }
 
         # Response (sucesso)
-        { "total_com_desconto": 225.00, "desconto_aplicado": 25.00 }
+        { "total_com_desconto": 225.00, "desconto_aplicado": 25.00, "cupom_id": 3 }
 
-        # Response (inválido)
-        { "erro": "Cupom inválido." }
+        # Response (já usado)
+        { "erro": "Você já utilizou este cupom anteriormente." }
     """
     data = request.get_json()
 
@@ -176,13 +179,17 @@ def aplicar_cupom():
 
     cupom = checar_cupom(data['codigo'])
     if not cupom:
-        return jsonify({'erro': 'Cupom inválido.'}), 404
+        return jsonify({'erro': 'Cupom inválido ou não encontrado.'}), 404
+
+    if cupom_ja_usado(cupom.id, current_user.id):
+        return jsonify({'erro': 'Você já utilizou este cupom anteriormente.'}), 409
+
+    if cupom.primeira_compra and usuario_tem_pedido_pago(current_user.id):
+        return jsonify({'erro': 'Este cupom é válido apenas na primeira compra.'}), 409
 
     total_original = somar_valor_dos_items(current_user.id)
     total_com_desconto = aplicar_desconto(total_original, cupom)
     desconto_aplicado = round(total_original - total_com_desconto, 2)
-
-    return jsonify({
-        'total_com_desconto': total_com_desconto,
-        'desconto_aplicado': desconto_aplicado,
-    })
+    session['cupom_id'] = cupom.id
+    return jsonify(
+        {'total_com_desconto': total_com_desconto, 'desconto_aplicado': desconto_aplicado, 'cupom_id': cupom.id, })

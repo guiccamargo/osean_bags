@@ -443,8 +443,69 @@ class ItemPedido(db.Model):
     preco_unitario = db.Column(db.Float, nullable=False)
 
 class Cupom(db.Model):
+    """Representa um cupom de desconto aplicável ao carrinho de compras.
+
+    :ivar id: Identificador único do cupom (chave primária).
+    :ivar codigo: Código promocional digitado pelo cliente. Armazenado em
+                  maiúsculas. Máximo de 250 caracteres.
+    :ivar desconto: Percentual de desconto a ser aplicado sobre o total dos
+                    produtos (não inclui frete). Ex: 10.0 equivale a 10%.
+    :ivar primeira_compra: Se ``True``, o cupom só é válido para clientes
+                           que ainda não realizaram nenhum pedido pago.
+                           Padrão: ``False``.
+    :ivar usos: Lista de :class:`CupomUso` registrando quais usuários já
+                utilizaram este cupom.
+
+    Example::
+
+        cupom = Cupom(codigo='BEMVINDO10', desconto=10.0, primeira_compra=True)
+        db.session.add(cupom)
+        db.session.commit()
+    """
+
     __tablename__ = 'cupons'
 
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.String(250), nullable=False)
+    codigo = db.Column(db.String(250), nullable=False, unique=True)
     desconto = db.Column(db.Float, nullable=False)
+    primeira_compra = db.Column(db.Boolean, default=False, nullable=False)
+
+    usos = db.relationship('CupomUso', backref='cupom', lazy=True)
+
+
+class CupomUso(db.Model):
+    """Registra que um usuário utilizou um cupom de desconto.
+
+    Cada linha representa um uso confirmado de um cupom por um usuário
+    específico. O registro é gravado no momento em que o pagamento é
+    confirmado pelo Mercado Pago (status ``approved``), garantindo que
+    cupons de pedidos não finalizados não sejam bloqueados prematuramente.
+
+    :ivar id: Identificador único do registro (chave primária).
+    :ivar cupom_id: Chave estrangeira referenciando :class:`Cupom`.
+    :ivar usuario_id: Chave estrangeira referenciando :class:`Usuario`.
+    :ivar pedido_id: Chave estrangeira referenciando :class:`Pedido`.
+                     Permite rastrear em qual pedido o cupom foi utilizado.
+
+    .. note::
+        A constraint ``UniqueConstraint`` em ``(cupom_id, usuario_id)``
+        impede no nível do banco de dados que o mesmo usuário use o
+        mesmo cupom mais de uma vez.
+
+    Example::
+
+        uso = CupomUso(cupom_id=1, usuario_id=3, pedido_id=42)
+        db.session.add(uso)
+        db.session.commit()
+    """
+
+    __tablename__ = 'cupom_usos'
+
+    id = db.Column(db.Integer, primary_key=True)
+    cupom_id = db.Column(db.Integer, db.ForeignKey('cupons.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    pedido_id = db.Column(db.Integer, db.ForeignKey('pedidos.id'), nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint('cupom_id', 'usuario_id', name='uq_cupom_usuario'),
+    )

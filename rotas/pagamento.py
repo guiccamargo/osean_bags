@@ -1,9 +1,9 @@
-from flask import Blueprint, request, flash, redirect, url_for, jsonify, render_template
+from flask import Blueprint, request, flash, redirect, url_for, jsonify, render_template, session
 from flask_login import current_user, login_required
 
 from db import db
 from extensions import sitemapper
-from funcoes import produtos_para_envio, fechar_pedido, atualizar_quantidade_vendas
+from funcoes import produtos_para_envio, fechar_pedido, atualizar_quantidade_vendas, registrar_uso_cupom
 from models import Pedido, Carrinho, Usuario, ItemPedido
 
 pagamento_bp = Blueprint('pagamento', __name__, template_folder='templates')
@@ -124,6 +124,13 @@ def pagamento_sucesso():
         carrinho = Carrinho.query.filter_by(usuario_id=pedido.usuario_id)
         if pedido:
             pedido.status = 'pago'
+            cupom_id = session.pop('cupom_id', None)
+            if cupom_id:
+                registrar_uso_cupom(
+                    cupom_id=cupom_id,
+                    usuario_id=pedido.usuario_id,
+                    pedido_id=pedido.id,
+                )
             pedido.payment_id_mercadopago = payment_id
             all_items = db.session.execute(
                 db.select(Carrinho).where(Carrinho.usuario_id == pedido.usuario_id)).scalars()
