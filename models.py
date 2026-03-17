@@ -441,3 +441,10 @@ class ItemPedido(db.Model):
     nome = db.Column(db.String(250), nullable=False)
     quantidade = db.Column(db.Integer, nullable=False)
     preco_unitario = db.Column(db.Float, nullable=False)
+
+class Cupom(db.Model):
+    __tablename__ = 'cupons'
+
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(250), nullable=False)
+    desconto = db.Column(db.Float, nullable=False)

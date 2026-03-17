@@ -600,3 +600,32 @@ class HomeMenuLink(MenuLink):
         :return: URL absoluta da rota ``geral.home``.
         """
         return url_for('geral.home')
+
+
+class CupomAdmin(BaseAdmin):
+    """
+    View administrativa para gerenciamento de cupons de desconto.
+
+    Estende BaseAdmin com configurações específicas para o model Cupom.
+    Exibe código e percentual de desconto na listagem, com suporte a busca
+    e filtro por faixa de desconto.
+
+    Attributes:
+        column_list (tuple): Colunas exibidas na listagem: código e desconto.
+        column_labels (dict): Traduz os campos para português.
+        column_searchable_list (tuple): Habilita busca pelo campo 'codigo'.
+        column_filters (tuple): Habilita filtro lateral pelo campo 'desconto'.
+        form_columns (tuple): Campos disponíveis no formulário de criação/edição.
+
+    Example:
+        admin.add_view(CupomAdmin(Cupom, db.session, name='Cupons'))
+    """
+
+    column_list = ('codigo', 'desconto')
+    column_labels = {
+        'codigo': 'Código',
+        'desconto': 'Desconto (%)',
+    }
+    column_searchable_list = ('codigo',)
+    column_filters = ('desconto',)
+    form_columns = ('codigo', 'desconto')

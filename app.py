@@ -6,9 +6,10 @@ from flask_admin.theme import Bootstrap4Theme
 from flask_sitemapper import Sitemapper
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from admin import HomeMenuLink
+from admin import HomeMenuLink, CupomAdmin
 from extensions import mail, db, login_manager, bootstrap, babel
 from funcoes import acessar_capa
+from models import Cupom
 from seo import SEO
 
 sitemapper = Sitemapper()
@@ -100,6 +101,7 @@ def _register_admin(app):
     adm.add_view(CarrosselAdmin(Carrossel, db.session))
     adm.add_view(ConfigAdmin(Config, db.session))
     adm.add_view(PedidoAdmin(Pedido, db.session))
+    adm.add_view(CupomAdmin(Cupom, db.session, name='Cupons'))
     adm.add_link(HomeMenuLink(name='Voltar ao Site'))
 
 

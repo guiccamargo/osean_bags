@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from db import db
 from extensions import sitemapper
 from funcoes import limpar_carrinho, atualizar_quantia, excluir_item_carrinho, acessar_capa, \
-    acessar_enderecos, produtos_para_envio, somar_valor_dos_items
+    acessar_enderecos, produtos_para_envio, somar_valor_dos_items, aplicar_desconto, checar_cupom
 from models import Carrinho, Produto
 from rotas.utils import renderizar_header
 
@@ -121,6 +121,7 @@ def atualizar_item(user_id: int, product_id: int):
     total_carrinho = somar_valor_dos_items(user_id)
     return jsonify({'novo_total': novo_total, 'total_carrinho': total_carrinho})
 
+
 @sitemapper.include()
 @login_required
 @carrinho_bp.route('/deletar/<int:user_id>/<int:product_id>', methods=['GET', 'POST'])
@@ -137,3 +138,51 @@ def deletar_item(user_id, product_id):
     """
     excluir_item_carrinho(user_id, product_id)
     return redirect(url_for('carrinho.ir_para_carrinho'))
+
+
+@carrinho_bp.route('/carrinho/cupom', methods=['POST'])
+@login_required
+def aplicar_cupom():
+    """Valida e aplica um cupom de desconto ao total do carrinho.
+
+    Recebe o código do cupom via JSON, verifica sua validade e,
+    caso exista, calcula o novo total com o desconto aplicado.
+
+    Request JSON:
+        codigo (str): Código do cupom enviado pelo usuário.
+
+    Returns:
+        JSON (200): Dicionário com ``total_com_desconto`` (float) e
+            ``desconto_aplicado`` (float) em caso de sucesso.
+        JSON (404): Mensagem de erro se o cupom não for encontrado.
+        JSON (400): Mensagem de erro se o campo ``codigo`` estiver ausente.
+
+    Example::
+
+        # Request
+        POST /carrinho/cupom
+        { "codigo": "OSEAN10" }
+
+        # Response (sucesso)
+        { "total_com_desconto": 225.00, "desconto_aplicado": 25.00 }
+
+        # Response (inválido)
+        { "erro": "Cupom inválido." }
+    """
+    data = request.get_json()
+
+    if not data or 'codigo' not in data:
+        return jsonify({'erro': 'Código do cupom não informado.'}), 400
+
+    cupom = checar_cupom(data['codigo'])
+    if not cupom:
+        return jsonify({'erro': 'Cupom inválido.'}), 404
+
+    total_original = somar_valor_dos_items(current_user.id)
+    total_com_desconto = aplicar_desconto(total_original, cupom)
+    desconto_aplicado = round(total_original - total_com_desconto, 2)
+
+    return jsonify({
+        'total_com_desconto': total_com_desconto,
+        'desconto_aplicado': desconto_aplicado,
+    })

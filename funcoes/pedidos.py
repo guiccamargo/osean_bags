@@ -152,3 +152,4 @@ def fechar_pedido(id_usuario: int, endereco_id: int, frete: str) -> tuple[str, s
 
     preference_id, init_point = gerar_link_pagamento(preference_data)
     return preference_id, init_point
+

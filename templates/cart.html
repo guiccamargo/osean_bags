@@ -38,6 +38,40 @@
             currency: 'BRL'
         });
     </script>
+    <script>
+        async function aplicarCupom() {
+            const codigo = document.getElementById('campo-cupom').value.trim();
+            const msgEl = document.getElementById('msg-cupom');
+
+            if (!codigo) {
+                msgEl.textContent = 'Digite um código.';
+                msgEl.className = 'mt-1 d-block error';
+                return;
+            }
+
+            const resposta = await fetch("{{ url_for('carrinho.aplicar_cupom') }}", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({codigo}),
+            });
+
+            const dados = await resposta.json();
+
+            if (!resposta.ok) {
+                msgEl.textContent = dados.erro;
+                msgEl.className = 'mt-1 d-block error';
+                return;
+            }
+
+            const formatar = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+
+            document.getElementById('total-carrinho').textContent = formatar(dados.total_com_desconto);
+            msgEl.textContent = `Cupom aplicado! Você economizou ${formatar(dados.desconto_aplicado)}.`;
+            msgEl.className = 'mt-1 d-block success';
+            document.getElementById('btn-aplicar-cupom').disabled = true;
+            document.getElementById('campo-cupom').disabled = true;
+        }
+    </script>
 </head>
 <body>
 <div class="container justify-content-center">
@@ -71,7 +105,8 @@
                     </p>
                     <a aria-label="Deletar item do carrinho."
                        class="btn btn-outline-danger btn-sm"
-                       href="{{url_for('carrinho.deletar_item', user_id=current_user['id'], product_id=product['id'])}}" type="button">
+                       href="{{url_for('carrinho.deletar_item', user_id=current_user['id'], product_id=product['id'])}}"
+                       type="button">
                         <svg class="bi bi-trash3" fill="currentColor" height="16" viewBox="0 0 16 16"
                              width="16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
@@ -93,9 +128,31 @@
 </div>
 
 <hr/>
-
+<!-- Campo de cupom de desconto -->
+<div class="container col-4 text-center mb-4">
+    <h5 class="texto-estilizado mb-2 mt-3">Cupom de desconto</h5>
+    <div class="input-group">
+        <input
+                aria-label="Código do cupom de desconto."
+                class="form-control contorno texto-estilizado"
+                id="campo-cupom"
+                maxlength="50"
+                placeholder="Digite um cupom"
+                type="text"
+        >
+        <button
+                aria-label="Aplicar cupom de desconto."
+                class="btn btn-custom-comprar"
+                id="btn-aplicar-cupom"
+                onclick="aplicarCupom()"
+                type="button"
+        >
+            Aplicar
+        </button>
+    </div>
+    <small class="mt-1 d-block" id="msg-cupom"></small>
+</div>
 <form action="{{ url_for('pagamento.ir_para_pagamento', user_id=current_user.id) }}" method="POST">
-
     <!-- Endereço + Frete -->
     <div class="container my-3">
         <div class="d-flex flex-column flex-sm-row justify-content-around align-items-start gap-3 checkout-section">
