@@ -34,8 +34,6 @@ def esqueci_senha():
         usuario = Usuario.query.filter_by(email=email).first()
 
         if usuario:
-            print(current_app.config['MAIL_USERNAME'])
-            print(current_app.config['MAIL_PASSWORD'])
             token = gerar_token(email)
             link = url_for('redefinir.redefinir_senha', token=token, _external=True)
 
