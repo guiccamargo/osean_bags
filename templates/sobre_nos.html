@@ -1,11 +1,51 @@
 <!DOCTYPE html>
+{% include "header.html" %}
 <html lang="pt-br">
 <head>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
     <meta charset="UTF-8">
     <meta content="Informações da loja Osean Bags." name="description">
     <title>Sobre Nós</title>
+    {% with seo = SEO['home'] %}
+    {% include 'seo.html' %}
+    {% endwith %}
 </head>
-<body>
-
+<body data-gr-ext-installed="" data-new-gr-c-s-check-loaded="8.932.0">
+<div class="container">
+    <h2 style="font-weight: 300;" class="texto-estilizado d-flex justify-content-center julius-sans-one-regular"><strong>Quem somos?</strong></h2>
+    <p class="texto-estilizado d-flex px-5 mb-4 noto-sans-light-italic">Na Osean, a gente acredita que você não deveria ter que escolher entre um
+        produto que
+        funciona bem e um que seja
+        bonito. Por que não ter os dois? Nossa missão é simplificar a sua rotina através de uma estética inteligente,
+        onde a
+        beleza de cada peça é tão relevante quanto a sua utilidade.</p>
+    <hr/>
+    <h2 style="font-weight: 300;" class="texto-estilizado d-flex justify-content-center mt-4 julius-sans-one-regular"><strong>E a qualidade?</strong></h2>
+    <p class="texto-estilizado px-5 mb-4 noto-sans-light-italic">
+        Tudo o que você vê aqui nasce de um processo autoral. Eu, como criadora da marca, desenho cada peça
+        pessoalmente,
+        pensando em como ela vai se encaixar de verdade no seu dia a dia. Não queremos apenas entregar um objeto;
+        queremos
+        entregar uma solução que tenha durabilidade e um acabamento impecável. Por isso, somos obcecados pela escolha
+        dos
+        melhores materiais — se não for para durar e encantar, não faz sentido para nós.
+    </p>
+    <hr/>
+    <h2 style="font-weight: 300;" class="texto-estilizado d-flex justify-content-center mt-4 julius-sans-one-regular"><strong>Por que escolher a
+        Osean?</strong></h2>
+    <p class="texto-estilizado px-5 mb-4 noto-sans-light-italic">
+        Para ser sincera, a Osean é muito mais do que o produto que chega na sua casa. É sobre o universo que criamos
+        juntos: um estilo de vida que valoriza a funcionalidade sem abrir mão da estética. Estamos aqui para quem, assim
+        como nós, busca qualidade real e design com propósito.
+        Ficamos muito felizes em ter você por aqui, fazendo parte do nosso mundo.
+    </p>
+    <hr/>
+</div>
 </body>
+<footer>
+    {% include "footer.html" %}
+</footer>
 </html>

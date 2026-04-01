@@ -276,6 +276,16 @@ input[type="radio"]:focus {
     }
 }
 
+.noto-sans-light-italic {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: italic;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+
 .form-label{
     color: #6B5F3B;
 }
