@@ -8,6 +8,7 @@ from redefinir_senha import verificar_token, gerar_token
 
 redefinir_bp = Blueprint('redefinir', __name__, template_folder='templates')
 
+from extensions import mail  # adicionar esse import
 
 @sitemapper.include()
 @redefinir_bp.route('/esqueci-senha', methods=['GET', 'POST'])
@@ -33,6 +34,8 @@ def esqueci_senha():
         usuario = Usuario.query.filter_by(email=email).first()
 
         if usuario:
+            print(current_app.config['MAIL_USERNAME'])
+            print(current_app.config['MAIL_PASSWORD'])
             token = gerar_token(email)
             link = url_for('redefinir.redefinir_senha', token=token, _external=True)
 
@@ -42,14 +45,12 @@ def esqueci_senha():
                 recipients=[email]
             )
             msg.body = f'Clique no link para redefinir sua senha: {link}\nO link expira em 1 hora.'
-            mail = current_app.extensions['mail']
             mail.send(msg)
 
         flash('Se esse e-mail estiver cadastrado, você receberá um link em breve.', category='success')
         return redirect(url_for('auth.login'))
 
     return render_template('senha/esqueci_senha.html')
-
 
 @sitemapper.include()
 @redefinir_bp.route('/redefinir-senha/<token>', methods=['GET', 'POST'])

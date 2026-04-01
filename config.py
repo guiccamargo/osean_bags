@@ -1,5 +1,8 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 database_url = os.getenv('DATABASE_URL', 'sqlite:///database.db')
 SQLALCHEMY_DATABASE_URI = database_url.replace('postgres://', 'postgresql://', 1)
