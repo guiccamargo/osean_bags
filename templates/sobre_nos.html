@@ -13,36 +13,128 @@
     {% include 'seo.html' %}
     {% endwith %}
 </head>
+<style>
+    .bloco {
+        display: flex;
+        align-items: center;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    /* Imagem */
+    .bloco img {
+        width: 200px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 15px;
+        transform: rotate(10deg);
+        flex-shrink: 0;
+    }
+
+    /* Texto */
+    .conteudo {
+        flex: 1;
+    }
+
+    .conteudo h2 {
+        font-weight: 300;
+        margin-bottom: 20px;
+    }
+
+    .conteudo p {
+        line-height: 1.6;
+    }
+
+    .bloco:nth-child(even) {
+    flex-direction: row-reverse;
+    }
+    .bloco:last-child {
+    margin-bottom: 20px;
+    }
+
+        /* MOBILE */
+    @media (max-width: 768px) {
+        .bloco {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .bloco img {
+            width: 70%;
+            height: auto;
+            transform: none;
+        }
+        .bloco:nth-child(even) {
+            flex-direction: column;
+        }
+    }
+
+</style>
 <body data-gr-ext-installed="" data-new-gr-c-s-check-loaded="8.932.0">
 <div class="container">
-    <h2 style="font-weight: 300;" class="texto-estilizado d-flex justify-content-center julius-sans-one-regular"><strong>Quem somos?</strong></h2>
-    <p class="texto-estilizado d-flex px-5 mb-4 noto-sans-light-italic">Na Osean, a gente acredita que você não deveria ter que escolher entre um
-        produto que
-        funciona bem e um que seja
-        bonito. Por que não ter os dois? Nossa missão é simplificar a sua rotina através de uma estética inteligente,
-        onde a
-        beleza de cada peça é tão relevante quanto a sua utilidade.</p>
-    <hr/>
-    <h2 style="font-weight: 300;" class="texto-estilizado d-flex justify-content-center mt-4 julius-sans-one-regular"><strong>E a qualidade?</strong></h2>
-    <p class="texto-estilizado px-5 mb-4 noto-sans-light-italic">
-        Tudo o que você vê aqui nasce de um processo autoral. Eu, como criadora da marca, desenho cada peça
-        pessoalmente,
-        pensando em como ela vai se encaixar de verdade no seu dia a dia. Não queremos apenas entregar um objeto;
-        queremos
-        entregar uma solução que tenha durabilidade e um acabamento impecável. Por isso, somos obcecados pela escolha
-        dos
-        melhores materiais — se não for para durar e encantar, não faz sentido para nós.
-    </p>
-    <hr/>
-    <h2 style="font-weight: 300;" class="texto-estilizado d-flex justify-content-center mt-4 julius-sans-one-regular"><strong>Por que escolher a
-        Osean?</strong></h2>
-    <p class="texto-estilizado px-5 mb-4 noto-sans-light-italic">
-        Para ser sincera, a Osean é muito mais do que o produto que chega na sua casa. É sobre o universo que criamos
-        juntos: um estilo de vida que valoriza a funcionalidade sem abrir mão da estética. Estamos aqui para quem, assim
-        como nós, busca qualidade real e design com propósito.
-        Ficamos muito felizes em ter você por aqui, fazendo parte do nosso mundo.
-    </p>
-    <hr/>
+
+    <!-- BLOCO 1 -->
+    <div class="bloco">
+        <img alt="" height="300" src="static/img/IMG_3719.JPEG" width="200">
+        <div class="conteudo">
+            <h2 class="texto-estilizado d-flex justify-content-center julius-sans-one-regular"
+                style="font-weight: 300;"><strong>Quem
+                somos?</strong></h2>
+            <p class="texto-estilizado d-flex px-5 mb-4 noto-sans-light-italic">Na Osean, a gente acredita que você não
+                deveria ter que escolher entre um
+                produto que
+                funciona bem e um que seja
+                bonito. Por que não ter os dois? Nossa missão é simplificar a sua rotina através de uma estética
+                inteligente,
+                onde a
+                beleza de cada peça é tão relevante quanto a sua utilidade.</p>
+        </div>
+    </div>
+
+    <!-- BLOCO 2 -->
+    <div class="bloco">
+        <img alt="" height="300" src="static/img/IMG_3563.JPEG" width="200">
+        <div class="conteudo">
+            <h2 class="texto-estilizado justify-content-center mt-4 julius-sans-one-regular"
+                style="font-weight: 300;"><strong>E a
+                qualidade?</strong></h2>
+            <p class="texto-estilizado px-5 mb-4 noto-sans-light-italic">
+                Tudo o que você vê aqui nasce de um processo autoral. Eu, como criadora da marca, desenho cada peça
+                pessoalmente,
+                pensando em como ela vai se encaixar de verdade no seu dia a dia. Não queremos apenas entregar um
+                objeto;
+                queremos
+                entregar uma solução que tenha durabilidade e um acabamento impecável. Por isso, somos obcecados pela
+                escolha
+                dos
+                melhores materiais — se não for para durar e encantar, não faz sentido para nós.
+            </p>
+        </div>
+    </div>
+
+    <!-- BLOCO 3 -->
+    <div class="bloco">
+        <img alt="" height="300" src="static/img/IMG_3521.JPEG" width="200">
+        <div class="conteudo">
+            <h2 class="texto-estilizado d-flex justify-content-center mt-4 julius-sans-one-regular"
+                style="font-weight: 300;"><strong>Por que
+                escolher a
+                Osean?</strong></h2>
+            <p class="texto-estilizado px-5 mb-4 noto-sans-light-italic">
+                Para ser sincera, a Osean é muito mais do que o produto que chega na sua casa. É sobre o universo que
+                criamos
+                juntos: um estilo de vida que valoriza a funcionalidade sem abrir mão da estética. Estamos aqui para
+                quem, assim
+                como nós, busca qualidade real e design com propósito.
+                Ficamos muito felizes em ter você por aqui, fazendo parte do nosso mundo.
+            </p>
+        </div>
+    </div>
+
 </div>
 </body>
 <footer>
