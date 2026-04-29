@@ -77,13 +77,13 @@
                      fetchpriority="high"
                      height="1000"
                      loading="eager"
-                     src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}"
+                     src="{{ banner.arquivo }}"
                      width="1000">
                 {% else %}
                 <img alt="Banner {{ loop.index }}"
                      class="d-block w-100"
                      loading="lazy"
-                     src="{{ url_for('static', filename='uploads/' ~ banner.arquivo) }}">
+                     src="{{ banner.arquivo }}">
                 {% endif %}
             </div>
             {% endfor %}

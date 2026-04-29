@@ -15,7 +15,7 @@ from wtforms.validators import Regexp
 from db import db
 from models import Foto
 
-BASE_UPLOAD = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+BASE_UPLOAD = os.path.join(os.path.dirname(__file__))
 
 
 
@@ -333,7 +333,7 @@ class CarrosselAdmin(BaseAdmin):
 
     column_formatters = {
         'arquivo': lambda v, c, m, p: Markup(
-            f'<img src="{url_for("static", filename="uploads/" + m.arquivo)}" style="max-height:100px;">'
+            f'<img src="{m.arquivo}" style="max-height:100px;">'
         ) if m.arquivo else ''
     }
 
