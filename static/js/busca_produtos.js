@@ -59,7 +59,7 @@ function renderizarProdutos(produtos) {
         <a href="/produtos/${p.id}" class="text-decoration-none text-dark">
             <div class="card shadow-sm">
                 <img class="card-img-top produto-img"
-                     src="static/uploads/${p.imagem}"/>
+                     src="${p.imagem}"/>
                 <hr/>
                 <div class="card-body text-center">
                     <h3 class="card-text texto-estilizado">${p.nome}</h3>
