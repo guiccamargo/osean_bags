@@ -115,23 +115,42 @@
                 display: none !important;
             }
             .header-mobile-only {
-                padding: 5px !important;
+                padding: 2px 4px !important;
+                font-size: 0.75rem !important;
+            }
+            .header-mobile-only strong {
+                font-size: 0.75rem;
+            }
+            .header-left a strong,
+            .header-right a strong {
+                font-size: 0.75rem;
+            }
+            /* Produtos (header-left) também menor */
+            .header-left a.btn strong {
+                font-size: 0.75rem;
+            }
+            .header-left a.btn {
+                padding: 2px 4px !important;
+            }
+            #logo {
+                width: 72px;
+                height: 40px;
             }
             .header-right {
                 gap: 0px;
-                flex-shrink: 1;
+                flex-shrink: 0;
+                padding-right: 2px;
             }
-            .login-img{
-                border: 1pt solid  #6B5F3B;
+            .login-img {
+                border: 1pt solid #6B5F3B;
             }
             .no-wrap {
-              white-space: nowrap;
+                white-space: nowrap;
             }
             #total {
                 padding-right: 10%;
             }
         }
-
         /* Evita layout shift do footer fixo */
         footer.fixed-bottom {
             background-color: #f8f9fa;
@@ -200,11 +219,12 @@
 
         <!-- Lado esquerdo: Produtos + Sobre Nós -->
         <div class="header-left">
-            <a aria-label="Visualizar produtos." class="btn btn-custom px-2"
+            <a aria-label="Visualizar produtos." class="btn btn-custom px-2 julius-sans-one-regular"
                href="{{url_for('produtos.produtos')}}">
                 <strong>Produtos</strong>
             </a>
-            <a aria-label="Saber mais sobre a empresa." class="btn btn-custom px-2 header-desktop-only"
+            <a aria-label="Saber mais sobre a empresa."
+               class="btn btn-custom px-2 header-desktop-only julius-sans-one-regular"
                href="{{url_for('geral.sobre_nos')}}">
                 <strong>Sobre Nós</strong>
             </a>
@@ -220,7 +240,8 @@
         <!-- Lado direito: Admin + Carrinho + Perfil / Login -->
         <div class="header-right">
             {% if admin: %}
-            <a aria-label="Acessar interface de administrador." class="btn btn-custom px-2" href="/admin">
+            <a aria-label="Acessar interface de administrador." class="btn btn-custom px-2 julius-sans-one-regular"
+               href="/admin">
                 <svg class="bi bi-gear" fill="#6B5F3B" height="22" viewBox="0 0 16 16" width="22"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
@@ -229,21 +250,21 @@
             </a>
             {% endif %}
             {% if logged_in %}
-            <a aria-label="Ver itens no carrinho." class="btn btn-custom px-2"
+            <a aria-label="Ver itens no carrinho." class="btn btn-custom px-2 julius-sans-one-regular"
                href="{{url_for('carrinho.ir_para_carrinho') }}">
                 <svg class="bi bi-bag" fill="#6B5F3B" height="22" viewBox="0 0 16 16" width="22"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                 </svg>
                 {% if total_items %}
-                <span id="total" class="btn-overlay rounded-circle">
+                <span class="btn-overlay rounded-circle" id="total">
                     {{total_items}}
                 </span>
                 {% endif %}
             </a>
 
             <div class="dropdown me-2">
-                <button aria-expanded="false" class="btn btn-circle rounded-circle w-auto" data-bs-toggle="dropdown"
+                <button aria-expanded="false" class="btn btn-circle rounded-circle mx-2 w-auto" data-bs-toggle="dropdown"
                         id="dropdown-perfil" type="button">
                     <strong>{{ inicial_nome }}</strong>
                 </button>
@@ -262,15 +283,16 @@
             </div>
 
             {% else %}
-            <a aria-label="Saber mais sobre a empresa." class="btn btn-custom header-mobile-only"
+            <a aria-label="Saber mais sobre a empresa."
+               class="btn btn-custom header-mobile-only julius-sans-one-regular"
                href="{{url_for('geral.sobre_nos')}}">
                 <strong class="no-wrap">Sobre Nós</strong>
             </a>
-            <a aria-label="Fazer login." class="btn btn-custom px-2 header-desktop-only"
+            <a aria-label="Fazer login." class="btn btn-custom header-desktop-only julius-sans-one-regular"
                href="{{url_for('auth.login')}}">
                 <strong>Login</strong>
             </a>
-            <a aria-label="Fazer login." class="btn btn-custom header-mobile-only"
+            <a aria-label="Fazer login." class="btn btn-custom header-mobile-only julius-sans-one-regular"
                href="{{url_for('auth.login')}}">
                 <svg class="bi bi-person rounded-circle login-img" fill="#6B5F3B" height="25"
                      viewBox="0 0 16 16" width="25"
@@ -278,7 +300,7 @@
                     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
                 </svg>
             </a>
-            <a aria-label="Criar conta." class="btn btn-custom px-2 header-desktop-only"
+            <a aria-label="Criar conta." class="btn btn-custom px-2 header-desktop-only julius-sans-one-regular"
                href="{{url_for('auth.register')}}">
                 <strong>Registrar</strong>
             </a>
