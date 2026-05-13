@@ -1,33 +1,35 @@
-from flask import render_template, redirect, url_for, flash, request, Blueprint, current_app
+"""
+Blueprint para redefinição de senha via e-mail.
+
+Gerencia o fluxo completo: solicitação de link, geração de token seguro
+e aplicação da nova senha após validação do token.
+"""
+
+from flask import render_template, redirect, url_for, flash, request, Blueprint
 from flask_mail import Message
 
 from db import db
-from extensions import sitemapper
+from extensions import mail, sitemapper
 from models import Usuario
 from redefinir_senha import verificar_token, gerar_token
 
 redefinir_bp = Blueprint('redefinir', __name__, template_folder='templates')
 
-from extensions import mail  # adicionar esse import
 
 @sitemapper.include()
 @redefinir_bp.route('/esqueci-senha', methods=['GET', 'POST'])
 def esqueci_senha():
     """Exibe e processa o formulário de solicitação de redefinição de senha.
 
-    Em requisições GET, renderiza o formulário onde o usuário informa seu e-mail.
-    Em requisições POST, verifica se o e-mail existe no banco de dados e, caso
-    exista, gera um token seguro e envia um link de redefinição por e-mail.
+    Em GET, renderiza o formulário onde o usuário informa seu e-mail.
+    Em POST, verifica se o e-mail existe e, se sim, envia um link de
+    redefinição por e-mail com token de expiração de 1 hora.
 
-    A mensagem de resposta é sempre a mesma independentemente de o e-mail estar
-    ou não cadastrado, evitando a enumeração de usuários.
+    A resposta é sempre a mesma independentemente de o e-mail estar
+    cadastrado, evitando enumeração de usuários.
 
-    :return: Renderiza ``senha/esqueci_senha.html`` em requisições GET.
-             Redireciona para ``auth.login`` após o processamento do formulário (POST).
-
-    .. note::
-        O link enviado por e-mail expira em 1 hora, conforme definido em
-        ``gerar_token`` / ``verificar_token``.
+    :return: Template ``senha/esqueci_senha.html`` em GET.
+             Redireciona para ``auth.login`` após o POST.
     """
     if request.method == 'POST':
         email = request.form['email']
@@ -39,7 +41,7 @@ def esqueci_senha():
 
             msg = Message(
                 subject='Redefinição de senha',
-                sender=current_app.config['MAIL_USERNAME'],
+                sender=mail.username,  # usa o atributo da instância, não current_app
                 recipients=[email]
             )
             msg.body = f'Clique no link para redefinir sua senha: {link}\nO link expira em 1 hora.'
@@ -50,35 +52,32 @@ def esqueci_senha():
 
     return render_template('senha/esqueci_senha.html')
 
+
 @sitemapper.include()
 @redefinir_bp.route('/redefinir-senha/<token>', methods=['GET', 'POST'])
 def redefinir_senha(token):
     """Exibe e processa o formulário de redefinição de senha via token.
 
-    Valida o token recebido na URL. Se válido, em requisições GET exibe o
-    formulário para o usuário definir uma nova senha. Em requisições POST,
-    aplica a nova senha ao usuário correspondente e redireciona para o login.
+    Valida o token recebido na URL. Se inválido ou expirado, redireciona
+    para a página de solicitação de novo link. Se válido, em GET exibe o
+    formulário; em POST aplica a nova senha e redireciona para o login.
 
-    :param token: Token assinado e com prazo de expiração gerado por ``gerar_token``,
-                  enviado ao usuário por e-mail na rota ``esqueci_senha``.
+    :param token: Token assinado gerado por :func:`redefinir_senha.gerar_token`,
+                  enviado ao usuário por e-mail.
 
-    :return: Redireciona para ``esqueci_senha`` se o token for inválido ou expirado.
-             Renderiza ``senha/redefinir_senha.html`` em requisições GET com token válido.
-             Redireciona para ``auth.login`` após a redefinição bem-sucedida (POST).
-
-    .. note::
-        A senha é armazenada com hash via ``usuario.set_password()``,
-        que deve utilizar ``werkzeug.security`` ou ``bcrypt``.
+    :return: Redireciona para ``redefinir.esqueci_senha`` se o token for inválido.
+             Renderiza ``senha/redefinir_senha.html`` em GET com token válido.
+             Redireciona para ``auth.login`` após redefinição bem-sucedida.
 
     .. warning::
-        O token é de uso único por tempo limitado. Após a expiração, o usuário
-        deverá solicitar um novo link pela rota ``esqueci_senha``.
+        O token é de uso único por tempo limitado. Após a expiração,
+        o usuário deve solicitar um novo link.
     """
     email = verificar_token(token)
 
     if not email:
         flash('Link inválido ou expirado.', category='error')
-        return redirect(url_for('esqueci_senha'))
+        return redirect(url_for('redefinir.esqueci_senha'))  # corrigido: nome correto do endpoint
 
     if request.method == 'POST':
         nova_senha = request.form['senha']

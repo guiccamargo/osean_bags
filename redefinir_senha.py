@@ -36,18 +36,17 @@ def verificar_token(token: str, expiracao: int = 3600) -> str | None:
     """Valida um token de redefinição de senha e retorna o e-mail associado.
 
     Verifica a assinatura e o prazo de expiração do token. Retorna ``None``
-    silenciosamente em caso de token inválido, adulterado ou expirado.
+    silenciosamente em caso de token inválido, adulterado ou expirado —
+    nunca relança a exceção, para que o fluxo de redefinição possa
+    tratar a falha com uma mensagem amigável ao usuário.
 
-    :param token: Token recebido via URL gerado por :func:`gerar_token`.
-    :param expiracao: Tempo máximo de validade do token em segundos.
-                      Padrão: ``3600`` (1 hora).
-
+    :param token: Token recebido via URL, gerado por :func:`gerar_token`.
+    :param expiracao: Tempo máximo de validade em segundos. Padrão: ``3600`` (1 hora).
     :return: E-mail associado ao token se válido, ``None`` caso contrário.
 
     Exemplo::
 
         email = verificar_token(token)
-
         if email is None:
             flash('Link inválido ou expirado.')
             return redirect(url_for('redefinir.esqueci_senha'))
@@ -55,6 +54,6 @@ def verificar_token(token: str, expiracao: int = 3600) -> str | None:
     try:
         email = s.loads(token, salt='redefinir-senha', max_age=expiracao)
         return email
-    except Exception as e:
-        logging.error('Um erro ocorreu.', exc_info=True)  # Logs traceback
-        raise e
+    except Exception:
+        logging.warning('Token de redefinição inválido ou expirado.')
+        return None
