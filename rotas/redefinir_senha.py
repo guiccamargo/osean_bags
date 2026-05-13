@@ -5,7 +5,7 @@ O envio de e-mail é feito em thread separada para evitar que o worker
 do Gunicorn fique bloqueado aguardando a resposta SMTP, o que causaria
 timeout e SIGKILL do processo.
 """
-
+import logging
 import threading
 
 from flask import render_template, redirect, url_for, flash, request, Blueprint, current_app
@@ -22,15 +22,18 @@ redefinir_bp = Blueprint('redefinir', __name__, template_folder='templates')
 def _enviar_email_async(app, msg):
     """Envia um e-mail em thread separada para não bloquear o worker WSGI.
 
-    Abre um novo contexto de aplicação antes do envio, pois threads
-    não herdam o contexto Flask da thread principal.
+    Loga erros explicitamente pois exceções em threads não propagam
+    para o contexto principal e falhariam silenciosamente.
 
     :param app: Instância da aplicação Flask.
     :param msg: Objeto :class:`flask_mail.Message` pronto para envio.
     """
     with app.app_context():
-        mail.send(msg)
-
+        try:
+            mail.send(msg)
+            logging.info('E-mail enviado com sucesso para: %s', msg.recipients)
+        except Exception:
+            logging.exception('Falha ao enviar e-mail para: %s', msg.recipients)
 
 @sitemapper.include()
 @redefinir_bp.route('/esqueci-senha', methods=['GET', 'POST'])
