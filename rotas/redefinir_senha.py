@@ -113,3 +113,34 @@ def redefinir_senha(token):
             return redirect(url_for('auth.login'))
 
     return render_template('senha/redefinir_senha.html', token=token)
+
+
+@redefinir_bp.route('/testar-email')
+def testar_email():
+    """Rota temporária de diagnóstico para verificar configuração de e-mail.
+
+    Remove esta rota após confirmar que o envio funciona.
+    """
+    import traceback
+    from flask import current_app
+
+    config_info = {
+        'MAIL_SERVER': current_app.config.get('MAIL_SERVER'),
+        'MAIL_PORT': current_app.config.get('MAIL_PORT'),
+        'MAIL_USE_TLS': current_app.config.get('MAIL_USE_TLS'),
+        'MAIL_USERNAME': current_app.config.get('MAIL_USERNAME'),
+        'MAIL_PASSWORD_SET': bool(current_app.config.get('MAIL_PASSWORD')),
+    }
+
+    try:
+        msg = Message(
+            subject='Teste de e-mail',
+            sender=current_app.config['MAIL_USERNAME'],
+            recipients=["test1.course.python@gmail.com"]
+        )
+        msg.body = 'Se você recebeu este e-mail, a configuração está correta.'
+        app = current_app._get_current_object()
+        threading.Thread(target=_enviar_email_async, args=(app, msg)).start()
+        return f'Envio disparado. Config: {config_info}'
+    except Exception as e:
+        return f'ERRO: {traceback.format_exc()}<br>Config: {config_info}'
