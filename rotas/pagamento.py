@@ -46,6 +46,7 @@ def calcular_frete_rota():
 @pagamento_bp.route('/pagamento/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def ir_para_pagamento(user_id):
+    """..."""  # docstring existente sem alteração
     if request.method == 'POST':
         endereco_escolhido = request.form.get('endereco_id')
         metodo_envio = request.form.get('envio')
@@ -54,12 +55,18 @@ def ir_para_pagamento(user_id):
             flash('Por favor, selecione uma opção de frete.')
             return redirect(url_for('carrinho.ir_para_carrinho'))
 
-        desconto_percentual = session.get('desconto_percentual', 0.0)
+        # Lê e limpa dados do cupom da sessão
+        cupom_id = session.pop('cupom_id', None)
+        desconto_percentual = session.pop('desconto_percentual', 0.0)
+        cupom_frete_gratis = session.pop('cupom_frete_gratis', False)
+
         preference_id, init_point = fechar_pedido(
             user_id,
             endereco_id=endereco_escolhido,
             frete=metodo_envio,
+            cupom_id=cupom_id,
             desconto_percentual=desconto_percentual,
+            cupom_frete_gratis=cupom_frete_gratis,
         )
         return redirect(init_point)
 

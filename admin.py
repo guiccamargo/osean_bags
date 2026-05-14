@@ -490,31 +490,34 @@ class HomeMenuLink(MenuLink):
 
 
 class CupomAdmin(BaseAdmin):
-    """
-    View administrativa para gerenciamento de cupons de desconto.
+    """View administrativa para gerenciamento de cupons de desconto.
 
-    Estende BaseAdmin com configurações específicas para o model Cupom.
-    Exibe código, percentual de desconto e flag de primeira compra na
-    listagem, com suporte a busca pelo código e filtro por tipo.
+    Suporta cupons de desconto percentual, frete grátis ou ambos combinados.
+    O campo ``desconto`` deve ser ``0`` para cupons exclusivamente de frete grátis.
 
     Attributes:
-        column_list (tuple): Colunas exibidas: código, desconto e primeira_compra.
-        column_labels (dict): Traduz os campos para português.
-        column_searchable_list (tuple): Habilita busca pelo campo 'codigo'.
-        column_filters (tuple): Habilita filtro pelos campos 'desconto' e
-            'primeira_compra'.
-        form_columns (tuple): Campos disponíveis no formulário de criação/edição.
-
-    Example:
-        admin.add_view(CupomAdmin(Cupom, db.session, name='Cupons'))
+        column_list: Colunas exibidas na listagem.
+        column_labels: Tradução dos nomes das colunas para português.
+        column_filters: Filtros laterais disponíveis na listagem.
+        column_descriptions: Textos de ajuda exibidos no formulário.
     """
 
-    column_list = ('codigo', 'desconto', 'primeira_compra')
+    column_list = ('codigo', 'desconto', 'frete_gratis', 'primeira_compra')
+
     column_labels = {
         'codigo': 'Código',
         'desconto': 'Desconto (%)',
+        'frete_gratis': 'Frete Grátis',
         'primeira_compra': 'Apenas 1ª Compra',
     }
-    column_searchable_list = ('codigo',)
-    column_filters = ('desconto', 'primeira_compra')
-    form_columns = ('codigo', 'desconto', 'primeira_compra')
+
+    column_filters = ('frete_gratis', 'primeira_compra')
+
+    column_descriptions = {
+        'codigo': 'Código que o cliente digitará no carrinho (ex: FRETEFREE). '
+                  'Será armazenado em maiúsculas.',
+        'desconto': 'Percentual de desconto sobre o subtotal dos produtos (0–100). '
+                    'Use 0 para cupons exclusivamente de frete grátis.',
+        'frete_gratis': 'Quando marcado, o frete é cobrado como R$ 0,00.',
+        'primeira_compra': 'Válido apenas para clientes sem compras anteriores.',
+    }

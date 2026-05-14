@@ -6,7 +6,6 @@
     <meta content="Carrinho de compras." name="description">
     <title>Carrinho</title>
     <style>
-        /* Responsividade do carrinho */
         @media (max-width: 575.98px) {
             .cart-action-buttons {
                 flex-direction: column !important;
@@ -16,16 +15,13 @@
             .cart-action-buttons .btn {
                 width: 100%;
             }
-
             .checkout-section {
                 flex-direction: column !important;
                 gap: 1.5rem;
             }
-
             .checkout-section > div {
                 width: 100% !important;
             }
-
             .cart-total-box {
                 width: 100% !important;
             }
@@ -37,40 +33,6 @@
             content_type: 'product',
             currency: 'BRL'
         });
-    </script>
-    <script>
-        async function aplicarCupom() {
-            const codigo = document.getElementById('campo-cupom').value.trim();
-            const msgEl = document.getElementById('msg-cupom');
-
-            if (!codigo) {
-                msgEl.textContent = 'Digite um código.';
-                msgEl.className = 'mt-1 d-block error';
-                return;
-            }
-
-            const resposta = await fetch("{{ url_for('carrinho.aplicar_cupom') }}", {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({codigo}),
-            });
-
-            const dados = await resposta.json();
-
-            if (!resposta.ok) {
-                msgEl.textContent = dados.erro;
-                msgEl.className = 'mt-1 d-block error';
-                return;
-            }
-
-            const formatar = v => 'R$ ' + v.toFixed(2).replace('.', ',');
-
-            document.getElementById('total-carrinho').textContent = formatar(dados.total_com_desconto);
-            msgEl.textContent = `Cupom aplicado! Você economizou ${formatar(dados.desconto_aplicado)}.`;
-            msgEl.className = 'mt-1 d-block success';
-            document.getElementById('btn-aplicar-cupom').disabled = true;
-            document.getElementById('campo-cupom').disabled = true;
-        }
     </script>
 </head>
 <body>
@@ -128,36 +90,32 @@
 </div>
 
 <hr/>
-<!-- Campo de cupom de desconto -->
-<div class="container col-lg-4 text-center mb-4">
-    <h5 class="texto-estilizado mb-2 mt-3">Cupom de desconto</h5>
-    <div class="input-group">
-        <input
-                aria-label="Código do cupom de desconto."
-                class="form-control contorno texto-estilizado"
-                id="campo-cupom"
-                maxlength="50"
-                placeholder="Digite um cupom"
-                type="text"
-        >
-        <button
-                aria-label="Aplicar cupom de desconto."
-                class="btn btn-custom-comprar"
-                id="btn-aplicar-cupom"
-                onclick="aplicarCupom()"
-                type="button"
-        >
-            Aplicar
-        </button>
+
+<!-- Cupom de desconto -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-sm-10">
+            <h5 class="texto-estilizado">Cupom de desconto:</h5>
+            <div class="input-group contorno">
+                <input class="form-control texto-estilizado"
+                       id="input-cupom"
+                       placeholder="Digite seu cupom"
+                       style="border:none;"
+                       type="text">
+                <button class="btn btn-primary"
+                        id="btn-aplicar-cupom"
+                        type="button">
+                    Aplicar
+                </button>
+            </div>
+            <small class="mt-1 d-block" id="msg-cupom"></small>
+        </div>
     </div>
-    <small class="mt-1 d-block" id="msg-cupom"></small>
 </div>
+
 <form action="{{ url_for('pagamento.ir_para_pagamento', user_id=current_user.id) }}" method="POST">
-    <!-- Endereço + Frete -->
     <div class="container my-3">
         <div class="d-flex flex-column flex-sm-row justify-content-around align-items-start gap-3 checkout-section">
-
-            <!-- Endereço de entrega -->
             <div class="w-100 w-sm-auto" style="max-width: 100%;">
                 <h5 class="texto-estilizado">Endereço de entrega:</h5>
                 {% if enderecos %}
@@ -176,17 +134,13 @@
                     Cadastrar Novo Endereço
                 </a>
             </div>
-
-            <!-- Opções de envio -->
             <div class="w-100 w-sm-auto mt-3">
                 <h5 class="texto-estilizado">Opções de envio:</h5>
                 <div id="opcoes-envio"></div>
             </div>
-
         </div>
     </div>
 
-    <!-- Botões de ação -->
     <div class="container my-4">
         <div class="d-flex justify-content-center gap-2">
             <button class="btn btn-primary me-3" id="btn-confirmar" type="submit">
@@ -200,7 +154,6 @@
             </a>
         </div>
     </div>
-
 </form>
 
 <script>
@@ -208,6 +161,80 @@
 </script>
 <script src="{{ url_for('static', filename='js/calcula_frete.js') }}"></script>
 <script src="{{ url_for('static', filename='js/atualiza_quantidade.js') }}"></script>
+
+<!-- Script do cupom: após o DOM estar carregado -->
+<script>
+document.getElementById('btn-aplicar-cupom').addEventListener('click', function () {
+    const codigo  = document.getElementById('input-cupom').value.trim();
+    const msgEl   = document.getElementById('msg-cupom');
+    const totalEl = document.getElementById('total-carrinho');
+
+    if (!codigo) {
+        msgEl.style.color = '#ee6f57';
+        msgEl.textContent = 'Informe um código de cupom.';
+        return;
+    }
+
+    fetch("{{ url_for('carrinho.aplicar_cupom') }}", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ codigo })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.erro) {
+            msgEl.style.color = '#ee6f57';
+            msgEl.textContent = data.erro;
+            return;
+        }
+
+        const partes = [];
+        if (data.desconto_aplicado > 0) {
+            partes.push(`Desconto de R$ ${data.desconto_aplicado.toFixed(2).replace('.', ',')} aplicado`);
+        }
+        if (data.frete_gratis) {
+            partes.push('Frete grátis aplicado!');
+            document.querySelectorAll('#opcoes-envio input[name="envio"]').forEach(radio => {
+                const label = radio.closest('label');
+                if (!label) return;
+                const nomeServico = label.querySelector('strong')?.textContent ?? '';
+                const prazo = radio.value.split('|')[2] ?? '';
+
+                label.innerHTML = '';
+
+                const novoRadio = document.createElement('input');
+                novoRadio.type     = 'radio';
+                novoRadio.name     = 'envio';
+                novoRadio.value    = radio.value;
+                novoRadio.required = true;
+                label.appendChild(novoRadio);
+                label.appendChild(document.createTextNode(' '));
+
+                const strong = document.createElement('strong');
+                strong.textContent = nomeServico;
+                label.appendChild(strong);
+                label.appendChild(
+                    document.createTextNode(` – R$ 0,00 (Frete Grátis) – ${prazo} dias`)
+                );
+            });
+        }
+
+        msgEl.style.color = 'green';
+        msgEl.textContent = partes.join(' · ') || 'Cupom aplicado!';
+
+        if (totalEl && data.total_com_desconto !== undefined) {
+            totalEl.textContent = data.total_com_desconto.toLocaleString('pt-BR', {
+                style: 'currency', currency: 'BRL'
+            });
+        }
+    })
+    .catch(() => {
+        msgEl.style.color = '#ee6f57';
+        msgEl.textContent = 'Erro ao validar cupom. Tente novamente.';
+    });
+});
+</script>
+
 </body>
 <footer>
     {% include "footer.html" %}

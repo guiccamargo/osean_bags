@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 from flask import url_for
 
 from apis.envio import calcular_frete
 from apis.pagamento import gerar_link_pagamento
 from db import db
+from funcoes.cupons import registrar_uso_cupom
 from models import Carrinho, Endereco, Produto, Config, Usuario, Pedido, ItemPedido
 
 
@@ -36,139 +37,125 @@ def produtos_para_envio(id_usuario: int, endereco_id: int) -> List[dict]:
                           email_contato=config_info['email'])
 
 
-def fechar_pedido(id_usuario: int, endereco_id: int, frete: str, desconto_percentual: float = 0.0) -> tuple[str, str]:
+def fechar_pedido(
+    id_usuario: int,
+    endereco_id: int,
+    frete: str,
+    cupom_id: Optional[int] = None,
+    desconto_percentual: float = 0.0,
+    cupom_frete_gratis: bool = False,
+) -> tuple[str, str]:
     """Consolida o carrinho em um pedido e gera o link de pagamento.
 
-    Reúne os dados do usuário, endereço de entrega, itens do carrinho e frete
-    para criar um :class:`Pedido` com seus respectivos :class:`ItemPedido` no
-    banco de dados e montar a preferência de pagamento para o Mercado Pago.
+    Aplica, se fornecidos, desconto percentual sobre os produtos e/ou
+    frete grátis, refletindo ambos no payload enviado ao Mercado Pago.
 
     :param id_usuario: ID do usuário autenticado realizando a compra.
-    :param endereco_id: ID do endereço de entrega selecionado pelo usuário.
-    :param frete: String com os dados do frete no formato ``'nome|preco|prazo'``.
+    :param endereco_id: ID do endereço de entrega selecionado.
+    :param frete: Dados do frete no formato ``'nome|preco|prazo'``.
+    :param cupom_id: ID do cupom aplicado, ou ``None`` se ausente.
+    :param desconto_percentual: Percentual de desconto sobre produtos (0–100).
+    :param cupom_frete_gratis: Se ``True``, zera o custo de frete.
 
-                  - ``nome``: nome ou modalidade do serviço de entrega.
-                  - ``preco``: valor do frete em reais (convertido para ``float``).
-                  - ``prazo``: prazo de entrega em dias úteis (convertido para ``int``).
-
-                  Exemplo: ``'PAC|29.90|8'``
-
-    :param desconto_percentual: Percentual de desconto de cupom a ser aplicado
-                                sobre o total dos produtos. Ex: 10.0 equivale a 10%.
-                                Padrão: 0.0 (sem desconto).
-
-    :return: Tupla ``(preference_id, init_point)`` onde:
-
-             - ``preference_id`` é o ID da preferência criada no Mercado Pago.
-             - ``init_point`` é a URL de checkout para redirecionar o usuário.
-
-    .. note::
-        O pedido é persistido no banco de dados antes da chamada à API do
-        Mercado Pago, pois o seu ``id`` é usado como ``external_reference``
-        para identificação no retorno do pagamento.
-
-    .. note::
-        O total do pedido é calculado somando ``preco * quantidade`` de cada
-        item do carrinho ao valor do frete.
-
-    .. warning::
-        Se a string ``frete`` estiver ausente ou em formato inválido, o custo
-        de envio será tratado como ``0.0`` e os campos de frete do pedido
-        podem ficar nulos, podendo causar erros. Certifique-se de validar
-        o dado antes de chamar esta função.
-
-    As URLs de redirecionamento configuradas na preferência são:
-
-    - **success** e **pending** → ``pagamento.pagamento_sucesso``
-    - **failure** → ``geral.home``
-
-    Exemplo de uso::
-
-        preference_id, link = fechar_pedido(
-            id_usuario=1,
-            endereco_id=3,
-            frete='PAC|29.90|8'
-        )
-        return redirect(link)
+    :return: Tupla ``(preference_id, init_point)``.
     """
-    sucesso_url = url_for('pagamento.pagamento_sucesso', _external=True)
     usuario = db.get_or_404(Usuario, id_usuario)
     itens = Carrinho.query.filter_by(usuario_id=id_usuario).all()
     endereco = db.get_or_404(Endereco, endereco_id)
 
-    nome_frete, preco_frete, prazo_frete = None, None, None
-    custo_envio = 0.0
+    # --- Parse do frete ---
+    nome_frete, preco_frete, prazo_frete = None, 0.0, None
     try:
         if frete and '|' in frete:
             nome_frete, preco_frete, prazo_frete = frete.split('|')
-            custo_envio = float(preco_frete)
-        else:
-            pass
+            preco_frete = float(preco_frete)
+            prazo_frete = int(prazo_frete)
     except (ValueError, TypeError):
         pass
+
+    # Zera o frete se o cupom conceder frete grátis
+    custo_envio = 0.0 if cupom_frete_gratis else float(preco_frete)
+
+    # --- Montar itens e calcular total ---
+    lista_mp = []   # itens para o Mercado Pago
+    total_produtos = 0.0
 
     novo_pedido = Pedido(
         usuario_id=id_usuario,
         status='pendente',
         metodo_envio=nome_frete,
-        valor_frete=float(preco_frete),
-        prazo_envio=int(prazo_frete),
+        valor_frete=custo_envio,
+        prazo_envio=prazo_frete,
         rua=endereco.rua,
         numero=endereco.numero,
         cidade=endereco.cidade,
         cep=endereco.cep,
-        total_pedido=0.0  # Calculado posteriormente
+        total_pedido=0.0,
     )
 
-    lista_de_produtos = []
-    total = 0
-
-    total_produtos = 0
     for item in itens:
         produto = db.get_or_404(Produto, item.produto_id)
-        lista_de_produtos.append({
-            'id': str(produto.id), 'title': produto.nome,
-            'quantity': int(item.quantidade), 'currency_id': 'BRL',
-            'unit_price': float(produto.preco),
+
+        # Preço unitário já com desconto proporcional aplicado
+        preco_com_desconto = round(
+            produto.preco * (1 - desconto_percentual / 100), 2
+        )
+
+        lista_mp.append({
+            'id': str(produto.id),
+            'title': produto.nome,
+            'quantity': int(item.quantidade),
+            'currency_id': 'BRL',
+            'unit_price': preco_com_desconto,
         })
+
         item_venda = ItemPedido(
-            produto_id=produto.id, nome=produto.nome,
-            quantidade=item.quantidade, preco_unitario=produto.preco
+            produto_id=produto.id,
+            nome=produto.nome,
+            quantidade=item.quantidade,
+            preco_unitario=preco_com_desconto,  # snapshot já com desconto
         )
         novo_pedido.itens.append(item_venda)
-        total_produtos += produto.preco * item.quantidade
+        total_produtos += preco_com_desconto * item.quantidade
 
-    # Aplica o desconto e adiciona como item negativo na preferência do Mercado Pago
-    valor_desconto = 0.0
+    novo_pedido.total_pedido = round(total_produtos + custo_envio, 2)
+    db.session.add(novo_pedido)
+    db.session.commit()
 
-    if desconto_percentual > 0:
-        valor_desconto = round(total_produtos * (desconto_percentual / 100), 2)
-        lista_de_produtos.append({
-            'id': 'desconto',
-            'title': f'Desconto ({desconto_percentual}%)',
+    # Registra uso do cupom após commit (pedido já tem ID)
+    if cupom_id:
+        registrar_uso_cupom(
+            cupom_id=cupom_id,
+            usuario_id=id_usuario,
+            pedido_id=novo_pedido.id,
+        )
+
+    # --- Frete como item separado no Mercado Pago ---
+    # Só adiciona se houver custo; cupom de frete grátis → não adiciona
+    if custo_envio > 0:
+        lista_mp.append({
+            'id': 'frete',
+            'title': f'Frete – {nome_frete}',
             'quantity': 1,
             'currency_id': 'BRL',
-            'unit_price': -valor_desconto,
+            'unit_price': custo_envio,
         })
 
-    total = round(total_produtos - valor_desconto, 2)
-    novo_pedido.total_pedido = total + custo_envio
-    db.session.add(novo_pedido)
-    db.session.commit()  # Pedido agora tem um ID
-
-    preference_data = {'items': lista_de_produtos,
-                       'external_reference': str(novo_pedido.id),  # Crucial para identificar na volta
-                       'shipments': {'cost': custo_envio, 'mode': 'not_specified', },
-                       'payer': {
-                           'name': usuario.nome,
-                           'surname': usuario.sobrenome,
-                           'email': usuario.email},
-                       'back_urls': {
-                           'success': url_for('pagamento.pagamento_sucesso', _external=True),
-                           'failure': url_for('pagamento.pagamento_falha', _external=True),
-                           'pending': url_for('pagamento.pagamento_pendente', _external=True),
-                       }, 'auto_return': 'approved', }
+    preference_data = {
+        'items': lista_mp,
+        'external_reference': str(novo_pedido.id),
+        'payer': {
+            'name': usuario.nome,
+            'surname': usuario.sobrenome,
+            'email': usuario.email,
+        },
+        'back_urls': {
+            'success': url_for('pagamento.pagamento_sucesso', _external=True),
+            'failure': url_for('pagamento.pagamento_falha', _external=True),
+            'pending': url_for('pagamento.pagamento_pendente', _external=True),
+        },
+        'auto_return': 'approved',
+    }
 
     preference_id, init_point = gerar_link_pagamento(preference_data)
     return preference_id, init_point
-

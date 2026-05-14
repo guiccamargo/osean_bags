@@ -443,35 +443,36 @@ class ItemPedido(db.Model):
     preco_unitario = db.Column(db.Float, nullable=False)
 
 class Cupom(db.Model):
-    """Representa um cupom de desconto aplicável ao carrinho de compras.
+    """Representa um cupom de desconto aplicável ao carrinho.
 
-    :ivar id: Identificador único do cupom (chave primária).
-    :ivar codigo: Código promocional digitado pelo cliente. Armazenado em
-                  maiúsculas. Máximo de 250 caracteres.
-    :ivar desconto: Percentual de desconto a ser aplicado sobre o total dos
-                    produtos (não inclui frete). Ex: 10.0 equivale a 10%.
-    :ivar primeira_compra: Se ``True``, o cupom só é válido para clientes
-                           que ainda não realizaram nenhum pedido pago.
-                           Padrão: ``False``.
-    :ivar usos: Lista de :class:`CupomUso` registrando quais usuários já
-                utilizaram este cupom.
+    Suporta dois tipos de benefício, que podem ser combinados:
 
-    Example::
+    - **Desconto percentual** sobre o subtotal dos produtos (``desconto``).
+    - **Frete grátis** (``frete_gratis``): zera o custo de envio no pedido
+      e no payload enviado ao Mercado Pago.
 
-        cupom = Cupom(codigo='BEMVINDO10', desconto=10.0, primeira_compra=True)
-        db.session.add(cupom)
-        db.session.commit()
+    O cupom pode ser restrito à primeira compra do usuário e/ou ter um
+    número máximo de utilizações globais.
+
+    :ivar id: Identificador único (chave primária).
+    :ivar codigo: Código digitado pelo cliente (único, armazenado em maiúsculas).
+    :ivar desconto: Percentual de desconto sobre o subtotal (0–100).
+                    Use ``0`` para cupons exclusivamente de frete grátis.
+    :ivar frete_gratis: Se ``True``, zera o custo de frete no pedido.
+    :ivar primeira_compra: Se ``True``, válido apenas para usuários sem
+                           pedidos pagos anteriores.
+    :ivar usos: Lista de :class:`CupomUso` registrando quem utilizou o cupom.
     """
 
     __tablename__ = 'cupons'
 
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.String(250), nullable=False, unique=True)
-    desconto = db.Column(db.Float, nullable=False)
-    primeira_compra = db.Column(db.Boolean, default=False, nullable=False)
+    codigo = db.Column(db.String(50), unique=True, nullable=False)
+    desconto = db.Column(db.Float, nullable=False, default=0.0)
+    frete_gratis = db.Column(db.Boolean, nullable=False, default=False)  # ← novo
+    primeira_compra = db.Column(db.Boolean, nullable=False, default=False)
 
     usos = db.relationship('CupomUso', backref='cupom', lazy=True)
-
 
 class CupomUso(db.Model):
     """Registra que um usuário utilizou um cupom de desconto.

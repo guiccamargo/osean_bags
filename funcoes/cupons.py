@@ -101,21 +101,28 @@ def registrar_uso_cupom(cupom_id: int, usuario_id: int, pedido_id: int) -> None:
 
 
 def aplicar_desconto(total: float, cupom: Cupom) -> float:
-    """Aplica o percentual de desconto de um cupom ao total do carrinho.
+    """Aplica o percentual de desconto de um cupom ao subtotal dos produtos.
 
     Subtrai do ``total`` o valor correspondente ao percentual de desconto
     definido no cupom. O resultado é arredondado para duas casas decimais
     e nunca retorna valor negativo.
 
-    :param total: Valor total do carrinho em reais, sem desconto.
+    O campo ``frete_gratis`` do cupom **não** é tratado aqui — o frete é
+    zerado separadamente em :func:`funcoes.pedidos.fechar_pedido`.
+
+    :param total: Valor total dos produtos em reais, sem desconto e sem frete.
     :param cupom: Instância de :class:`Cupom` com o percentual de desconto.
-    :return: Novo total após a aplicação do desconto (mínimo 0.0).
+    :return: Novo subtotal após a aplicação do desconto (mínimo ``0.0``).
 
     Example::
 
-        cupom = checar_cupom('OSEAN10')
+        cupom = checar_cupom('OSEAN10')      # desconto=10, frete_gratis=False
         total_com_desconto = aplicar_desconto(250.00, cupom)
-        # Desconto de 10% → retorna 225.00
+        # → 225.00
+
+        cupom_frete = checar_cupom('FRETEFREE')  # desconto=0, frete_gratis=True
+        total_com_desconto = aplicar_desconto(250.00, cupom_frete)
+        # → 250.00  (frete zerado em fechar_pedido, não aqui)
     """
     desconto = total * (cupom.desconto / 100)
     return round(max(total - desconto, 0.0), 2)

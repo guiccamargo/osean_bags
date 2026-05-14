@@ -26,21 +26,6 @@ def create_app():
     app.jinja_env.filters['preco_br'] = formatar_preco
     app.jinja_env.globals['acessar_capa'] = acessar_capa
 
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-
-    app.config['MAIL_PORT'] = 587
-
-    app.config['MAIL_USE_TLS'] = True
-
-    app.config['MAIL_USE_SSL'] = False
-
-    app.config['MAIL_USERNAME'] = os.getenv('EMAIL_DE_REDEFINICAO')
-    app.config['MAIL_PASSWORD'] = os.getenv('SENHA_DE_APP')
-
-    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('EMAIL_DE_REDEFINICAO')
-
-    app.config['MAIL_TIMEOUT'] = 15
-
     _init_extensions(app)
     _register_blueprints(app)
     _register_admin(app)
